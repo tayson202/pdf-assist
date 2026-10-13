@@ -141,3 +141,45 @@
   --z-modal:   300;
   --z-toast:   400;
 }
+
+/* ── Theme Presets ────────────────────────────────── */
+body[data-theme="ocean"] {
+  --color-bg-base: #070d19;
+  --color-bg-surface: #0c1629;
+  --color-bg-elevated: #13223f;
+  --color-bg-overlay: #1b2f57;
+  --gradient-primary: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+  --gradient-text: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+  --color-purple-500: #0284c7;
+  --color-purple-400: #38bdf8;
+  --color-border: rgba(14, 165, 233, 0.16);
+  --color-border-hover: rgba(14, 165, 233, 0.35);
+}
+
+body[data-theme="emerald"] {
+  --color-bg-base: #06110d;
+  --color-bg-surface: #0a1b15;
+  --color-bg-elevated: #0f2a21;
+  --color-bg-overlay: #163c2f;
+  --gradient-primary: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --gradient-text: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
+  --color-purple-500: #059669;
+  --color-purple-400: #34d399;
+  --color-border: rgba(16, 185, 129, 0.16);
+  --color-border-hover: rgba(16, 185, 129, 0.35);
+}
+
+body[data-theme="light"] {
+  --color-bg-base: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #f1f5f9;
+  --color-bg-overlay: #e2e8f0;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --gradient-card: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+  --gradient-hero: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-border-hover: rgba(139, 92, 246, 0.3);
+}
+

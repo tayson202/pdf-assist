@@ -97,6 +97,61 @@ class Viewer {
         }
       });
     }
+
+    // In-viewer document search
+    this.searchInput = document.getElementById('viewer-search-input');
+    this.searchCount = document.getElementById('viewer-search-count');
+    this.searchMatches = [];
+    if (this.searchInput) {
+      this.searchInput.addEventListener('input', () => this.handleSearch());
+      this.searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          this.jumpToNextSearchResult();
+        }
+      });
+    }
+  }
+
+  handleSearch() {
+    const query = (this.searchInput ? this.searchInput.value : '').trim().toLowerCase();
+    if (!query) {
+      if (this.searchCount) this.searchCount.textContent = '';
+      this.searchMatches = [];
+      return;
+    }
+    const pdf = window.appStore.getState('currentPdf');
+    if (!pdf) return;
+
+    const text = pdf.textContent || '';
+    const sections = text.split(/\[Page\s+(\d+)\]:?/i);
+    this.searchMatches = [];
+
+    if (sections.length > 2) {
+      for (let i = 1; i < sections.length; i += 2) {
+        const pageNum = parseInt(sections[i], 10);
+        const content = (sections[i + 1] || '').toLowerCase();
+        if (content.includes(query)) {
+          this.searchMatches.push(pageNum);
+        }
+      }
+    } else {
+      if (text.toLowerCase().includes(query)) {
+        this.searchMatches.push(1);
+      }
+    }
+
+    if (this.searchCount) {
+      this.searchCount.textContent = this.searchMatches.length 
+        ? `${this.searchMatches.length} match(es)` 
+        : '0 matches';
+    }
+  }
+
+  jumpToNextSearchResult() {
+    if (this.searchMatches && this.searchMatches.length > 0) {
+      const nextMatch = this.searchMatches.find(p => p > this.currentPage) || this.searchMatches[0];
+      this.goToPage(nextMatch);
+    }
   }
 
   goToPage(pageNum) {

@@ -35,11 +35,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Theme Switcher
+  const themeSelect = document.getElementById('theme-select');
+  if (themeSelect) {
+    const savedTheme = localStorage.getItem('pdf_assist_theme') || 'cyber';
+    themeSelect.value = savedTheme;
+    if (savedTheme !== 'cyber') {
+      document.body.setAttribute('data-theme', savedTheme);
+    }
+    themeSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (val === 'cyber') {
+        document.body.removeAttribute('data-theme');
+      } else {
+        document.body.setAttribute('data-theme', val);
+      }
+      localStorage.setItem('pdf_assist_theme', val);
+      Utils.showToast(`Theme switched to ${e.target.options[e.target.selectedIndex].text}`, 'info');
+    });
+  }
+
   // Settings button
   const settingsBtn = document.getElementById('btn-settings');
   if (settingsBtn) {
     settingsBtn.addEventListener('click', () => {
-      Utils.showToast('Settings: Dark Mode and AI Model preferences active.', 'info');
+      Utils.showToast('Preferences active: Theme & FastAPI RAG engine ready.', 'info');
     });
   }
 

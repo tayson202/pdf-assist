@@ -59,6 +59,18 @@
             <span class="sidebar__nav-label">Summarize</span>
           </button>
         </li>
+        <li class="sidebar__nav-item" data-page="study">
+          <button class="sidebar__nav-btn" id="nav-study" aria-label="Study and Quiz">
+            <span class="sidebar__nav-icon" aria-hidden="true">🎓</span>
+            <span class="sidebar__nav-label">Study &amp; Quiz</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="translate">
+          <button class="sidebar__nav-btn" id="nav-translate" aria-label="Translate">
+            <span class="sidebar__nav-icon" aria-hidden="true">🌐</span>
+            <span class="sidebar__nav-label">Translate</span>
+          </button>
+        </li>
         <li class="sidebar__nav-item" data-page="annotate">
           <button class="sidebar__nav-btn" id="nav-annotate" aria-label="Annotate">
             <span class="sidebar__nav-icon" aria-hidden="true">🖊️</span>
@@ -69,6 +81,12 @@
           <button class="sidebar__nav-btn" id="nav-tools" aria-label="PDF Tools">
             <span class="sidebar__nav-icon" aria-hidden="true">⚙️</span>
             <span class="sidebar__nav-label">Tools</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="compare">
+          <button class="sidebar__nav-btn" id="nav-compare" aria-label="Compare PDFs">
+            <span class="sidebar__nav-icon" aria-hidden="true">⚖️</span>
+            <span class="sidebar__nav-label">Compare</span>
           </button>
         </li>
       </ul>
@@ -91,6 +109,12 @@
       </button>
       <span class="topbar__title">PDFAssist</span>
       <div class="topbar__actions">
+        <select class="theme-select" id="theme-select" aria-label="Select color theme">
+          <option value="cyber">🌌 Cyber Dark</option>
+          <option value="ocean">🌊 Deep Ocean</option>
+          <option value="emerald">🌲 Emerald Matrix</option>
+          <option value="light">☀️ Crisp Light</option>
+        </select>
         <div class="backend-badge" id="backend-status-badge" title="FastAPI Engine (http://127.0.0.1:8000)">
           <span class="backend-badge__dot"></span>
           <span id="backend-status-text">Backend Connected</span>
@@ -147,17 +171,35 @@
           <p class="feature-card__desc">Get concise summaries of any PDF in seconds. Choose short, medium, or detailed.</p>
           <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
         </article>
+        <article class="feature-card" data-page="study">
+          <div class="feature-card__icon" aria-hidden="true">🎓</div>
+          <h2 class="feature-card__title">Study &amp; Quiz</h2>
+          <p class="feature-card__desc">Master concepts with interactive 3D flashcards and AI multiple-choice quizzes.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Practice →</button>
+        </article>
+        <article class="feature-card" data-page="translate">
+          <div class="feature-card__icon" aria-hidden="true">🌐</div>
+          <h2 class="feature-card__title">Translate</h2>
+          <p class="feature-card__desc">Translate document sections into 10+ languages with one-click markdown export.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Translate →</button>
+        </article>
         <article class="feature-card" data-page="annotate">
           <div class="feature-card__icon" aria-hidden="true">🖊️</div>
           <h2 class="feature-card__title">Annotate</h2>
           <p class="feature-card__desc">Highlight, underline, and add notes directly on your PDF with smart tools.</p>
-          <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Annotate →</button>
         </article>
         <article class="feature-card" data-page="tools">
           <div class="feature-card__icon" aria-hidden="true">⚙️</div>
           <h2 class="feature-card__title">Merge &amp; Split</h2>
           <p class="feature-card__desc">Combine multiple PDFs or split one into individual pages — no installs needed.</p>
-          <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Manage →</button>
+        </article>
+        <article class="feature-card" data-page="compare">
+          <div class="feature-card__icon" aria-hidden="true">⚖️</div>
+          <h2 class="feature-card__title">Compare PDFs</h2>
+          <p class="feature-card__desc">Diff two document versions side-by-side with line-by-line change analysis.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Compare →</button>
         </article>
       </div>
     </section>
@@ -171,6 +213,25 @@
         </div>
       </div>
       <div class="viewer-container" id="viewer-container">
+        <!-- Audio & Search Sub-Bar -->
+        <div class="viewer-top-tools">
+          <div class="viewer-audio-bar">
+            <button class="btn btn--ghost btn--sm" id="btn-audio-play">▶ Read Aloud</button>
+            <select class="form-select form-select--sm" id="audio-speed" style="padding:4px 8px;font-size:0.75rem;border-radius:var(--radius-md);">
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1.0x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2.0x</option>
+            </select>
+            <span class="audio-status-pill" id="audio-status">Audio Ready</span>
+          </div>
+          <div class="viewer-search-box">
+            <input type="text" class="form-input" id="viewer-search-input" placeholder="🔍 Find in doc..." />
+            <span id="viewer-search-count" class="search-count"></span>
+          </div>
+        </div>
+
         <div class="viewer-toolbar" id="viewer-toolbar" role="toolbar" aria-label="Viewer controls">
           <button class="btn btn--ghost btn--icon" id="btn-prev-page" aria-label="Previous page">‹</button>
           <span class="viewer-toolbar__page-info" id="page-info">Page 1 / 1</span>
@@ -346,6 +407,143 @@
       </div>
     </section>
 
+    <!-- STUDY & QUIZ PAGE -->
+    <section class="page" id="page-study" aria-label="Study and Quiz" hidden>
+      <div class="page-header">
+        <h1 class="page-title">Study &amp; AI Quiz</h1>
+        <p class="page-subtitle">Master document concepts with 3D flashcards and automated quizzes</p>
+      </div>
+      <div class="study-layout">
+        <div class="study-tabs" role="tablist">
+          <button class="btn btn--ghost btn--active" id="tab-flashcards">🗂️ 3D Flashcards</button>
+          <button class="btn btn--ghost" id="tab-quiz">📝 Interactive Quiz</button>
+        </div>
+
+        <!-- Flashcards View -->
+        <div id="study-flashcards-view">
+          <div class="flashcard-stage" id="flashcard-stage">
+            <div class="flashcard" id="flashcard">
+              <div class="flashcard-face flashcard-front">
+                <span class="flashcard-tag" id="card-tag">Concept • Page 1</span>
+                <div class="flashcard-prompt" id="card-prompt">Upload a PDF or try the demo to generate flashcards.</div>
+                <span class="flashcard-hint">💡 Click card or press Space to flip</span>
+              </div>
+              <div class="flashcard-face flashcard-back">
+                <span class="flashcard-tag">Verified Citation</span>
+                <div class="flashcard-prompt" id="card-answer" style="font-size:1.1rem;font-weight:400;">Answer will appear here.</div>
+                <span class="flashcard-hint">💡 Click card to flip back</span>
+              </div>
+            </div>
+          </div>
+          <div class="flashcard-controls">
+            <button class="btn btn--ghost btn--icon" id="btn-prev-card" title="Previous Card">‹</button>
+            <span id="card-counter" style="font-size:0.875rem;color:var(--color-text-secondary);font-weight:500;">Card 1 of 5</span>
+            <button class="btn btn--ghost btn--icon" id="btn-next-card" title="Next Card">›</button>
+            <button class="btn btn--primary btn--sm" id="btn-flip-card">🔄 Flip Card</button>
+            <button class="btn btn--ghost btn--sm" id="btn-shuffle-cards">🔀 Shuffle</button>
+          </div>
+        </div>
+
+        <!-- Quiz View -->
+        <div id="study-quiz-view" hidden>
+          <div class="quiz-container">
+            <div class="quiz-progress-bar">
+              <span id="quiz-score-display" style="font-weight:600;color:var(--color-purple-300);">Score: 0 / 4</span>
+              <button class="btn btn--ghost btn--sm" id="btn-regen-quiz">🔄 Regenerate Quiz</button>
+            </div>
+            <div id="quiz-questions-list" class="quiz-options"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANSLATE PAGE -->
+    <section class="page" id="page-translate" aria-label="Translate" hidden>
+      <div class="page-header">
+        <h1 class="page-title">Multi-Language Translate</h1>
+        <p class="page-subtitle">Instant neural translation with formatted citations</p>
+      </div>
+      <div class="translate-layout">
+        <div class="card">
+          <h2 class="card__title">Translation Settings</h2>
+          <div class="form-group">
+            <label class="form-label" for="translate-lang">Target Language</label>
+            <select class="form-select" id="translate-lang">
+              <option value="es" selected>🇪🇸 Spanish (Español)</option>
+              <option value="fr">🇫🇷 French (Français)</option>
+              <option value="de">🇩🇪 German (Deutsch)</option>
+              <option value="ar">🇸🇦 Arabic (العربية)</option>
+              <option value="ja">🇯🇵 Japanese (日本語)</option>
+              <option value="zh">🇨🇳 Chinese (中文)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="translate-scope">Translation Scope</label>
+            <select class="form-select" id="translate-scope">
+              <option value="summary" selected>Executive Summary &amp; Key Points</option>
+              <option value="overview">Overview &amp; Methodologies</option>
+              <option value="full">Comprehensive Document Highlights</option>
+            </select>
+          </div>
+          <button class="btn btn--primary btn--full" id="btn-translate-action">🌐 Translate Document</button>
+        </div>
+
+        <div class="translate-output-card">
+          <div class="translate-header">
+            <span style="font-weight:600;font-size:0.95rem;color:var(--color-text-primary);">Translated Intelligence</span>
+            <div style="display:flex;gap:var(--space-2);">
+              <button class="btn btn--ghost btn--sm" id="btn-copy-translation">📋 Copy</button>
+              <button class="btn btn--ghost btn--sm" id="btn-download-translation">💾 Markdown</button>
+            </div>
+          </div>
+          <div id="translate-output-text" style="flex:1;">
+            <div class="empty-state">
+              <div class="empty-state__icon" aria-hidden="true">🌐</div>
+              <p class="empty-state__label">Select language and click "Translate Document"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARE PAGE -->
+    <section class="page" id="page-compare" aria-label="Compare PDFs" hidden>
+      <div class="page-header">
+        <h1 class="page-title">Document Compare &amp; Diff</h1>
+        <p class="page-subtitle">Analyze revisions, additions, and deletions between two PDFs</p>
+      </div>
+      <div class="compare-layout">
+        <div class="compare-dropzones">
+          <div class="card" style="text-align:center;">
+            <div style="font-size:2rem;margin-bottom:var(--space-2);" aria-hidden="true">📄</div>
+            <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:var(--space-1);">Original Document (v1.0)</h3>
+            <p id="compare-label-a" style="font-size:0.875rem;color:var(--color-text-muted);margin-bottom:var(--space-3);">Contract_Draft_v1.0.pdf</p>
+            <input type="file" id="compare-file-a" accept=".pdf" style="display:none;" />
+            <button class="btn btn--ghost btn--sm" onclick="document.getElementById('compare-file-a').click()">Choose File</button>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:2rem;margin-bottom:var(--space-2);" aria-hidden="true">📄</div>
+            <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:var(--space-1);">Revised Document (v2.0)</h3>
+            <p id="compare-label-b" style="font-size:0.875rem;color:var(--color-text-muted);margin-bottom:var(--space-3);">Contract_Draft_v2.0_Final.pdf</p>
+            <input type="file" id="compare-file-b" accept=".pdf" style="display:none;" />
+            <button class="btn btn--ghost btn--sm" onclick="document.getElementById('compare-file-b').click()">Choose File</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:var(--space-3);justify-content:center;">
+          <button class="btn btn--primary btn--lg" id="btn-run-compare">⚖️ Run Diff Analysis</button>
+          <button class="btn btn--ghost btn--lg" id="btn-demo-compare">Try Demo Diff →</button>
+        </div>
+
+        <div class="compare-results" id="compare-results-view">
+          <div class="empty-state">
+            <div class="empty-state__icon" aria-hidden="true">⚖️</div>
+            <p class="empty-state__label">Click "Run Diff Analysis" or "Try Demo Diff" to inspect document changes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ── Global Toast Notifications ─────────────────── -->
@@ -369,8 +567,12 @@
   <script src="js/router.js"></script>
   <script src="js/pdf-loader.js"></script>
   <script src="js/viewer.js"></script>
+  <script src="js/audio-reader.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/summarize.js"></script>
+  <script src="js/study-quiz.js"></script>
+  <script src="js/translate.js"></script>
+  <script src="js/compare.js"></script>
   <script src="js/annotate.js"></script>
   <script src="js/tools.js"></script>
   <script src="js/app.js"></script>
