@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PDF Assist – AI-powered PDF tool for chat, summarization, annotation, merge and split." />
+  <title>PDF Assist – AI-Powered PDF Assistant</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <!-- Favicon placeholder -->
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="dark-mode">
+
+  <!-- ── Sidebar Navigation ─────────────────────────── -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar__logo">
+      <img src="assets/icons/logo.svg" alt="PDF Assist Logo" class="sidebar__logo-icon" />
+      <span class="sidebar__logo-text">PDF<span class="gradient-text">Assist</span></span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <ul class="sidebar__nav-list" role="list">
+        <li class="sidebar__nav-item active" data-page="home">
+          <button class="sidebar__nav-btn" id="nav-home" aria-label="Home">
+            <span class="sidebar__nav-icon" aria-hidden="true">🏠</span>
+            <span class="sidebar__nav-label">Home</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="viewer">
+          <button class="sidebar__nav-btn" id="nav-viewer" aria-label="PDF Viewer">
+            <span class="sidebar__nav-icon" aria-hidden="true">📄</span>
+            <span class="sidebar__nav-label">Viewer</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="chat">
+          <button class="sidebar__nav-btn" id="nav-chat" aria-label="AI Chat">
+            <span class="sidebar__nav-icon" aria-hidden="true">🤖</span>
+            <span class="sidebar__nav-label">AI Chat</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="summarize">
+          <button class="sidebar__nav-btn" id="nav-summarize" aria-label="Summarize">
+            <span class="sidebar__nav-icon" aria-hidden="true">✨</span>
+            <span class="sidebar__nav-label">Summarize</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="annotate">
+          <button class="sidebar__nav-btn" id="nav-annotate" aria-label="Annotate">
+            <span class="sidebar__nav-icon" aria-hidden="true">🖊️</span>
+            <span class="sidebar__nav-label">Annotate</span>
+          </button>
+        </li>
+        <li class="sidebar__nav-item" data-page="tools">
+          <button class="sidebar__nav-btn" id="nav-tools" aria-label="PDF Tools">
+            <span class="sidebar__nav-icon" aria-hidden="true">⚙️</span>
+            <span class="sidebar__nav-label">Tools</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar__footer">
+      <button class="btn btn--ghost btn--sm" id="btn-settings" aria-label="Settings">
+        ⚙ Settings
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content Area ──────────────────────────── -->
+  <main class="main-content" id="main-content" role="main">
+
+    <!-- Mobile Top Bar -->
+    <header class="topbar" id="topbar">
+      <button class="topbar__hamburger" id="btn-hamburger" aria-label="Toggle sidebar" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="topbar__title">PDFAssist</span>
+      <div class="topbar__actions">
+        <button class="btn btn--ghost btn--icon" id="btn-upload-topbar" aria-label="Upload PDF">📤</button>
+      </div>
+    </header>
+
+    <!-- ── Pages ──────────────────────────────────────── -->
+
+    <!-- HOME PAGE -->
+    <section class="page page--active" id="page-home" aria-label="Home">
+      <div class="hero">
+        <div class="hero__badge">✦ AI-Powered PDF Assistant</div>
+        <h1 class="hero__title">
+          Transform your PDFs<br />
+          with <span class="gradient-text">AI intelligence</span>
+        </h1>
+        <p class="hero__subtitle">
+          Upload any PDF and instantly chat with it, get summaries, annotate,
+          merge, split — all in one beautiful interface.
+        </p>
+        <div class="hero__actions">
+          <button class="btn btn--primary btn--lg" id="btn-upload-hero" aria-label="Upload PDF">
+            <span>📤</span> Upload PDF
+          </button>
+          <button class="btn btn--ghost btn--lg" id="btn-demo" aria-label="Try Demo">
+            Try Demo →
+          </button>
+        </div>
+
+        <!-- Drop Zone -->
+        <div class="dropzone" id="dropzone" role="region" aria-label="Drag and drop PDF files here">
+          <div class="dropzone__content">
+            <div class="dropzone__icon" aria-hidden="true">📂</div>
+            <p class="dropzone__label">Drag &amp; drop your PDF here</p>
+            <p class="dropzone__sub">or <span class="link-text">browse files</span></p>
+          </div>
+          <input type="file" id="file-input" accept=".pdf" class="dropzone__input" aria-label="Select PDF file" />
+        </div>
+      </div>
+
+      <!-- Feature Cards -->
+      <div class="features-grid" id="features">
+        <article class="feature-card" data-page="chat">
+          <div class="feature-card__icon" aria-hidden="true">🤖</div>
+          <h2 class="feature-card__title">AI Chat</h2>
+          <p class="feature-card__desc">Ask any question about your PDF and get instant, accurate answers powered by AI.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
+        </article>
+        <article class="feature-card" data-page="summarize">
+          <div class="feature-card__icon" aria-hidden="true">✨</div>
+          <h2 class="feature-card__title">Summarize</h2>
+          <p class="feature-card__desc">Get concise summaries of any PDF in seconds. Choose short, medium, or detailed.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
+        </article>
+        <article class="feature-card" data-page="annotate">
+          <div class="feature-card__icon" aria-hidden="true">🖊️</div>
+          <h2 class="feature-card__title">Annotate</h2>
+          <p class="feature-card__desc">Highlight, underline, and add notes directly on your PDF with smart tools.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
+        </article>
+        <article class="feature-card" data-page="tools">
+          <div class="feature-card__icon" aria-hidden="true">⚙️</div>
+          <h2 class="feature-card__title">Merge &amp; Split</h2>
+          <p class="feature-card__desc">Combine multiple PDFs or split one into individual pages — no installs needed.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Try it →</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- VIEWER PAGE -->
+    <section class="page" id="page-viewer" aria-label="PDF Viewer" hidden>
+      <div class="page-header">
+        <h1 class="page-title">PDF Viewer</h1>
+        <div class="page-header__actions">
+          <button class="btn btn--primary btn--sm" id="btn-upload-viewer">📤 Upload PDF</button>
+        </div>
+      </div>
+      <div class="viewer-container" id="viewer-container">
+        <div class="viewer-toolbar" id="viewer-toolbar" role="toolbar" aria-label="Viewer controls">
+          <button class="btn btn--ghost btn--icon" id="btn-prev-page" aria-label="Previous page">‹</button>
+          <span class="viewer-toolbar__page-info" id="page-info">Page 1 / 1</span>
+          <button class="btn btn--ghost btn--icon" id="btn-next-page" aria-label="Next page">›</button>
+          <div class="viewer-toolbar__divider" aria-hidden="true"></div>
+          <button class="btn btn--ghost btn--icon" id="btn-zoom-out" aria-label="Zoom out">−</button>
+          <span class="viewer-toolbar__zoom" id="zoom-level">100%</span>
+          <button class="btn btn--ghost btn--icon" id="btn-zoom-in" aria-label="Zoom in">+</button>
+          <div class="viewer-toolbar__divider" aria-hidden="true"></div>
+          <button class="btn btn--ghost btn--icon" id="btn-fullscreen" aria-label="Fullscreen">⛶</button>
+          <button class="btn btn--ghost btn--icon" id="btn-download-pdf" aria-label="Download PDF">⬇</button>
+        </div>
+        <div class="viewer-canvas-wrapper" id="viewer-canvas-wrapper">
+          <div class="viewer-empty-state" id="viewer-empty">
+            <div class="empty-state__icon" aria-hidden="true">📄</div>
+            <p class="empty-state__label">No PDF loaded. Upload one to get started.</p>
+            <button class="btn btn--primary" id="btn-upload-viewer-empty">Upload PDF</button>
+          </div>
+          <canvas id="pdf-canvas" class="pdf-canvas" aria-label="PDF page canvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI CHAT PAGE -->
+    <section class="page" id="page-chat" aria-label="AI Chat" hidden>
+      <div class="page-header">
+        <h1 class="page-title">AI Chat</h1>
+        <p class="page-subtitle">Ask anything about your PDF</p>
+      </div>
+      <div class="chat-layout">
+        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
+          <div class="chat-welcome">
+            <div class="chat-welcome__icon" aria-hidden="true">🤖</div>
+            <h2 class="chat-welcome__title">Hello! I'm your PDF Assistant</h2>
+            <p class="chat-welcome__sub">Upload a PDF and ask me anything about it.</p>
+          </div>
+        </div>
+        <div class="chat-input-area" role="region" aria-label="Chat input">
+          <div class="chat-input-wrapper">
+            <textarea
+              id="chat-input"
+              class="chat-input"
+              placeholder="Ask a question about your PDF..."
+              rows="1"
+              aria-label="Your message"
+            ></textarea>
+            <button class="btn btn--primary btn--icon chat-send-btn" id="btn-send-chat" aria-label="Send message">➤</button>
+          </div>
+          <p class="chat-input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARIZE PAGE -->
+    <section class="page" id="page-summarize" aria-label="Summarize" hidden>
+      <div class="page-header">
+        <h1 class="page-title">Summarize</h1>
+        <p class="page-subtitle">Get AI-generated summaries of your PDF</p>
+      </div>
+      <div class="summarize-layout">
+        <div class="summarize-controls card">
+          <h2 class="card__title">Summary Options</h2>
+          <div class="form-group">
+            <label class="form-label" for="summary-length">Length</label>
+            <div class="btn-group" role="group" aria-label="Summary length">
+              <button class="btn btn--ghost btn--sm btn--active" id="sum-short" data-length="short">Short</button>
+              <button class="btn btn--ghost btn--sm" id="sum-medium" data-length="medium">Medium</button>
+              <button class="btn btn--ghost btn--sm" id="sum-detailed" data-length="detailed">Detailed</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="summary-style">Style</label>
+            <select class="form-select" id="summary-style" aria-label="Summary style">
+              <option value="paragraph">Paragraph</option>
+              <option value="bullet">Bullet Points</option>
+              <option value="structured">Structured (Sections)</option>
+            </select>
+          </div>
+          <button class="btn btn--primary btn--full" id="btn-generate-summary">✨ Generate Summary</button>
+        </div>
+        <div class="summarize-output card" id="summary-output">
+          <div class="empty-state">
+            <div class="empty-state__icon" aria-hidden="true">✨</div>
+            <p class="empty-state__label">Upload a PDF and click "Generate Summary"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOTATE PAGE -->
+    <section class="page" id="page-annotate" aria-label="Annotate" hidden>
+      <div class="page-header">
+        <h1 class="page-title">Annotate</h1>
+        <p class="page-subtitle">Highlight, underline, and add notes</p>
+      </div>
+      <div class="annotate-layout">
+        <div class="annotate-toolbar card" role="toolbar" aria-label="Annotation tools">
+          <h2 class="card__title">Tools</h2>
+          <div class="tool-group">
+            <button class="tool-btn" id="tool-highlight" aria-label="Highlight" title="Highlight">🖌 Highlight</button>
+            <button class="tool-btn" id="tool-underline" aria-label="Underline" title="Underline">U̲ Underline</button>
+            <button class="tool-btn" id="tool-note" aria-label="Add note" title="Add Note">📝 Note</button>
+            <button class="tool-btn" id="tool-erase" aria-label="Erase" title="Erase">🗑 Erase</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="annotation-color">Color</label>
+            <div class="color-palette" role="group" aria-label="Annotation color picker">
+              <button class="color-swatch active" style="background:#a78bfa" data-color="#a78bfa" aria-label="Purple"></button>
+              <button class="color-swatch" style="background:#60a5fa" data-color="#60a5fa" aria-label="Blue"></button>
+              <button class="color-swatch" style="background:#34d399" data-color="#34d399" aria-label="Green"></button>
+              <button class="color-swatch" style="background:#f59e0b" data-color="#f59e0b" aria-label="Yellow"></button>
+              <button class="color-swatch" style="background:#f87171" data-color="#f87171" aria-label="Red"></button>
+            </div>
+          </div>
+          <button class="btn btn--ghost btn--sm" id="btn-save-annotations">💾 Save</button>
+        </div>
+        <div class="annotate-canvas-wrapper" id="annotate-canvas-wrapper">
+          <div class="empty-state" id="annotate-empty">
+            <div class="empty-state__icon" aria-hidden="true">🖊️</div>
+            <p class="empty-state__label">Upload a PDF to start annotating</p>
+            <button class="btn btn--primary" id="btn-upload-annotate">Upload PDF</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLS PAGE (Merge / Split) -->
+    <section class="page" id="page-tools" aria-label="PDF Tools" hidden>
+      <div class="page-header">
+        <h1 class="page-title">PDF Tools</h1>
+        <p class="page-subtitle">Merge, split, and manage your PDFs</p>
+      </div>
+      <div class="tools-grid">
+        <!-- Merge -->
+        <div class="tool-card card">
+          <div class="tool-card__icon" aria-hidden="true">🔗</div>
+          <h2 class="tool-card__title">Merge PDFs</h2>
+          <p class="tool-card__desc">Combine multiple PDF files into one document.</p>
+          <div class="merge-files-list" id="merge-files-list" role="list" aria-label="Files to merge"></div>
+          <button class="btn btn--ghost btn--sm" id="btn-add-merge-file">+ Add File</button>
+          <button class="btn btn--primary btn--full" id="btn-merge">🔗 Merge PDFs</button>
+        </div>
+        <!-- Split -->
+        <div class="tool-card card">
+          <div class="tool-card__icon" aria-hidden="true">✂️</div>
+          <h2 class="tool-card__title">Split PDF</h2>
+          <p class="tool-card__desc">Split a PDF into individual pages or custom ranges.</p>
+          <div class="form-group">
+            <label class="form-label" for="split-mode">Split Mode</label>
+            <select class="form-select" id="split-mode" aria-label="Split mode">
+              <option value="all">Extract All Pages</option>
+              <option value="range">Custom Page Range</option>
+              <option value="every">Every N Pages</option>
+            </select>
+          </div>
+          <div class="form-group" id="split-range-group" hidden>
+            <label class="form-label" for="split-range">Page Range (e.g. 1-3, 5)</label>
+            <input type="text" class="form-input" id="split-range" placeholder="1-3, 5, 7-9" aria-label="Page range" />
+          </div>
+          <button class="btn btn--primary btn--full" id="btn-split">✂️ Split PDF</button>
+        </div>
+        <!-- Extract Text -->
+        <div class="tool-card card">
+          <div class="tool-card__icon" aria-hidden="true">📝</div>
+          <h2 class="tool-card__title">Extract Text</h2>
+          <p class="tool-card__desc">Pull all text content from a PDF for editing or processing.</p>
+          <button class="btn btn--primary btn--full" id="btn-extract-text">📝 Extract Text</button>
+          <div class="extract-output" id="extract-output" hidden>
+            <textarea class="form-textarea" id="extracted-text" rows="8" readonly aria-label="Extracted text"></textarea>
+            <button class="btn btn--ghost btn--sm" id="btn-copy-text">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Global Toast Notifications ─────────────────── -->
+  <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-label="Notifications"></div>
+
+  <!-- ── Upload Progress Modal ───────────────────────── -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-label="Upload progress" hidden>
+    <div class="modal">
+      <div class="modal__icon" aria-hidden="true">📤</div>
+      <h2 class="modal__title">Processing PDF</h2>
+      <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar__fill" id="progress-fill"></div>
+      </div>
+      <p class="modal__status" id="modal-status">Uploading...</p>
+    </div>
+  </div>
+
+  <!-- ── Scripts ────────────────────────────────────── -->
+  <script src="js/utils.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/pdf-loader.js"></script>
+  <script src="js/viewer.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/summarize.js"></script>
+  <script src="js/annotate.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

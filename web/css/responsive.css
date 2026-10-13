@@ -1,0 +1,165 @@
+/* ============================================================
+   responsive.css — Media Queries & Adaptive Layouts
+   PDF Assist
+   ============================================================ */
+
+/* ── Tablet & Small Desktop (<= 1024px) ────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 72px;
+  }
+
+  .sidebar {
+    width: var(--sidebar-width);
+    padding: var(--space-4) 0;
+  }
+
+  .sidebar__logo-text,
+  .sidebar__nav-label,
+  .sidebar__footer {
+    display: none;
+  }
+
+  .sidebar__logo {
+    justify-content: center;
+    padding: 0 0 var(--space-4);
+  }
+
+  .sidebar__nav {
+    padding: 0 var(--space-2);
+  }
+
+  .sidebar__nav-btn {
+    justify-content: center;
+    padding: var(--space-3) 0;
+  }
+
+  .sidebar__nav-item.active .sidebar__nav-btn {
+    box-shadow: none;
+    border-radius: var(--radius-lg);
+  }
+
+  .main-content {
+    margin-left: var(--sidebar-width);
+  }
+
+  .summarize-layout,
+  .annotate-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .summarize-controls,
+  .annotate-toolbar {
+    position: static;
+  }
+}
+
+/* ── Mobile Devices (<= 768px) ─────────────────────────── */
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .topbar {
+    display: flex;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar__logo-text,
+  .sidebar__nav-label,
+  .sidebar__footer {
+    display: flex;
+  }
+
+  .sidebar__logo {
+    justify-content: flex-start;
+    padding: 0 var(--space-6) var(--space-6);
+  }
+
+  .sidebar__nav {
+    padding: 0 var(--space-3);
+  }
+
+  .sidebar__nav-btn {
+    justify-content: flex-start;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .main-content {
+    margin-left: 0;
+    min-height: calc(100vh - var(--topbar-height));
+  }
+
+  .page {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .hero {
+    padding: var(--space-10) var(--space-2) var(--space-8);
+  }
+
+  .hero__title {
+    font-size: var(--text-3xl);
+  }
+
+  .hero__subtitle {
+    font-size: var(--text-base);
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+  }
+
+  .features-grid,
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-layout,
+  .viewer-container {
+    height: calc(100vh - 160px);
+  }
+
+  .viewer-toolbar {
+    gap: var(--space-1);
+    padding: var(--space-2);
+  }
+
+  .viewer-toolbar__page-info,
+  .viewer-toolbar__zoom {
+    min-width: 50px;
+    font-size: var(--text-xs);
+  }
+}
+
+/* ── Small Phones (<= 480px) ───────────────────────────── */
+@media (max-width: 480px) {
+  .page {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .dropzone {
+    padding: var(--space-8) var(--space-4);
+  }
+
+  .toast {
+    min-width: calc(100vw - 32px);
+    right: 16px;
+    left: 16px;
+  }
+}
