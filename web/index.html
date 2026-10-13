@@ -89,6 +89,12 @@
             <span class="sidebar__nav-label">Compare</span>
           </button>
         </li>
+        <li class="sidebar__nav-item" data-page="resume">
+          <button class="sidebar__nav-btn" id="nav-resume" aria-label="AI Resume Builder">
+            <span class="sidebar__nav-icon" aria-hidden="true">📄</span>
+            <span class="sidebar__nav-label">Resume</span>
+          </button>
+        </li>
       </ul>
     </nav>
 
@@ -200,6 +206,12 @@
           <h2 class="feature-card__title">Compare PDFs</h2>
           <p class="feature-card__desc">Diff two document versions side-by-side with line-by-line change analysis.</p>
           <button class="btn btn--ghost btn--sm feature-card__cta">Compare →</button>
+        </article>
+        <article class="feature-card" data-page="resume">
+          <div class="feature-card__icon" aria-hidden="true">📄</div>
+          <h2 class="feature-card__title">AI Resume Builder</h2>
+          <p class="feature-card__desc">Build from zero with AI wizard, import existing resumes, choose top templates (⭐ 4.9), and export ATS-ready PDFs.</p>
+          <button class="btn btn--ghost btn--sm feature-card__cta">Build Resume →</button>
         </article>
       </div>
     </section>
@@ -550,6 +562,274 @@
       </div>
     </section>
 
+    <!-- RESUME PAGE -->
+    <section class="page" id="page-resume" aria-label="AI Resume Builder" hidden>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">AI Resume Builder &amp; Designer</h1>
+          <p class="page-subtitle">Build from zero with AI, import existing resumes, switch top-rated templates, and export ATS-optimized PDFs</p>
+        </div>
+        <div class="page-header__actions">
+          <input type="file" id="resume-import-file" accept=".pdf" style="display:none;" />
+          <button class="btn btn--ghost btn--sm" id="btn-import-resume">📂 Import Old Resume</button>
+          <button class="btn btn--ghost btn--sm" id="btn-load-sample-resume">⭐ Load Sample</button>
+          <button class="btn btn--ghost btn--sm" id="btn-copy-resume-text">📋 Copy Text</button>
+          <button class="btn btn--primary btn--sm" id="btn-export-resume-pdf">📥 Download PDF</button>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <div class="resume-tabs-bar">
+        <button class="btn btn--sm btn--active" id="tab-resume-editor">🛠️ Edit &amp; Customize</button>
+        <button class="btn btn--sm btn--ghost" id="tab-resume-wizard">✨ AI Creator (Build from Zero)</button>
+      </div>
+
+      <!-- Template Selection Bar with Highest Rated Highlight -->
+      <div class="template-cards-bar">
+        <div class="template-card active" data-template="modern">
+          <span class="template-card__badge template-card__badge--top">HIGHEST RATED</span>
+          <div class="template-card__title">
+            <span>Modern Tech Pro</span>
+          </div>
+          <div class="template-card__rating">⭐ 4.9 / 5.0 (5.2k reviews)</div>
+          <p class="template-card__desc">Sleek gradient header with high-impact metric bullets. Optimized for tech &amp; engineering.</p>
+        </div>
+
+        <div class="template-card" data-template="executive">
+          <div class="template-card__title">
+            <span>Executive Minimalist</span>
+          </div>
+          <div class="template-card__rating">⭐ 4.8 / 5.0 (3.8k reviews)</div>
+          <p class="template-card__desc">Refined serif typography and elegant center-aligned header. Best for leadership and management.</p>
+        </div>
+
+        <div class="template-card" data-template="creative">
+          <div class="template-card__title">
+            <span>Creative Gradient</span>
+          </div>
+          <div class="template-card__rating">⭐ 4.8 / 5.0 (2.9k reviews)</div>
+          <p class="template-card__desc">Eye-catching colorful border and badges. Perfect for designers, product managers, and marketing.</p>
+        </div>
+
+        <div class="template-card" data-template="classic">
+          <div class="template-card__title">
+            <span>Classic ATS Standard</span>
+          </div>
+          <div class="template-card__rating">⭐ 4.7 / 5.0 (4.1k reviews)</div>
+          <p class="template-card__desc">Traditional high-density monochrome layout ensuring 100% compliance across corporate ATS scanners.</p>
+        </div>
+      </div>
+
+      <!-- VIEW 1: Editor & Live Paper Preview -->
+      <div id="resume-editor-view">
+        <div class="resume-layout">
+          <!-- Left Column: Form Editor -->
+          <div class="resume-editor-panel">
+            <!-- ATS Analyzer Card -->
+            <div class="ats-card">
+              <div class="ats-card__header">
+                <div>
+                  <strong style="color:var(--color-text-primary);font-size:0.9rem;">ATS Compatibility Score</strong>
+                  <div style="font-size:0.75rem;color:var(--color-text-muted);">Real-time recruiter keyword &amp; format check</div>
+                </div>
+                <div style="text-align:right;">
+                  <span id="ats-score-val" style="font-size:1.25rem;font-weight:800;color:var(--color-emerald-400);">95/100</span>
+                  <div><span id="ats-score-rating" class="badge badge--success" style="font-size:0.65rem;">EXCELLENT</span></div>
+                </div>
+              </div>
+              <div class="progress-bar" style="height:6px;margin:8px 0;">
+                <div class="progress-bar__fill" id="ats-score-fill" style="width:95%;background:var(--color-emerald-400);"></div>
+              </div>
+              <div id="ats-score-tips" style="font-size:0.75rem;color:var(--color-purple-300);line-height:1.4;">
+                ✓ Strong action verbs • High-density skills • Clean format
+              </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="card">
+              <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;color:var(--color-purple-300);">👤 Personal Details</h2>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Full Name</label>
+                  <input type="text" class="form-input form-input--sm" id="res-name" placeholder="Alex Morgan" />
+                </div>
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Professional Title</label>
+                  <input type="text" class="form-input form-input--sm" id="res-title" placeholder="Senior Software Engineer" />
+                </div>
+              </div>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Email Address</label>
+                  <input type="email" class="form-input form-input--sm" id="res-email" placeholder="alex@example.com" />
+                </div>
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Phone Number</label>
+                  <input type="text" class="form-input form-input--sm" id="res-phone" placeholder="+1 (555) 000-0000" />
+                </div>
+              </div>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Location</label>
+                  <input type="text" class="form-input form-input--sm" id="res-location" placeholder="San Francisco, CA" />
+                </div>
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">LinkedIn Handle / URL</label>
+                  <input type="text" class="form-input form-input--sm" id="res-linkedin" placeholder="linkedin.com/in/alex" />
+                </div>
+              </div>
+              <div>
+                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">GitHub / Portfolio URL</label>
+                <input type="text" class="form-input form-input--sm" id="res-github" placeholder="github.com/alex" />
+              </div>
+            </div>
+
+            <!-- Professional Summary -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <h2 style="font-size:0.95rem;font-weight:600;margin:0;color:var(--color-purple-300);">📝 Professional Summary</h2>
+                <button class="btn btn--ghost btn--sm" id="btn-ai-enhance-summary" style="font-size:0.75rem;padding:2px 8px;">✨ AI Polish</button>
+              </div>
+              <textarea class="form-textarea" id="res-summary" rows="4" style="font-size:0.8rem;" placeholder="Summarize your career highlights, impact, and engineering philosophy..."></textarea>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="font-size:0.95rem;font-weight:600;margin:0;color:var(--color-purple-300);">💼 Work Experience</h2>
+                <button class="btn btn--ghost btn--sm" id="btn-add-experience">+ Add Position</button>
+              </div>
+              <div id="experience-items-list"></div>
+            </div>
+
+            <!-- Skills -->
+            <div class="card">
+              <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:8px;color:var(--color-purple-300);">⚡ Skills &amp; Competencies</h2>
+              <div id="skills-tags-container" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;"></div>
+              <div style="display:flex;gap:8px;">
+                <input type="text" class="form-input form-input--sm" id="input-new-skill" placeholder="Type skill (e.g. Docker, React, Python)..." />
+                <button class="btn btn--primary btn--sm" id="btn-add-skill">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live A4 Printable Preview -->
+          <div class="resume-preview-panel">
+            <div class="resume-paper-wrapper">
+              <div class="resume-paper" id="resume-paper-preview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: Wizard / Make Resume from Zero -->
+      <div id="resume-wizard-view" hidden>
+        <div class="wizard-box">
+          <div class="wizard-steps-header">
+            <div>
+              <h2 style="font-size:1.25rem;font-weight:700;margin:0 0 4px 0;">✨ AI Resume Creator — Build from Zero</h2>
+              <p style="font-size:0.85rem;color:var(--color-text-muted);margin:0;">Answer a few quick questions to generate an industry-ready resume.</p>
+            </div>
+            <span class="badge badge--primary" id="wizard-step-indicator" style="font-size:0.8rem;padding:4px 10px;">Step 1 of 4</span>
+          </div>
+
+          <!-- Step 1 -->
+          <div class="wizard-step-pane" data-step="1">
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 1: Contact Information</h3>
+            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Full Name *</label>
+                <input type="text" class="form-input" id="wiz-name" placeholder="e.g. Sarah Connor" />
+              </div>
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Target Job Title *</label>
+                <input type="text" class="form-input" id="wiz-title" placeholder="e.g. Lead Machine Learning Engineer" />
+              </div>
+            </div>
+            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Email Address *</label>
+                <input type="email" class="form-input" id="wiz-email" placeholder="e.g. sarah.connor@domain.com" />
+              </div>
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Phone Number</label>
+                <input type="text" class="form-input" id="wiz-phone" placeholder="e.g. +1 (555) 234-5678" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="wizard-step-pane" data-step="2" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 2: Experience &amp; Impact</h3>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Most Recent Role / Position *</label>
+                <input type="text" class="form-input" id="wiz-exp-role" placeholder="e.g. Senior Software Architect" />
+              </div>
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Company / Organization Name *</label>
+                <input type="text" class="form-input" id="wiz-exp-company" placeholder="e.g. Google Cloud Platforms" />
+              </div>
+              <p style="font-size:0.8rem;color:var(--color-text-muted);">Our AI engine will automatically craft quantified achievement bullet points and ATS power action verbs for this role.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="wizard-step-pane" data-step="3" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 3: Core Skills &amp; Tools</h3>
+            <div>
+              <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Comma-separated list of your technical competencies &amp; tools:</label>
+              <textarea class="form-textarea" id="wiz-skills" rows="3" placeholder="e.g. Python, FastAPI, Docker, Kubernetes, React, PostgreSQL, AI Prompting, CI/CD"></textarea>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="wizard-step-pane" data-step="4" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 4: Select Your Starting Template</h3>
+            <div class="template-radio-grid">
+              <label class="template-radio-label">
+                <input type="radio" name="wiz-template" value="modern" checked />
+                <div class="template-radio-content">
+                  <strong>⭐ Modern Tech Pro (4.9 Highest Rated)</strong>
+                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Sleek top border, modern typography, tech-tailored</p>
+                </div>
+              </label>
+              <label class="template-radio-label">
+                <input type="radio" name="wiz-template" value="executive" />
+                <div class="template-radio-content">
+                  <strong>Executive Minimalist (⭐ 4.8)</strong>
+                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Classic serif typography, centered elegant headers</p>
+                </div>
+              </label>
+              <label class="template-radio-label">
+                <input type="radio" name="wiz-template" value="creative" />
+                <div class="template-radio-content">
+                  <strong>Creative Gradient (⭐ 4.8)</strong>
+                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Vibrant pill tags, eye-catching color accents</p>
+                </div>
+              </label>
+              <label class="template-radio-label">
+                <input type="radio" name="wiz-template" value="classic" />
+                <div class="template-radio-content">
+                  <strong>Classic ATS Standard (⭐ 4.7)</strong>
+                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Maximum text density, 100% monochrome ATS scan pass</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Wizard Footer Controls -->
+          <div class="wizard-actions">
+            <button class="btn btn--ghost" id="btn-wizard-prev" style="display:none;">← Previous</button>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button class="btn btn--primary" id="btn-wizard-next">Next Step →</button>
+              <button class="btn btn--primary" id="btn-wizard-finish" style="display:none;">✨ Generate Resume</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ── Global Toast Notifications ─────────────────── -->
@@ -581,6 +861,7 @@
   <script src="js/compare.js"></script>
   <script src="js/annotate.js"></script>
   <script src="js/tools.js"></script>
+  <script src="js/resume.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
