@@ -63,5 +63,30 @@ document.addEventListener('DOMContentLoaded', () => {
     Utils.showToast('Welcome to PDF Assist! Upload a PDF or click "Try Demo" to get started.', 'info', 4000);
   }, 400);
 
+  // Probe FastAPI Backend Health
+  async function checkBackendHealth() {
+    const badge = document.getElementById('backend-status-badge');
+    const badgeText = document.getElementById('backend-status-text');
+    if (!badge || !badgeText) return;
+
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/v1/health');
+      if (res.ok) {
+        const data = await res.json();
+        badge.classList.remove('backend-badge--connecting');
+        badgeText.textContent = `API: Online (FastAPI RAG)`;
+        badge.title = `FastAPI RAG Backend live at http://127.0.0.1:8000 (status: ${data.status})`;
+      } else {
+        badge.classList.add('backend-badge--connecting');
+        badgeText.textContent = 'Web Engine Active';
+      }
+    } catch (e) {
+      badge.classList.add('backend-badge--connecting');
+      badgeText.textContent = 'Web Engine Active';
+    }
+  }
+  checkBackendHealth();
+
   console.log('PDF Assist initialized successfully.');
 });
+

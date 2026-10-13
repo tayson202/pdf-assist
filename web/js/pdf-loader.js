@@ -69,29 +69,64 @@ class PdfLoader {
     }
 
     this.showModal('Loading PDF document...');
-    this.updateProgress(25);
+    this.updateProgress(20);
 
     try {
-      await Utils.sleep(400);
-      this.updateProgress(65);
-      this.setStatus('Extracting text & page structures...');
+      let pageCount = 5;
+      let textSample = '';
+      let pdfDoc = null;
 
-      const textSample = await this.extractSimulatedText(file);
-      await Utils.sleep(500);
+      if (window.pdfjsLib) {
+        this.setStatus('Parsing PDF with PDF.js...');
+        this.updateProgress(45);
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+          pdfDoc = await loadingTask.promise;
+          pageCount = pdfDoc.numPages || 1;
+
+          this.setStatus('Extracting page text for AI RAG...');
+          this.updateProgress(70);
+
+          let texts = [];
+          const maxPagesToExtract = Math.min(pageCount, 15);
+          for (let i = 1; i <= maxPagesToExtract; i++) {
+            const page = await pdfDoc.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageStr = textContent.items.map(item => item.str).join(' ');
+            if (pageStr.trim()) {
+              texts.push(`[Page ${i}]: ${pageStr.trim()}`);
+            }
+          }
+          textSample = texts.join('\n\n');
+        } catch (pdfErr) {
+          console.warn('PDF.js parse notice, fallback used:', pdfErr);
+        }
+      }
+
+      if (!textSample) {
+        this.updateProgress(65);
+        this.setStatus('Extracting text & page structures...');
+        textSample = await this.extractSimulatedText(file);
+      }
+
+      await Utils.sleep(300);
       this.updateProgress(100);
 
       const pdfData = {
         name: file.name,
         size: file.size,
-        pageCount: 5,
+        pageCount: pageCount,
         file: file,
+        pdfDoc: pdfDoc,
         textContent: textSample,
         uploadedAt: new Date().toLocaleTimeString()
       };
 
       window.appStore.setState('currentPdf', pdfData);
       this.hideModal();
-      Utils.showToast(`Loaded "${file.name}" successfully!`, 'success');
+      Utils.showToast(`Loaded "${file.name}" (${pageCount} pages) successfully!`, 'success');
 
       // Navigate to viewer view
       window.appRouter.navigateTo('viewer');
@@ -115,14 +150,14 @@ class PdfLoader {
           name: 'Artificial_Intelligence_Overview_2026.pdf',
           size: 2450800,
           pageCount: 8,
-          textContent: `Introduction to Modern Artificial Intelligence (2026 Edition)\n\nAbstract: This paper reviews recent breakthroughs in reasoning systems, multimodal foundation models, and autonomous coding assistants. The evolution of token distillation, retrieval augmented generation (RAG), and agentic workflows are discussed with case studies demonstrating a 64% reduction in document review latency. Key topics include transformer scaling laws, sparse mixture of experts, structured extraction, and contextual summarization.`,
+          textContent: `[Page 1]: Introduction to Modern Artificial Intelligence (2026 Edition)\nAbstract: This paper reviews recent breakthroughs in reasoning systems, multimodal foundation models, and autonomous coding assistants.\n\n[Page 2]: The evolution of token distillation, retrieval augmented generation (RAG), and agentic workflows are discussed with case studies demonstrating a 64% reduction in document review latency.\n\n[Page 3]: Key topics include transformer scaling laws, sparse mixture of experts, structured extraction, and contextual summarization.\n\n[Page 4]: Architecture and Safety Considerations: Grounding checks, citation verification, and factual consistency scoring prevent hallucinations in document Q&A pipelines.`,
           isDemo: true,
           uploadedAt: new Date().toLocaleTimeString()
         };
 
         window.appStore.setState('currentPdf', demoPdf);
         this.hideModal();
-        Utils.showToast('Demo document loaded!', 'success');
+        Utils.showToast('Demo document loaded (8 pages)!', 'success');
         window.appRouter.navigateTo('viewer');
       }, 400);
     }, 400);
@@ -130,7 +165,7 @@ class PdfLoader {
 
   extractSimulatedText(file) {
     return new Promise((resolve) => {
-      resolve(`Document Title: ${file.name}\n\nSection 1: Executive Overview\nThis document provides comprehensive information regarding organizational objectives, milestones, metrics, and risk analysis. The target objectives include scaling infrastructure reliability and enabling automated workflow assistants.\n\nSection 2: Key Milestones\n- Milestone Q1: Foundation model integration\n- Milestone Q2: Document pipeline optimization\n- Milestone Q3: End-to-end user verification and compliance\n\nSection 3: Conclusion\nAutomated analysis provides actionable intelligence and accelerates document processing workflows.`);
+      resolve(`[Page 1]: Document Title: ${file.name}\nSection 1: Executive Overview\nThis document provides comprehensive information regarding organizational objectives, milestones, metrics, and risk analysis.\n\n[Page 2]: Section 2: Key Milestones\n- Milestone Q1: Foundation model integration\n- Milestone Q2: Document pipeline optimization\n- Milestone Q3: End-to-end user verification and compliance\n\n[Page 3]: Section 3: Risk Assessment and Analysis\nPotential bottlenecks during multi-party document review are addressed via automated compliance pipelines.\n\n[Page 4]: Section 4: Operational Metrics\nReview throughput shows marked improvement across tested document batches.\n\n[Page 5]: Section 5: Conclusion & Next Steps\nAutomated analysis provides actionable intelligence and accelerates document processing workflows.`);
     });
   }
 

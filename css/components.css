@@ -583,3 +583,63 @@
 .toast--hide {
   animation: toastFade var(--transition-base) ease forwards;
 }
+
+/* ── Citations & Backend Status ───────────────────── */
+.citation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  color: #c4b5fd;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  margin: 3px 4px 3px 0;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  vertical-align: middle;
+}
+.citation-badge:hover {
+  background: rgba(139, 92, 246, 0.4);
+  border-color: #a78bfa;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+.backend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+  font-weight: var(--font-medium);
+  font-family: var(--font-sans);
+  backdrop-filter: blur(8px);
+}
+.backend-badge--connecting {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+.backend-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  display: inline-block;
+}
+.backend-badge--connecting .backend-badge__dot {
+  background: #f59e0b;
+  box-shadow: 0 0 10px #f59e0b;
+}
+

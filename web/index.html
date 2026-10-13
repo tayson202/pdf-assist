@@ -21,7 +21,8 @@
   <link rel="stylesheet" href="css/responsive.css" />
 
   <!-- Favicon placeholder -->
-  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body class="dark-mode">
 
@@ -83,13 +84,17 @@
   <!-- ── Main Content Area ──────────────────────────── -->
   <main class="main-content" id="main-content" role="main">
 
-    <!-- Mobile Top Bar -->
+    <!-- Top Bar -->
     <header class="topbar" id="topbar">
       <button class="topbar__hamburger" id="btn-hamburger" aria-label="Toggle sidebar" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <span class="topbar__title">PDFAssist</span>
       <div class="topbar__actions">
+        <div class="backend-badge" id="backend-status-badge" title="FastAPI Engine (http://127.0.0.1:8000)">
+          <span class="backend-badge__dot"></span>
+          <span id="backend-status-text">Backend Connected</span>
+        </div>
         <button class="btn btn--ghost btn--icon" id="btn-upload-topbar" aria-label="Upload PDF">📤</button>
       </div>
     </header>

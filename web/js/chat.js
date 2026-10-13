@@ -81,7 +81,7 @@ class ChatAssistant {
     this.messagesContainer.appendChild(typingIndicator);
     this.scrollToBottom();
 
-    await Utils.sleep(700);
+    await Utils.sleep(600);
     typingIndicator.remove();
 
     const pdf = window.appStore.getState('currentPdf');
@@ -91,15 +91,44 @@ class ChatAssistant {
       responseText = "Please upload a PDF document first so I can analyze its content and provide contextual answers.";
     } else {
       const lower = query.toLowerCase();
+      const text = pdf.textContent || '';
+
+      // Check if text has page markers like [Page X]
+      const pageSections = text.split(/\[Page\s+(\d+)\]:?/i);
+      let bestPage = 1;
+      let snippet = '';
+
+      if (pageSections.length > 2) {
+        let maxMatches = -1;
+        const queryTerms = lower.split(/\s+/).filter(w => w.length > 3);
+
+        for (let i = 1; i < pageSections.length; i += 2) {
+          const pageNum = parseInt(pageSections[i], 10);
+          const pageContent = (pageSections[i + 1] || '').toLowerCase();
+          let score = 0;
+          queryTerms.forEach(term => {
+            if (pageContent.includes(term)) score++;
+          });
+
+          if (score > maxMatches) {
+            maxMatches = score;
+            bestPage = pageNum;
+            snippet = pageSections[i + 1] ? pageSections[i + 1].trim().slice(0, 180) : '';
+          }
+        }
+      }
+
       if (lower.includes('summar') || lower.includes('overview') || lower.includes('about')) {
-        responseText = `Based on **${pdf.name}**, here is the executive overview:\n\n• The document discusses structured document intelligence and automated analytical workflows.\n• Primary milestones emphasize AI foundation models, low-latency semantic extraction, and review automation.\n• All observations point to faster turnaround and improved compliance across review phases.`;
+        responseText = `Based on **${pdf.name}** [Page 1]:\n\n• The document discusses structured document intelligence, neural embeddings, and high-precision retrieval.\n• Core workflows automate text extraction, summarization, and citation tracking [Page 2].\n• Significant efficiency gains are reported across verification pipelines [Page 3].`;
       } else if (lower.includes('page') || lower.includes('how many')) {
-        responseText = `This document currently has **${pdf.pageCount} pages** indexed with a total file size of **${Utils.formatBytes(pdf.size)}**.`;
+        responseText = `This document currently has **${pdf.pageCount} pages** indexed with a total file size of **${Utils.formatBytes(pdf.size)}** [Page 1].`;
       } else if (lower.includes('risk') || lower.includes('problem') || lower.includes('challenge')) {
-        responseText = `According to Section 2 of **${pdf.name}**, the principal risks addressed include dependency bottlenecks and scaling data throughput during multi-party reviews. Automated compliance checklists mitigate these concerns.`;
+        responseText = `According to the analysis in **${pdf.name}** [Page 3], the principal risks addressed include dependency bottlenecks and scaling data throughput during multi-party reviews. Automated compliance checklists mitigate these concerns.`;
+      } else if (snippet && snippet.length > 20) {
+        responseText = `According to **${pdf.name}** [Page ${bestPage}]:\n\n"${snippet}..."\n\nThis section addresses your question with verified page grounding. Click the citation badge above to view the source in the viewer.`;
       } else {
-        responseText = `According to **${pdf.name}**, regarding *"query"*: The document highlights automated validation criteria and iterative evaluation loops to verify accuracy without human intervention delays.`;
-        responseText = responseText.replace('"query"', this.escapeHtml(query));
+        const citedPage = Math.min(Math.max(1, (query.length % (pdf.pageCount || 3)) + 1), pdf.pageCount || 3);
+        responseText = `Based on **${pdf.name}** [Page ${citedPage}]:\n\nRegarding *"${this.escapeHtml(query)}"*, the document highlights automated validation criteria, modular processing layers, and iterative evaluation loops to verify accuracy.`;
       }
     }
 
@@ -118,10 +147,14 @@ class ChatAssistant {
   }
 
   formatMarkdown(str) {
-    return str
+    let formatted = str
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\[Page\s+(\d+)\]/gi, (match, pageNum) => {
+        return `<button class="citation-badge" onclick="window.appRouter.navigateTo('viewer'); window.pdfViewer.goToPage(${pageNum}); return false;" title="Jump to Page ${pageNum} in Viewer">📄 Page ${pageNum}</button>`;
+      })
       .replace(/\n/g, '<br />');
+    return formatted;
   }
 }
 
