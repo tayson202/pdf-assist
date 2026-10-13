@@ -81,8 +81,11 @@ class PdfLoader {
         this.updateProgress(45);
         try {
           const arrayBuffer = await file.arrayBuffer();
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-          const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+          const typedArray = new Uint8Array(arrayBuffer);
+          const loadingTask = pdfjsLib.getDocument({
+            data: typedArray,
+            isEvalSupported: false
+          });
           pdfDoc = await loadingTask.promise;
           pageCount = pdfDoc.numPages || 1;
 
@@ -137,7 +140,21 @@ class PdfLoader {
     }
   }
 
-  loadDemoPdf() {
+  loadDemoPdf(silent = false) {
+    const demoPdf = {
+      name: 'Artificial_Intelligence_Overview_2026.pdf',
+      size: 2450800,
+      pageCount: 8,
+      textContent: `[Page 1]: Introduction to Modern Artificial Intelligence (2026 Edition)\nAbstract: This paper reviews recent breakthroughs in reasoning systems, multimodal foundation models, and autonomous coding assistants.\n\n[Page 2]: The evolution of token distillation, retrieval augmented generation (RAG), and agentic workflows are discussed with case studies demonstrating a 64% reduction in document review latency.\n\n[Page 3]: Key topics include transformer scaling laws, sparse mixture of experts, structured extraction, and contextual summarization.\n\n[Page 4]: Architecture and Safety Considerations: Grounding checks, citation verification, and factual consistency scoring prevent hallucinations in document Q&A pipelines.`,
+      isDemo: true,
+      uploadedAt: new Date().toLocaleTimeString()
+    };
+
+    if (silent) {
+      window.appStore.setState('currentPdf', demoPdf);
+      return;
+    }
+
     this.showModal('Initializing interactive demo PDF...');
     this.updateProgress(30);
 
@@ -146,21 +163,12 @@ class PdfLoader {
       this.setStatus('Generating AI index & embeddings...');
       setTimeout(() => {
         this.updateProgress(100);
-        const demoPdf = {
-          name: 'Artificial_Intelligence_Overview_2026.pdf',
-          size: 2450800,
-          pageCount: 8,
-          textContent: `[Page 1]: Introduction to Modern Artificial Intelligence (2026 Edition)\nAbstract: This paper reviews recent breakthroughs in reasoning systems, multimodal foundation models, and autonomous coding assistants.\n\n[Page 2]: The evolution of token distillation, retrieval augmented generation (RAG), and agentic workflows are discussed with case studies demonstrating a 64% reduction in document review latency.\n\n[Page 3]: Key topics include transformer scaling laws, sparse mixture of experts, structured extraction, and contextual summarization.\n\n[Page 4]: Architecture and Safety Considerations: Grounding checks, citation verification, and factual consistency scoring prevent hallucinations in document Q&A pipelines.`,
-          isDemo: true,
-          uploadedAt: new Date().toLocaleTimeString()
-        };
-
         window.appStore.setState('currentPdf', demoPdf);
         this.hideModal();
         Utils.showToast('Demo document loaded (8 pages)!', 'success');
         window.appRouter.navigateTo('viewer');
-      }, 400);
-    }, 400);
+      }, 300);
+    }, 300);
   }
 
   extractSimulatedText(file) {

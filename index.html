@@ -270,6 +270,12 @@
           </div>
         </div>
         <div class="chat-input-area" role="region" aria-label="Chat input">
+          <div class="chat-suggestions" id="chat-suggestions" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="What is the main summary of this document?">💡 Summarize document</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="What are the key milestones in Section 2?">🎯 Key milestones</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="What risks and bottlenecks are analyzed?">⚠️ Risks &amp; Mitigations</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="How many pages are in this PDF?">📄 Page count</button>
+          </div>
           <div class="chat-input-wrapper">
             <textarea
               id="chat-input"

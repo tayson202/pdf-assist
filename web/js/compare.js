@@ -44,6 +44,9 @@ class DocumentComparer {
         }
       });
     }
+
+    // Auto-run initial comparison so results are visible immediately
+    setTimeout(() => this.runComparison(), 300);
   }
 
   async runComparison() {

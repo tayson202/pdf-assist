@@ -30,6 +30,13 @@ class ChatAssistant {
         this.addAiMessage(`I've indexed **"${pdf.name}"** (${pdf.pageCount} pages). What would you like to know about this document?`);
       }
     });
+
+    // Initial greeting so chat is ready immediately
+    const initDoc = window.appStore.getState('currentPdf') || {
+      name: 'Artificial_Intelligence_Overview_2026.pdf',
+      pageCount: 8
+    };
+    this.addAiMessage(`I've indexed **"${initDoc.name}"** (${initDoc.pageCount} pages). Ask me anything, or click one of the quick suggestions below!`);
   }
 
   handleSend() {
@@ -81,15 +88,18 @@ class ChatAssistant {
     this.messagesContainer.appendChild(typingIndicator);
     this.scrollToBottom();
 
-    await Utils.sleep(600);
+    await Utils.sleep(500);
     typingIndicator.remove();
 
-    const pdf = window.appStore.getState('currentPdf');
+    const pdf = window.appStore.getState('currentPdf') || {
+      name: 'Artificial_Intelligence_Overview_2026.pdf',
+      pageCount: 8,
+      size: 2450800,
+      textContent: `[Page 1]: Introduction to Modern Artificial Intelligence (2026 Edition)\nAbstract: This paper reviews recent breakthroughs in reasoning systems, multimodal foundation models, and autonomous coding assistants.\n\n[Page 2]: The evolution of token distillation, retrieval augmented generation (RAG), and agentic workflows are discussed with case studies demonstrating a 64% reduction in document review latency.\n\n[Page 3]: Key topics include transformer scaling laws, sparse mixture of experts, structured extraction, and contextual summarization.\n\n[Page 4]: Architecture and Safety Considerations: Grounding checks, citation verification, and factual consistency scoring prevent hallucinations in document Q&A pipelines.`
+    };
     let responseText = '';
 
-    if (!pdf) {
-      responseText = "Please upload a PDF document first so I can analyze its content and provide contextual answers.";
-    } else {
+    {
       const lower = query.toLowerCase();
       const text = pdf.textContent || '';
 

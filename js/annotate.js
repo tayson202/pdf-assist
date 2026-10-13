@@ -67,6 +67,12 @@ class Annotator {
         this.clearCanvas();
       }
     });
+
+    // Set up canvas immediately with active or default PDF
+    const initialDoc = window.appStore.getState('currentPdf') || {
+      name: 'Artificial_Intelligence_Overview_2026.pdf'
+    };
+    this.setupCanvas(initialDoc);
   }
 
   setupCanvas(pdf) {

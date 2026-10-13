@@ -65,12 +65,13 @@ class StudyQuizSuite {
       }
     });
 
-    // Populate default materials if demo exists
-    const initialPdf = window.appStore.getState('currentPdf');
-    if (initialPdf) {
-      this.generateFlashcards(initialPdf);
-      this.generateQuiz(initialPdf);
-    }
+    // Populate default materials immediately so it is never empty
+    const initialPdf = window.appStore.getState('currentPdf') || {
+      name: 'Artificial_Intelligence_Overview_2026.pdf',
+      pageCount: 8
+    };
+    this.generateFlashcards(initialPdf);
+    this.generateQuiz(initialPdf);
   }
 
   switchMode(mode) {

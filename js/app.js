@@ -35,6 +35,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Pre-load default document so all features work out of the box
+  if (window.pdfLoader && !window.appStore.getState('currentPdf')) {
+    window.pdfLoader.loadDemoPdf(true);
+  }
+
+  // Suggestion buttons in Chat
+  document.querySelectorAll('.chat-suggestion-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = btn.getAttribute('data-query');
+      const input = document.getElementById('chat-input');
+      if (input && q) {
+        input.value = q;
+        if (window.chatAssistant) {
+          window.chatAssistant.handleSend();
+        }
+      }
+    });
+  });
+
   // Theme Switcher
   const themeSelect = document.getElementById('theme-select');
   if (themeSelect) {

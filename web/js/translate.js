@@ -106,14 +106,16 @@ class DocumentTranslator {
         Utils.showToast('Downloaded translation markdown file.', 'success');
       });
     }
+
+    // Auto-populate initial translation
+    setTimeout(() => this.handleTranslate(), 200);
   }
 
   async handleTranslate() {
-    const pdf = window.appStore.getState('currentPdf');
-    if (!pdf) {
-      Utils.showToast('Please upload a PDF first to translate its content.', 'warning');
-      return;
-    }
+    const pdf = window.appStore.getState('currentPdf') || {
+      name: 'Artificial_Intelligence_Overview_2026.pdf',
+      pageCount: 8
+    };
 
     const lang = this.targetLangSelect ? this.targetLangSelect.value : 'es';
     const scope = this.scopeSelect ? this.scopeSelect.value : 'summary';
