@@ -6,7 +6,7 @@
 class SettingsManager {
   constructor() {
     this.modal = null;
-    this.activeTab = 'cloud';
+    this.activeTab = 'ai';
     this.defaultSettings = {
       // Cloud Storage (Supabase)
       supabaseUrl: 'https://tjpvtfxlunlzglucjyih.supabase.co',
@@ -111,12 +111,6 @@ class SettingsManager {
       });
     }
 
-    // Test Supabase Connection button
-    const btnTestSupa = document.getElementById('btn-test-supabase');
-    if (btnTestSupa) {
-      btnTestSupa.addEventListener('click', () => this.testSupabaseConnection());
-    }
-
     // Clear Document Cache button
     const btnClearCache = document.getElementById('btn-clear-cache');
     if (btnClearCache) {
@@ -199,11 +193,6 @@ class SettingsManager {
       if (el) el.checked = !!val;
     };
 
-    setVal('setting-supa-url', s.supabaseUrl);
-    setVal('setting-supa-key', s.supabaseAnonKey);
-    setVal('setting-supa-bucket', s.supabaseBucket);
-    setChecked('setting-auto-sync', s.autoCloudSync);
-
     setVal('setting-ai-provider', s.aiProvider);
     setVal('setting-api-key', s.apiKey);
     setVal('setting-temperature', s.aiTemperature);
@@ -228,10 +217,10 @@ class SettingsManager {
     };
 
     const newSettings = {
-      supabaseUrl: getVal('setting-supa-url') || this.defaultSettings.supabaseUrl,
-      supabaseAnonKey: getVal('setting-supa-key') || this.defaultSettings.supabaseAnonKey,
-      supabaseBucket: getVal('setting-supa-bucket') || this.defaultSettings.supabaseBucket,
-      autoCloudSync: getChecked('setting-auto-sync'),
+      supabaseUrl: this.settings.supabaseUrl,
+      supabaseAnonKey: this.settings.supabaseAnonKey,
+      supabaseBucket: this.settings.supabaseBucket,
+      autoCloudSync: this.settings.autoCloudSync,
 
       aiProvider: getVal('setting-ai-provider') || 'fastapi-rag',
       apiKey: getVal('setting-api-key'),

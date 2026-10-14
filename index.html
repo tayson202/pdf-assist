@@ -1065,7 +1065,7 @@
           <div class="settings-header-icon" aria-hidden="true">⚙️</div>
           <div>
             <h2 class="settings-modal-title">System &amp; AI Preferences</h2>
-            <p class="settings-modal-sub">Enterprise Configuration • Cloud Storage &amp; AI Provider</p>
+            <p class="settings-modal-sub">Enterprise Configuration • AI Provider &amp; Preferences</p>
           </div>
         </div>
         <button class="settings-close-btn" id="btn-close-settings" aria-label="Close Settings">✕</button>
@@ -1073,8 +1073,7 @@
 
       <!-- Settings Navigation Tabs -->
       <div class="settings-tabs-bar" role="tablist">
-        <button class="settings-tab-btn active" data-tab="cloud">☁ Supabase Cloud</button>
-        <button class="settings-tab-btn" data-tab="ai">🤖 AI Engine</button>
+        <button class="settings-tab-btn active" data-tab="ai">🤖 AI Engine</button>
         <button class="settings-tab-btn" data-tab="appearance">🎨 Appearance</button>
         <button class="settings-tab-btn" data-tab="language">🌐 Language &amp; RTL</button>
         <button class="settings-tab-btn" data-tab="data">💾 Storage &amp; Cache</button>
@@ -1083,47 +1082,8 @@
       <!-- Settings Body Panes -->
       <div class="settings-modal-body">
 
-        <!-- PANE: Supabase Cloud -->
-        <div class="settings-pane" data-pane="cloud">
-          <div class="settings-section-card">
-            <h3 class="settings-card-title">☁ Supabase Object Storage</h3>
-            <p class="settings-card-desc">PDF Assist persists indexed documents to your Supabase enterprise storage bucket with encrypted access.</p>
-            
-            <div class="form-group">
-              <label for="setting-supa-url">Supabase Project URL</label>
-              <input type="url" id="setting-supa-url" class="input" placeholder="https://xyz.supabase.co" />
-            </div>
-
-            <div class="form-group">
-              <label for="setting-supa-key">Supabase Publishable / Anon Key</label>
-              <input type="password" id="setting-supa-key" class="input" placeholder="sb_publishable_..." />
-            </div>
-
-            <div class="form-group">
-              <label for="setting-supa-bucket">Target Storage Bucket</label>
-              <input type="text" id="setting-supa-bucket" class="input" placeholder="files assist" />
-            </div>
-
-            <div class="form-toggle-row">
-              <label class="toggle-switch">
-                <input type="checkbox" id="setting-auto-sync" checked />
-                <span class="toggle-slider"></span>
-              </label>
-              <div>
-                <strong>Auto-upload new documents</strong>
-                <p style="font-size:0.75rem;margin:0;color:var(--color-text-muted);">Sync newly selected PDF files to Supabase automatically.</p>
-              </div>
-            </div>
-
-            <div style="margin-top:16px;">
-              <button class="btn btn--ghost btn--sm" id="btn-test-supabase">⚡ Test Supabase Connection</button>
-              <div id="supa-test-result" style="margin-top:10px;display:none;"></div>
-            </div>
-          </div>
-        </div>
-
         <!-- PANE: AI Engine -->
-        <div class="settings-pane" data-pane="ai" hidden>
+        <div class="settings-pane" data-pane="ai">
           <div class="settings-section-card">
             <h3 class="settings-card-title">🤖 AI Reasoning &amp; RAG Pipeline</h3>
             <p class="settings-card-desc">Configure the AI engine for semantic questions, citation generation, and ATS analysis.</p>
@@ -1257,22 +1217,22 @@
   </div>
 
   <!-- ── Scripts ────────────────────────────────────── -->
-  <script src="js/utils.js?v=3.5.0"></script>
-  <script src="js/supabase-client.js?v=3.5.0"></script>
-  <script src="js/store.js?v=3.5.0"></script>
-  <script src="js/settings.js?v=3.5.0"></script>
-  <script src="js/router.js?v=3.5.0"></script>
-  <script src="js/pdf-loader.js?v=3.5.0"></script>
-  <script src="js/viewer.js?v=3.5.0"></script>
-  <script src="js/audio-reader.js?v=3.5.0"></script>
-  <script src="js/chat.js?v=3.5.0"></script>
-  <script src="js/summarize.js?v=3.5.0"></script>
-  <script src="js/study-quiz.js?v=3.5.0"></script>
-  <script src="js/translate.js?v=3.5.0"></script>
-  <script src="js/compare.js?v=3.5.0"></script>
-  <script src="js/annotate.js?v=3.5.0"></script>
-  <script src="js/tools.js?v=3.5.0"></script>
-  <script src="js/resume.js?v=3.5.0"></script>
-  <script src="js/app.js?v=3.5.0"></script>
+  <script src="js/utils.js?v=3.6.0"></script>
+  <script src="js/supabase-client.js?v=3.6.0"></script>
+  <script src="js/store.js?v=3.6.0"></script>
+  <script src="js/settings.js?v=3.6.0"></script>
+  <script src="js/router.js?v=3.6.0"></script>
+  <script src="js/pdf-loader.js?v=3.6.0"></script>
+  <script src="js/viewer.js?v=3.6.0"></script>
+  <script src="js/audio-reader.js?v=3.6.0"></script>
+  <script src="js/chat.js?v=3.6.0"></script>
+  <script src="js/summarize.js?v=3.6.0"></script>
+  <script src="js/study-quiz.js?v=3.6.0"></script>
+  <script src="js/translate.js?v=3.6.0"></script>
+  <script src="js/compare.js?v=3.6.0"></script>
+  <script src="js/annotate.js?v=3.6.0"></script>
+  <script src="js/tools.js?v=3.6.0"></script>
+  <script src="js/resume.js?v=3.6.0"></script>
+  <script src="js/app.js?v=3.6.0"></script>
 </body>
 </html>
