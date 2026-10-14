@@ -1055,9 +1055,11 @@
           </div>
         </div>
       </div>
-    <!-- ── Developer & Platform Footer ──────────────────────── -->
-    <footer class="omnidoc-footer" style="margin-top:var(--space-12);padding:var(--space-8) var(--space-6);border-top:1px solid rgba(255,255,255,0.08);background:linear-gradient(180deg, transparent, rgba(13,17,26,0.7));border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;">
-      <div style="max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:var(--space-6);align-items:center;">
+    </section>
+
+    <!-- ── Developer & Platform Footer (Persistent Across All Sections) ──────────────────────── -->
+    <footer class="omnidoc-footer">
+      <div class="omnidoc-footer-inner">
         
         <!-- Brand & Badges -->
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;">
@@ -1073,10 +1075,10 @@
         </p>
 
         <!-- Developer Attribution Card -->
-        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(139,92,246,0.3);border-radius:var(--radius-2xl);padding:var(--space-4) var(--space-6);display:flex;align-items:center;gap:var(--space-5);flex-wrap:wrap;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,0.35);">
+        <div class="developer-card">
           
           <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg, #8b5cf6, #3b82f6);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:1.05rem;box-shadow:0 0 18px rgba(139,92,246,0.6);">
+            <div class="developer-avatar">
               YT
             </div>
             <div style="text-align:left;">
@@ -1091,19 +1093,19 @@
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             
             <!-- Portfolio -->
-            <a href="https://tayson202.github.io/portfolio/" target="_blank" rel="noopener noreferrer" class="btn btn--ghost btn--sm" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:0.82rem;text-decoration:none;border:1px solid rgba(56,189,248,0.35);color:#38bdf8;background:rgba(56,189,248,0.08);transition:all 0.2s ease;">
+            <a href="https://tayson202.github.io/portfolio/" target="_blank" rel="noopener noreferrer" class="dev-social-btn" style="border:1px solid rgba(56,189,248,0.35);color:#38bdf8;background:rgba(56,189,248,0.08);">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
               <span>Portfolio</span>
             </a>
 
             <!-- LinkedIn -->
-            <a href="https://www.linkedin.com/in/youssef-tamer-169827248" target="_blank" rel="noopener noreferrer" class="btn btn--ghost btn--sm" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:0.82rem;text-decoration:none;border:1px solid rgba(10,102,194,0.45);color:#60a5fa;background:rgba(10,102,194,0.1);transition:all 0.2s ease;">
+            <a href="https://www.linkedin.com/in/youssef-tamer-169827248" target="_blank" rel="noopener noreferrer" class="dev-social-btn" style="border:1px solid rgba(10,102,194,0.45);color:#60a5fa;background:rgba(10,102,194,0.1);">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9h2.79v8.37H6.46v-8.37M7.86 6.54a1.63 1.63 0 1 0 1.63 1.63c0-.9-.73-1.63-1.63-1.63Z"/></svg>
               <span>LinkedIn</span>
             </a>
 
             <!-- Instagram -->
-            <a href="https://instagram.com/yousseftamer951?xtok=MThsOWU4ZnpoYnBtNQ%3D%3D" target="_blank" rel="noopener noreferrer" class="btn btn--ghost btn--sm" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:0.82rem;text-decoration:none;border:1px solid rgba(236,72,153,0.45);color:#f472b6;background:rgba(236,72,153,0.1);transition:all 0.2s ease;">
+            <a href="https://instagram.com/yousseftamer951?xtok=MThsOWU4ZnpoYnBtNQ%3D%3D" target="_blank" rel="noopener noreferrer" class="dev-social-btn" style="border:1px solid rgba(236,72,153,0.45);color:#f472b6;background:rgba(236,72,153,0.1);">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
               <span>Instagram</span>
             </a>
