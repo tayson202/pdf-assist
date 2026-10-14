@@ -69,6 +69,7 @@ class ResumeManager {
     this.populateEditor();
     this.renderPreview();
     this.updateAtsScore();
+    this.analyzeJobMatch();
   }
 
   bindEvents() {
@@ -168,6 +169,12 @@ class ResumeManager {
         });
       }
     });
+
+    // ATS Target Job Matcher Scan
+    const btnScanJob = document.getElementById('btn-analyze-job-match');
+    if (btnScanJob) {
+      btnScanJob.addEventListener('click', () => this.analyzeJobMatch());
+    }
 
     // Wizard navigation buttons
     const btnWizNext = document.getElementById('btn-wizard-next');
@@ -598,32 +605,220 @@ class ResumeManager {
   }
 
   updateAtsScore() {
-    let score = 70;
+    let score = 0;
+    const tips = [];
     const d = this.data;
 
-    if (d.name && d.name !== 'Your Name') score += 5;
-    if (d.email && d.phone) score += 5;
-    if (d.summary && d.summary.length > 50) score += 5;
-    if (d.experience && d.experience.length >= 2) score += 5;
-    if (d.skills && d.skills.length >= 6) score += 5;
-    if (d.education && d.education.length >= 1) score += 5;
+    // 1. Contact Info check (up to 20 pts)
+    const hasContact = d.name && d.name !== 'Your Name' && d.email && d.phone;
+    if (hasContact) {
+      score += 20;
+    } else {
+      tips.push('Add full name, verified email, and phone number');
+    }
 
-    score = Math.min(score, 98);
+    // 2. Summary check (up to 15 pts)
+    const summaryWords = (d.summary || '').trim().split(/\s+/).filter(Boolean).length;
+    if (summaryWords >= 30) {
+      score += 15;
+    } else if (summaryWords >= 10) {
+      score += 8;
+      tips.push('Expand summary to 35+ words emphasizing core domain expertise');
+    } else {
+      tips.push('Add an impactful professional career summary');
+    }
 
-    const scoreEl = document.getElementById('ats-score-num');
-    const badgeEl = document.getElementById('ats-score-badge');
-    if (scoreEl) scoreEl.textContent = `${score}/100`;
-    if (badgeEl) {
-      if (score >= 90) {
-        badgeEl.textContent = 'Excellent Match';
-        badgeEl.style.color = '#34d399';
-      } else if (score >= 80) {
-        badgeEl.textContent = 'Strong Candidate';
-        badgeEl.style.color = '#60a5fa';
+    // 3. Experience check (up to 25 pts)
+    if (d.experience && d.experience.length > 0) {
+      let totalBullets = 0;
+      d.experience.forEach(exp => {
+        totalBullets += (exp.bullets || []).length;
+      });
+      if (totalBullets >= 4) {
+        score += 25;
+      } else if (totalBullets >= 2) {
+        score += 15;
+        tips.push('Add more detail bullets to your work experience');
       } else {
-        badgeEl.textContent = 'Needs Enhancement';
-        badgeEl.style.color = '#f59e0b';
+        score += 8;
+        tips.push('Add bullet points to experience entries');
       }
+    } else {
+      tips.push('Add at least one relevant work position');
+    }
+
+    // 4. Skills count check (up to 20 pts)
+    const skillsCount = (d.skills || []).length;
+    if (skillsCount >= 8) {
+      score += 20;
+    } else if (skillsCount >= 4) {
+      score += 12;
+      tips.push('List 8+ specific technical skills for higher ATS ranking');
+    } else {
+      score += 5;
+      tips.push('Add key skills to pass automated parser screening');
+    }
+
+    // 5. Action Verbs check (up to 10 pts)
+    const actionVerbs = ['architected', 'engineered', 'built', 'reduced', 'spearheaded', 'optimized', 'scaled', 'led', 'developed', 'designed', 'managed', 'deployed', 'implemented', 'accelerated'];
+    const allText = ((d.summary || '') + ' ' + (d.experience || []).map(e => (e.bullets || []).join(' ')).join(' ')).toLowerCase();
+    const matchedVerbs = actionVerbs.filter(v => allText.includes(v));
+    if (matchedVerbs.length >= 3) {
+      score += 10;
+    } else if (matchedVerbs.length >= 1) {
+      score += 5;
+      tips.push('Use high-impact action verbs (Architected, Scaled, Spearheaded)');
+    } else {
+      tips.push('Start experience bullets with strong action verbs');
+    }
+
+    // 6. Metrics & quantifiable results check (up to 10 pts)
+    const hasMetrics = /\d+[%kKmM]?|\$\d+/.test(allText);
+    if (hasMetrics) {
+      score += 10;
+    } else {
+      tips.push('Include quantifiable metrics (e.g. 45%, $2M, 50K+)');
+    }
+
+    // Cap at 100
+    score = Math.min(100, Math.max(0, score));
+
+    // Update UI elements
+    const scoreValEl = document.getElementById('ats-score-val');
+    const scoreRatingEl = document.getElementById('ats-score-rating');
+    const scoreFillEl = document.getElementById('ats-score-fill');
+    const scoreTipsEl = document.getElementById('ats-score-tips');
+
+    if (scoreValEl) scoreValEl.textContent = `${score}/100`;
+    if (scoreFillEl) scoreFillEl.style.width = `${score}%`;
+
+    let ratingText = 'NEEDS WORK';
+    let ratingClass = 'badge--danger';
+    let fillColor = '#ef4444';
+
+    if (score >= 85) {
+      ratingText = 'EXCELLENT';
+      ratingClass = 'badge--success';
+      fillColor = '#10b981';
+    } else if (score >= 70) {
+      ratingText = 'STRONG';
+      ratingClass = 'badge--info';
+      fillColor = '#06b6d4';
+    } else if (score >= 50) {
+      ratingText = 'AVERAGE';
+      ratingClass = 'badge--warning';
+      fillColor = '#f59e0b';
+    }
+
+    if (scoreRatingEl) {
+      scoreRatingEl.textContent = ratingText;
+      scoreRatingEl.className = `badge ${ratingClass}`;
+    }
+    if (scoreFillEl) {
+      scoreFillEl.style.background = fillColor;
+    }
+
+    if (scoreTipsEl) {
+      if (tips.length === 0) {
+        scoreTipsEl.innerHTML = '<span style="color:#10b981;">✓ Optimal ATS keyword density, structure, and metric compliance.</span>';
+      } else {
+        scoreTipsEl.innerHTML = `💡 <em>ATS Tip:</em> ${tips.slice(0, 2).join(' • ')}`;
+      }
+    }
+  }
+
+  analyzeJobMatch() {
+    const descInput = document.getElementById('input-job-desc');
+    const badgeEl = document.getElementById('job-match-badge');
+    const summaryEl = document.getElementById('ats-gap-summary');
+    const chipsContainer = document.getElementById('missing-keywords-chips');
+
+    let jobText = descInput ? descInput.value.trim() : '';
+    if (!jobText) {
+      jobText = 'Looking for a Senior AI & Cloud Systems Engineer with Python, Kubernetes, PostgreSQL, RAG pipelines, FastAPI, CI/CD, Docker, React, TypeScript, Redis, Microservices.';
+      if (descInput) descInput.value = jobText;
+    }
+
+    // Common technical and domain keywords dictionary
+    const dictionary = [
+      'Python', 'FastAPI', 'Docker', 'Kubernetes', 'PostgreSQL', 'React', 'TypeScript',
+      'JavaScript', 'RAG pipelines', 'CI/CD', 'AWS', 'GCP', 'Redis', 'Kafka',
+      'Microservices', 'GraphQL', 'REST APIs', 'System Architecture', 'Git', 'Linux',
+      'AI Systems', 'Prompt Engineering', 'Vector Search', 'Machine Learning', 'Next.js'
+    ];
+
+    // Find all keywords mentioned in job description
+    const lowerJob = jobText.toLowerCase();
+    const targetedKeywords = dictionary.filter(kw => {
+      const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      return regex.test(lowerJob) || lowerJob.includes(kw.toLowerCase());
+    });
+
+    // Cross reference with candidate's resume
+    const candidateCorpus = [
+      this.data.title,
+      this.data.summary,
+      ...this.data.skills,
+      ...this.data.experience.map(e => `${e.role} ${e.company} ${(e.bullets || []).join(' ')}`)
+    ].join(' ').toLowerCase();
+
+    const matched = [];
+    const missing = [];
+
+    targetedKeywords.forEach(kw => {
+      const kwLower = kw.toLowerCase();
+      if (candidateCorpus.includes(kwLower) || this.data.skills.some(s => s.toLowerCase() === kwLower)) {
+        matched.push(kw);
+      } else {
+        missing.push(kw);
+      }
+    });
+
+    const total = targetedKeywords.length;
+    const matchPercent = total > 0 ? Math.round((matched.length / total) * 100) : 95;
+
+    // Update Badge
+    if (badgeEl) {
+      badgeEl.textContent = `${matchPercent}% Match`;
+      badgeEl.style.background = matchPercent >= 80 ? '#10b981' : (matchPercent >= 60 ? '#f59e0b' : '#ef4444');
+    }
+
+    // Update Summary
+    if (summaryEl) {
+      summaryEl.textContent = `${matched.length} matched / ${missing.length} missing keywords found`;
+    }
+
+    // Render Chips
+    if (chipsContainer) {
+      chipsContainer.innerHTML = '';
+
+      // Render matched chips
+      matched.forEach(kw => {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);color:#6ee7b7;font-size:0.75rem;padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;';
+        chip.innerHTML = `✓ ${this.escapeHtml(kw)}`;
+        chipsContainer.appendChild(chip);
+      });
+
+      // Render missing chips with quick + Add to Skills button
+      missing.forEach(kw => {
+        const chip = document.createElement('button');
+        chip.style.cssText = 'background:rgba(239,68,68,0.12);border:1px dashed rgba(239,68,68,0.4);color:#fca5a5;font-size:0.75rem;padding:3px 8px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.2s;';
+        chip.title = `Click to add "${kw}" to your skills`;
+        chip.innerHTML = `+ Add <strong>${this.escapeHtml(kw)}</strong>`;
+        chip.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (!this.data.skills.includes(kw)) {
+            this.data.skills.push(kw);
+            this.renderSkillsTags();
+            this.renderPreview();
+            this.updateAtsScore();
+            this.analyzeJobMatch();
+            Utils.showToast(`Added "${kw}" to your skills! Match score updated.`, 'success');
+          }
+        });
+        chipsContainer.appendChild(chip);
+      });
     }
   }
 

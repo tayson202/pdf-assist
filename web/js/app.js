@@ -86,7 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const settingsBtn = document.getElementById('btn-settings');
   if (settingsBtn) {
     settingsBtn.addEventListener('click', () => {
-      Utils.showToast('Preferences active: Theme & FastAPI RAG engine ready.', 'info');
+      if (window.settingsManager) {
+        window.settingsManager.open();
+      }
     });
   }
 

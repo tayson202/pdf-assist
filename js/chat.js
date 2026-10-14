@@ -65,10 +65,81 @@ class ChatAssistant {
   addAiMessage(text) {
     const msg = document.createElement('div');
     msg.className = 'chat-message chat-message--ai';
-    msg.innerHTML = `
-      <div class="chat-message__avatar" aria-hidden="true">🤖</div>
-      <div class="chat-message__bubble">${this.formatMarkdown(text)}</div>
-    `;
+    
+    const avatar = document.createElement('div');
+    avatar.className = 'chat-message__avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+    avatar.textContent = '🤖';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-message__bubble';
+    
+    const content = document.createElement('div');
+    content.className = 'chat-message__text';
+    content.innerHTML = this.formatMarkdown(text);
+    bubble.appendChild(content);
+
+    // Smart Actions Toolbar (Copy & Read Aloud)
+    const actions = document.createElement('div');
+    actions.className = 'chat-msg-actions';
+    actions.style.cssText = 'display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08);';
+
+    // 📋 Copy Button
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn-chat-action';
+    copyBtn.style.cssText = 'background:none;border:none;color:var(--color-text-muted);font-size:0.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;';
+    copyBtn.innerHTML = '📋 Copy';
+    copyBtn.title = 'Copy response text';
+    copyBtn.addEventListener('click', () => {
+      const cleanText = text.replace(/\[Page\s+\d+\]/gi, '').replace(/[*_#`]/g, '');
+      navigator.clipboard.writeText(cleanText);
+      copyBtn.innerHTML = '✓ Copied!';
+      copyBtn.style.color = '#34d399';
+      setTimeout(() => {
+        copyBtn.innerHTML = '📋 Copy';
+        copyBtn.style.color = '';
+      }, 2000);
+    });
+    actions.appendChild(copyBtn);
+
+    // 🔊 Read Aloud Button
+    const speakBtn = document.createElement('button');
+    speakBtn.className = 'btn-chat-action';
+    speakBtn.style.cssText = 'background:none;border:none;color:var(--color-text-muted);font-size:0.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;';
+    speakBtn.innerHTML = '🔊 Read Aloud';
+    speakBtn.title = 'Listen to audio response';
+    speakBtn.addEventListener('click', () => {
+      if ('speechSynthesis' in window) {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          speakBtn.innerHTML = '🔊 Read Aloud';
+          speakBtn.style.color = '';
+          return;
+        }
+        const cleanText = text.replace(/\[Page\s+\d+\]/gi, '').replace(/[*_#`]/g, '');
+        const utter = new SpeechSynthesisUtterance(cleanText);
+        utter.rate = 1.0;
+        utter.onend = () => {
+          speakBtn.innerHTML = '🔊 Read Aloud';
+          speakBtn.style.color = '';
+        };
+        utter.onerror = () => {
+          speakBtn.innerHTML = '🔊 Read Aloud';
+          speakBtn.style.color = '';
+        };
+        window.speechSynthesis.speak(utter);
+        speakBtn.innerHTML = '⏹ Stop Audio';
+        speakBtn.style.color = '#38bdf8';
+      } else {
+        Utils.showToast('Text-to-speech is not supported in this browser.', 'warning');
+      }
+    });
+    actions.appendChild(speakBtn);
+
+    bubble.appendChild(actions);
+    msg.appendChild(avatar);
+    msg.appendChild(bubble);
+
     this.messagesContainer.appendChild(msg);
     this.scrollToBottom();
     return msg;
@@ -157,10 +228,16 @@ class ChatAssistant {
   }
 
   formatMarkdown(str) {
+    const style = window.settingsManager?.settings?.citationStyle || 'badge';
     let formatted = str
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\[Page\s+(\d+)\]/gi, (match, pageNum) => {
+        if (style === 'academic') {
+          return `<button class="citation-badge" style="background:rgba(255,255,255,0.06);font-style:italic;" onclick="window.appRouter.navigateTo('viewer'); window.pdfViewer.goToPage(${pageNum}); return false;" title="Jump to Page ${pageNum}">(p. ${pageNum})</button>`;
+        } else if (style === 'footnote') {
+          return `<button class="citation-badge" style="vertical-align:super;font-size:0.65rem;" onclick="window.appRouter.navigateTo('viewer'); window.pdfViewer.goToPage(${pageNum}); return false;" title="Jump to Page ${pageNum}">[${pageNum}]</button>`;
+        }
         return `<button class="citation-badge" onclick="window.appRouter.navigateTo('viewer'); window.pdfViewer.goToPage(${pageNum}); return false;" title="Jump to Page ${pageNum} in Viewer">📄 Page ${pageNum}</button>`;
       })
       .replace(/\n/g, '<br />');
