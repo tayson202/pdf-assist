@@ -36,7 +36,7 @@ class ChatAssistant {
       name: 'Artificial_Intelligence_Overview_2026.pdf',
       pageCount: 8
     };
-    this.addAiMessage(`I've indexed **"${initDoc.name}"** (${initDoc.pageCount} pages). Ask me anything, or click one of the quick suggestions below!`);
+    this.addAiMessage(`I've indexed **"${initDoc.name}"** (${initDoc.pageCount} pages). Welcome to **OmniDoc & Resume**! Ask me anything, generate study guides, or click a quick suggestion below!`);
   }
 
   handleSend() {

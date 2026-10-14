@@ -1,34 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="omni-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#8b5cf6" />
-      <stop offset="100%" stop-color="#3b82f6" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#06b6d4" />
     </linearGradient>
-    <linearGradient id="glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#c4b5fd" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0.8" />
+    <linearGradient id="resume-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ec4899" />
+      <stop offset="100%" stop-color="#a855f7" />
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="3" result="blur" />
+    <filter id="omni-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
   </defs>
 
-  <!-- Document Outline -->
-  <path d="M16 8C13.7909 8 12 9.79086 12 12V52C12 54.2091 13.7909 56 16 56H48C50.2091 56 52 54.2091 52 52V22L38 8H16Z" fill="#111318" stroke="url(#logo-grad)" stroke-width="2.5" />
+  <!-- Background Halo Orbit -->
+  <circle cx="32" cy="32" r="28" fill="#1e1b4b" fill-opacity="0.3" stroke="url(#omni-grad-1)" stroke-width="1" stroke-dasharray="3 3" />
+
+  <!-- Document Base Layer (OmniDoc) -->
+  <path d="M16 10C13.7909 10 12 11.7909 12 14V50C12 52.2091 13.7909 54 16 54H42C44.2091 54 46 52.2091 46 50V22L34 10H16Z" fill="#0d111a" stroke="url(#omni-grad-1)" stroke-width="2.5" stroke-linejoin="round" />
   
-  <!-- Fold corner -->
-  <path d="M38 8V20C38 21.1046 38.8954 22 40 22H52" stroke="url(#logo-grad)" stroke-width="2.5" stroke-linejoin="round" />
+  <!-- Document Fold Corner -->
+  <path d="M34 10V20C34 21.1046 34.8954 22 36 22H46" stroke="url(#omni-grad-1)" stroke-width="2.5" stroke-linejoin="round" />
 
-  <!-- Brain / AI Nodes -->
-  <g filter="url(#glow)">
-    <circle cx="32" cy="38" r="4" fill="url(#logo-grad)" />
-    <circle cx="24" cy="32" r="3" fill="#8b5cf6" />
-    <circle cx="40" cy="32" r="3" fill="#3b82f6" />
-    <circle cx="26" cy="44" r="2.5" fill="#a78bfa" />
-    <circle cx="38" cy="44" r="2.5" fill="#60a5fa" />
+  <!-- Front Layer / Resume Card Badge -->
+  <rect x="24" y="24" width="28" height="34" rx="4" fill="#131826" stroke="url(#resume-grad)" stroke-width="2" />
+  
+  <!-- Resume Elements -->
+  <!-- Candidate Avatar icon on resume -->
+  <circle cx="32" cy="32" r="3.5" fill="url(#resume-grad)" />
+  <!-- Resume lines -->
+  <line x1="39" y1="30" x2="47" y2="30" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+  <line x1="39" y1="34" x2="45" y2="34" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" />
+  <line x1="28" y1="41" x2="48" y2="41" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" />
+  <line x1="28" y1="46" x2="48" y2="46" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" />
+  <line x1="28" y1="51" x2="41" y2="51" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" />
 
-    <!-- Connecting Lines -->
-    <path d="M32 38L24 32M32 38L40 32M32 38L26 44M32 38L38 44M24 32L26 44M40 32L38 44" stroke="url(#glow-grad)" stroke-width="1.5" stroke-linecap="round" />
+  <!-- AI Sparkle / Omni Node at Top-Right -->
+  <g filter="url(#omni-glow)">
+    <path d="M48 6L49.5 11L54.5 12.5L49.5 14L48 19L46.5 14L41.5 12.5L46.5 11L48 6Z" fill="#38bdf8" />
+    <circle cx="48" cy="12.5" r="1.5" fill="#ffffff" />
   </g>
 </svg>
