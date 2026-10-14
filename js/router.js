@@ -60,6 +60,9 @@ class Router {
 
     // Trigger optional page hooks
     window.dispatchEvent(new CustomEvent('pageChange', { detail: { page: pageId } }));
+
+    // Reset window scroll to top of new page
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 }
 
