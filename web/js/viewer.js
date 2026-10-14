@@ -7,6 +7,7 @@ class Viewer {
     this.canvas = document.getElementById('pdf-canvas');
     this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
     this.emptyState = document.getElementById('viewer-empty');
+    this.richViewer = document.getElementById('doc-rich-viewer');
     this.pageInfo = document.getElementById('page-info');
     this.zoomDisplay = document.getElementById('zoom-level');
 
@@ -78,12 +79,22 @@ class Viewer {
 
     if (this.downloadBtn) {
       this.downloadBtn.addEventListener('click', () => {
-        const pdf = window.appStore.getState('currentPdf');
-        if (!pdf) {
-          Utils.showToast('No PDF available to download.', 'warning');
+        const doc = window.appStore.getState('currentPdf');
+        if (!doc) {
+          Utils.showToast('No document available to download.', 'warning');
           return;
         }
-        Utils.showToast(`Downloading ${pdf.name}...`, 'info');
+        if (doc.file) {
+          const url = URL.createObjectURL(doc.file);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = doc.name;
+          a.click();
+          URL.revokeObjectURL(url);
+          Utils.showToast(`Downloaded "${doc.name}"!`, 'success');
+        } else {
+          Utils.showToast(`Downloading ${doc.name}...`, 'info');
+        }
       });
     }
 
@@ -112,6 +123,15 @@ class Viewer {
     }
     // Render immediately on init
     this.render();
+  }
+
+  goToPage(pageNum) {
+    const target = parseInt(pageNum, 10);
+    if (!isNaN(target)) {
+      this.currentPage = Math.min(Math.max(1, target), this.totalPages || 1);
+      this.render();
+      Utils.showToast(`Viewing Page ${this.currentPage} of ${this.totalPages}`, 'info');
+    }
   }
 
   handleSearch() {
@@ -180,11 +200,67 @@ class Viewer {
     const pdf = window.appStore.getState('currentPdf') || {
       name: 'Artificial_Intelligence_Overview_2026.pdf',
       pageCount: 8,
-      size: 2450800
+      size: 2450800,
+      docType: 'pdf'
     };
 
     if (this.emptyState) this.emptyState.style.display = 'none';
-    this.canvas.style.display = 'block';
+
+    // Update topbar document badge icon
+    const docBadge = document.getElementById('topbar-doc-badge');
+    if (docBadge) {
+      let icon = '📄';
+      if (pdf.docType === 'word') icon = '📘';
+      else if (pdf.docType === 'excel') icon = '📗';
+      else if (pdf.docType === 'powerpoint') icon = '📙';
+      const nameEl = document.getElementById('topbar-doc-name');
+      if (nameEl) nameEl.textContent = pdf.name;
+      const iconEl = docBadge.querySelector('span:first-child');
+      if (iconEl) iconEl.textContent = icon;
+    }
+
+    // 1. Excel Spreadsheet View
+    if (pdf.docType === 'excel' && pdf.docDetails && pdf.docDetails.sheetNames) {
+      if (this.canvas) this.canvas.style.display = 'none';
+      if (this.richViewer) {
+        this.richViewer.style.display = 'block';
+        this.renderExcelView(pdf);
+      }
+      if (this.pageInfo) {
+        this.pageInfo.textContent = `Sheet ${this.currentPage} / ${this.totalPages}`;
+      }
+      return;
+    }
+
+    // 2. PowerPoint Slide View
+    if (pdf.docType === 'powerpoint' && pdf.docDetails && pdf.docDetails.slides) {
+      if (this.canvas) this.canvas.style.display = 'none';
+      if (this.richViewer) {
+        this.richViewer.style.display = 'block';
+        this.renderPptView(pdf);
+      }
+      if (this.pageInfo) {
+        this.pageInfo.textContent = `Slide ${this.currentPage} / ${this.totalPages}`;
+      }
+      return;
+    }
+
+    // 3. Word Document View
+    if (pdf.docType === 'word' && pdf.docDetails && pdf.docDetails.html) {
+      if (this.canvas) this.canvas.style.display = 'none';
+      if (this.richViewer) {
+        this.richViewer.style.display = 'block';
+        this.renderWordView(pdf);
+      }
+      if (this.pageInfo) {
+        this.pageInfo.textContent = `Page ${this.currentPage} / ${this.totalPages}`;
+      }
+      return;
+    }
+
+    // 4. Default PDF Canvas View
+    if (this.richViewer) this.richViewer.style.display = 'none';
+    if (this.canvas) this.canvas.style.display = 'block';
 
     if (this.pageInfo) {
       this.pageInfo.textContent = `Page ${this.currentPage} / ${this.totalPages}`;
@@ -293,9 +369,141 @@ class Viewer {
     ctx.restore();
   }
 
+  renderExcelView(pdf) {
+    if (!this.richViewer) return;
+    const names = (pdf.docDetails && pdf.docDetails.sheetNames) || ['Sheet1'];
+    const activeSheetName = names[this.currentPage - 1] || names[0];
+    const sheetData = (pdf.docDetails && pdf.docDetails.sheets && pdf.docDetails.sheets[activeSheetName]) || { html: '<p style="padding:16px;">No sheet data available.</p>' };
+
+    this.richViewer.innerHTML = `
+      <div class="excel-viewer-card" style="background:var(--color-bg-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-lg);">
+        <div class="excel-header-bar" style="padding:12px 18px;background:rgba(16,185,129,0.08);border-bottom:1px solid var(--color-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">📗</span>
+            <strong style="font-size:0.95rem;color:#34d399;">${this.escapeHtml(pdf.name)}</strong>
+            <span class="badge" style="background:rgba(16,185,129,0.15);color:#6ee7b7;font-size:0.7rem;">Excel Spreadsheet</span>
+          </div>
+          <span style="font-size:0.75rem;color:var(--color-text-muted);">Sheet ${this.currentPage} of ${this.totalPages}</span>
+        </div>
+        <div class="excel-tabs-bar" style="display:flex;gap:6px;padding:8px 14px;background:rgba(0,0,0,0.25);border-bottom:1px solid var(--color-border);overflow-x:auto;">
+          ${names.map((name, i) => `
+            <button class="btn btn--sm ${i + 1 === this.currentPage ? 'btn--primary' : 'btn--ghost'}" data-sheet-idx="${i + 1}" style="font-size:0.75rem;padding:4px 12px;">
+              📊 ${this.escapeHtml(name)}
+            </button>
+          `).join('')}
+        </div>
+        <div class="excel-table-scroll" style="overflow:auto;max-height:620px;padding:12px;">
+          <style>
+            .excel-table-scroll table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+            .excel-table-scroll th, .excel-table-scroll td { border: 1px solid var(--color-border); padding: 7px 12px; text-align: left; }
+            .excel-table-scroll th { background: rgba(255,255,255,0.06); font-weight: 600; color: var(--color-cyan-400); }
+            .excel-table-scroll tr:hover { background: rgba(255,255,255,0.04); }
+          </style>
+          ${sheetData.html}
+        </div>
+      </div>
+    `;
+
+    this.richViewer.querySelectorAll('[data-sheet-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-sheet-idx'), 10);
+        this.currentPage = idx;
+        this.render();
+      });
+    });
+  }
+
+  renderPptView(pdf) {
+    if (!this.richViewer) return;
+    const slides = (pdf.docDetails && pdf.docDetails.slides) || [];
+    const currentSlide = slides[this.currentPage - 1] || { title: `Slide ${this.currentPage}`, bullets: [] };
+
+    this.richViewer.innerHTML = `
+      <div class="ppt-viewer-card" style="background:var(--color-bg-surface);border:1px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;box-shadow:var(--shadow-xl);max-width:840px;margin:0 auto;">
+        <div class="ppt-header-bar" style="padding:12px 18px;background:rgba(245,158,11,0.08);border-bottom:1px solid var(--color-border);display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">📙</span>
+            <strong style="font-size:0.95rem;color:#fbbf24;">${this.escapeHtml(pdf.name)}</strong>
+            <span class="badge" style="background:rgba(245,158,11,0.15);color:#fde68a;font-size:0.7rem;">PowerPoint Slide</span>
+          </div>
+          <span style="font-size:0.75rem;color:var(--color-text-muted);">Slide ${this.currentPage} of ${this.totalPages}</span>
+        </div>
+        
+        <!-- 16:9 Presentation Frame -->
+        <div style="aspect-ratio:16/9;background:#09090b;padding:36px 48px;display:flex;flex-direction:column;justify-content:center;position:relative;border-bottom:1px solid var(--color-border);">
+          <div style="position:absolute;top:16px;right:20px;font-size:0.75rem;color:var(--color-text-muted);font-weight:600;">
+            Slide ${this.currentPage}
+          </div>
+          <h2 style="font-size:1.65rem;font-weight:800;color:#fafafa;margin:0 0 16px 0;letter-spacing:-0.02em;line-height:1.3;">
+            ${this.escapeHtml(currentSlide.title)}
+          </h2>
+          <div style="height:3px;width:64px;background:linear-gradient(90deg, #f59e0b, #ef4444);margin-bottom:22px;border-radius:999px;"></div>
+          <ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:12px;font-size:1rem;color:#e4e4e7;line-height:1.6;">
+            ${currentSlide.bullets && currentSlide.bullets.length ? currentSlide.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('') : '<li style="color:var(--color-text-muted);">Presentation slide overview.</li>'}
+          </ul>
+        </div>
+
+        <!-- Slide Strip Navigation -->
+        <div style="display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:rgba(0,0,0,0.3);">
+          ${slides.map((s, i) => `
+            <button class="btn btn--sm ${i + 1 === this.currentPage ? 'btn--primary' : 'btn--ghost'}" data-slide-idx="${i + 1}" style="font-size:0.7rem;padding:4px 10px;white-space:nowrap;">
+              Slide ${i + 1}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    this.richViewer.querySelectorAll('[data-slide-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-slide-idx'), 10);
+        this.currentPage = idx;
+        this.render();
+      });
+    });
+  }
+
+  renderWordView(pdf) {
+    if (!this.richViewer) return;
+    const html = (pdf.docDetails && pdf.docDetails.html) || '<p>No Word document content</p>';
+
+    this.richViewer.innerHTML = `
+      <div class="word-viewer-card" style="background:#ffffff;color:#18181b;border-radius:var(--radius-lg);padding:44px 50px;box-shadow:0 20px 40px rgba(0,0,0,0.5);max-width:760px;margin:0 auto;line-height:1.65;font-family:Inter, -apple-system, sans-serif;">
+        <div style="border-bottom:2px solid #3b82f6;padding-bottom:10px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.2rem;">📘</span>
+            <strong style="color:#1d4ed8;font-size:1rem;">${this.escapeHtml(pdf.name)}</strong>
+          </div>
+          <span style="font-size:0.75rem;color:#6b7280;">Word Document (Page ${this.currentPage} of ${this.totalPages})</span>
+        </div>
+        <div class="word-content-body" style="font-size:0.92rem;color:#27272a;">
+          <style>
+            .word-content-body h1 { font-size: 1.5rem; color: #1e3a8a; margin: 16px 0 8px 0; }
+            .word-content-body h2 { font-size: 1.25rem; color: #1e40af; margin: 14px 0 6px 0; }
+            .word-content-body h3 { font-size: 1.1rem; color: #1d4ed8; margin: 12px 0 4px 0; }
+            .word-content-body p { margin-bottom: 12px; }
+            .word-content-body ul, .word-content-body ol { margin: 8px 0 14px 20px; }
+            .word-content-body table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+            .word-content-body th, .word-content-body td { border: 1px solid #d1d5db; padding: 6px 10px; }
+            .word-content-body th { background: #f3f4f6; }
+          </style>
+          ${html}
+        </div>
+      </div>
+    `;
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[m]));
+  }
+
   clear() {
     if (this.emptyState) this.emptyState.style.display = 'flex';
     if (this.canvas) this.canvas.style.display = 'none';
+    if (this.richViewer) this.richViewer.style.display = 'none';
     if (this.pageInfo) this.pageInfo.textContent = 'Page 0 / 0';
   }
 }

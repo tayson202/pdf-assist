@@ -63,61 +63,169 @@ class PdfLoader {
   }
 
   async handleFile(file) {
-    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
-      Utils.showToast('Please upload a valid PDF document (.pdf)', 'error');
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    const supportedExts = ['pdf', 'docx', 'doc', 'xlsx', 'xls', 'csv', 'pptx', 'ppt', 'txt', 'md', 'json'];
+
+    if (!supportedExts.includes(ext) && !file.type.includes('pdf') && !file.type.includes('word') && !file.type.includes('sheet') && !file.type.includes('presentation')) {
+      Utils.showToast(`Unsupported format .${ext}. Please upload a PDF, Word (.docx), Excel (.xlsx/.csv), PowerPoint (.pptx), or TXT document.`, 'error');
       return;
     }
 
-    this.showModal('Loading PDF document...');
-    this.updateProgress(20);
+    this.showModal(`Loading ${ext.toUpperCase()} document...`);
+    this.updateProgress(15);
 
     try {
-      let pageCount = 5;
+      let pageCount = 1;
       let textSample = '';
       let pdfDoc = null;
+      let docType = ext;
+      let docDetails = {};
 
-      if (window.pdfjsLib) {
-        this.setStatus('Parsing PDF with PDF.js...');
-        this.updateProgress(45);
+      if (ext === 'pdf' || file.type === 'application/pdf') {
+        docType = 'pdf';
+        if (window.pdfjsLib) {
+          this.setStatus('Parsing PDF with PDF.js...');
+          this.updateProgress(40);
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            const typedArray = new Uint8Array(arrayBuffer);
+            const loadingTask = pdfjsLib.getDocument({
+              data: typedArray,
+              isEvalSupported: false
+            });
+            pdfDoc = await loadingTask.promise;
+            pageCount = pdfDoc.numPages || 1;
+
+            this.setStatus('Extracting page text for AI RAG...');
+            this.updateProgress(70);
+
+            const texts = [];
+            const maxPagesToExtract = Math.min(pageCount, 15);
+            for (let i = 1; i <= maxPagesToExtract; i++) {
+              const page = await pdfDoc.getPage(i);
+              const textContent = await page.getTextContent();
+              const pageStr = textContent.items.map(item => item.str).join(' ');
+              if (pageStr.trim()) {
+                texts.push(`[Page ${i}]: ${pageStr.trim()}`);
+              }
+            }
+            textSample = texts.join('\n\n');
+          } catch (pdfErr) {
+            console.warn('PDF.js parse notice, fallback used:', pdfErr);
+          }
+        }
+      } else if (ext === 'docx' || ext === 'doc') {
+        docType = 'word';
+        this.setStatus('Extracting Word document with Mammoth.js...');
+        this.updateProgress(50);
         try {
           const arrayBuffer = await file.arrayBuffer();
-          const typedArray = new Uint8Array(arrayBuffer);
-          const loadingTask = pdfjsLib.getDocument({
-            data: typedArray,
-            isEvalSupported: false
-          });
-          pdfDoc = await loadingTask.promise;
-          pageCount = pdfDoc.numPages || 1;
+          if (window.mammoth) {
+            const resHtml = await mammoth.convertToHtml({ arrayBuffer });
+            const resRaw = await mammoth.extractRawText({ arrayBuffer });
+            docDetails.html = resHtml.value;
+            docDetails.raw = resRaw.value;
 
-          this.setStatus('Extracting page text for AI RAG...');
-          this.updateProgress(70);
-
-          let texts = [];
-          const maxPagesToExtract = Math.min(pageCount, 15);
-          for (let i = 1; i <= maxPagesToExtract; i++) {
-            const page = await pdfDoc.getPage(i);
-            const textContent = await page.getTextContent();
-            const pageStr = textContent.items.map(item => item.str).join(' ');
-            if (pageStr.trim()) {
-              texts.push(`[Page ${i}]: ${pageStr.trim()}`);
+            // Chunk by ~300 words into pages for viewer & RAG
+            const words = (resRaw.value || '').split(/\s+/).filter(Boolean);
+            const wordsPerPage = 320;
+            pageCount = Math.max(1, Math.ceil(words.length / wordsPerPage));
+            const pages = [];
+            for (let i = 0; i < pageCount; i++) {
+              const chunk = words.slice(i * wordsPerPage, (i + 1) * wordsPerPage).join(' ');
+              pages.push(`[Page ${i + 1}]: ${chunk}`);
             }
+            textSample = pages.join('\n\n');
+          } else {
+            textSample = await file.text();
           }
-          textSample = texts.join('\n\n');
-        } catch (pdfErr) {
-          console.warn('PDF.js parse notice, fallback used:', pdfErr);
+        } catch (wordErr) {
+          console.warn('Word parse notice:', wordErr);
+          textSample = `[Page 1]: Word Document: ${file.name}\n\nContents parsed from Word document.`;
         }
+      } else if (ext === 'xlsx' || ext === 'xls' || ext === 'csv') {
+        docType = 'excel';
+        this.setStatus('Parsing Spreadsheet tables with SheetJS...');
+        this.updateProgress(50);
+        try {
+          if (window.XLSX) {
+            const arrayBuffer = await file.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+            docDetails.sheetNames = workbook.SheetNames || ['Sheet1'];
+            docDetails.sheets = {};
+            const pages = [];
+            pageCount = docDetails.sheetNames.length;
+
+            docDetails.sheetNames.forEach((sheetName, idx) => {
+              const ws = workbook.Sheets[sheetName];
+              const html = XLSX.utils.sheet_to_html(ws);
+              const csv = XLSX.utils.sheet_to_csv(ws);
+              docDetails.sheets[sheetName] = { html, csv };
+              pages.push(`[Page ${idx + 1} - Sheet: ${sheetName}]:\n${csv.slice(0, 1800)}`);
+            });
+            textSample = pages.join('\n\n');
+          } else {
+            textSample = await file.text();
+          }
+        } catch (excelErr) {
+          console.warn('Excel parse notice:', excelErr);
+          textSample = `[Page 1 - Sheet: Sheet1]: Spreadsheet Data: ${file.name}`;
+        }
+      } else if (ext === 'pptx' || ext === 'ppt') {
+        docType = 'powerpoint';
+        this.setStatus('Unpacking presentation slides with JSZip...');
+        this.updateProgress(50);
+        try {
+          if (window.JSZip) {
+            const arrayBuffer = await file.arrayBuffer();
+            const zip = await JSZip.loadAsync(arrayBuffer);
+            const slideFiles = Object.keys(zip.files).filter(k => k.match(/^ppt\/slides\/slide\d+\.xml$/i));
+            slideFiles.sort((a, b) => {
+              const numA = parseInt(a.replace(/\D/g, ''), 10);
+              const numB = parseInt(b.replace(/\D/g, ''), 10);
+              return numA - numB;
+            });
+
+            docDetails.slides = [];
+            pageCount = Math.max(1, slideFiles.length);
+            const pages = [];
+
+            for (let i = 0; i < slideFiles.length; i++) {
+              const xmlText = await zip.files[slideFiles[i]].async('text');
+              const parser = new DOMParser();
+              const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+              const textNodes = Array.from(xmlDoc.getElementsByTagName('a:t')).map(n => n.textContent.trim()).filter(Boolean);
+              const title = textNodes[0] || `Slide ${i + 1}`;
+              const bullets = textNodes.slice(1);
+              docDetails.slides.push({ title, bullets, allText: textNodes.join(' ') });
+              pages.push(`[Page ${i + 1} - Slide ${i + 1}: ${title}]:\n${bullets.map(b => '• ' + b).join('\n')}`);
+            }
+            textSample = pages.join('\n\n');
+          } else {
+            textSample = `[Page 1 - Slide 1]: Presentation: ${file.name}`;
+          }
+        } catch (pptErr) {
+          console.warn('PPTX parse notice:', pptErr);
+          textSample = `[Page 1 - Slide 1]: Presentation: ${file.name}`;
+        }
+      } else {
+        docType = 'text';
+        textSample = await file.text();
+        const words = textSample.split(/\s+/).filter(Boolean);
+        pageCount = Math.max(1, Math.ceil(words.length / 320));
       }
 
       if (!textSample) {
         this.updateProgress(65);
-        this.setStatus('Extracting text & page structures...');
+        this.setStatus('Extracting text & structures...');
         textSample = await this.extractSimulatedText(file);
       }
 
       // Cloud Upload to Supabase Storage (Bucket: files assist)
       let cloudInfo = null;
       if (window.supabaseService) {
-        this.setStatus('Uploading to Supabase Storage (files assist)...');
+        this.setStatus('Syncing with Cloud Storage...');
         this.updateProgress(85);
         try {
           cloudInfo = await window.supabaseService.uploadPdf(file, (pct, msg) => {
@@ -129,33 +237,36 @@ class PdfLoader {
         }
       }
 
-      await Utils.sleep(200);
+      await Utils.sleep(150);
       this.updateProgress(100);
 
-      const pdfData = {
+      const docData = {
         name: file.name,
         size: file.size,
+        docType: docType,
         pageCount: pageCount,
         file: file,
         pdfDoc: pdfDoc,
+        docDetails: docDetails,
         textContent: textSample,
         cloudUrl: cloudInfo ? cloudInfo.publicUrl : null,
         cloudSync: cloudInfo ? cloudInfo.cloudSync : 'synced',
         uploadedAt: new Date().toLocaleTimeString()
       };
 
-      window.appStore.setState('currentPdf', pdfData);
+      window.appStore.setState('currentPdf', docData);
       this.hideModal();
       
-      const supaMsg = cloudInfo ? ' • Synced with Supabase' : '';
-      Utils.showToast(`Loaded "${file.name}" (${pageCount} pgs)${supaMsg}!`, 'success');
+      const supaMsg = cloudInfo ? ' • Synced with Cloud' : '';
+      const unit = docType === 'excel' ? 'sheets' : (docType === 'powerpoint' ? 'slides' : 'pages');
+      Utils.showToast(`Loaded "${file.name}" (${ext.toUpperCase()} • ${pageCount} ${unit})${supaMsg}!`, 'success');
 
-      // Navigate to viewer view
+      // Navigate to viewer
       window.appRouter.navigateTo('viewer');
     } catch (err) {
       console.error(err);
       this.hideModal();
-      Utils.showToast('Error loading PDF: ' + err.message, 'error');
+      Utils.showToast('Error loading document: ' + err.message, 'error');
     }
   }
 

@@ -41,6 +41,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- PDF.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Mammoth.js for Word (.docx) Parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <!-- SheetJS for Excel (.xlsx, .xls, .csv) Parsing -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <!-- JSZip for PowerPoint (.pptx) Slide Text Extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- html2pdf.js for 1-Click High-Quality Resume PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="dark-mode">
 
@@ -173,8 +181,8 @@
           <span class="backend-badge__dot"></span>
           <span id="backend-status-text">AI Ready</span>
         </div>
-        <button class="btn btn--primary btn--sm" id="btn-upload-topbar" aria-label="Upload PDF" style="display:inline-flex;align-items:center;gap:6px;">
-          <span>📤</span> Upload PDF
+        <button class="btn btn--primary btn--sm" id="btn-upload-topbar" aria-label="Upload Document" style="display:inline-flex;align-items:center;gap:6px;">
+          <span>📤</span> Upload Document
         </button>
       </div>
     </header>
@@ -184,18 +192,17 @@
     <!-- HOME PAGE -->
     <section class="page page--active" id="page-home" aria-label="Home">
       <div class="hero">
-        <div class="hero__badge">✦ AI-Powered PDF Assistant</div>
+        <div class="hero__badge">✦ Universal AI Document Assistant</div>
         <h1 class="hero__title">
-          Transform your PDFs<br />
+          Transform your documents<br />
           with <span class="gradient-text">AI intelligence</span>
         </h1>
         <p class="hero__subtitle">
-          Upload any PDF and instantly chat with it, get summaries, annotate,
-          merge, split — all in one beautiful interface.
+          Upload any PDF, Word (.docx), PowerPoint (.pptx), or Excel (.xlsx/.csv) to instantly chat with it, get summaries, analyze tables, and build resumes — all in one interface.
         </p>
         <div class="hero__actions">
-          <button class="btn btn--primary btn--lg" id="btn-upload-hero" aria-label="Upload PDF">
-            <span>📤</span> Upload PDF
+          <button class="btn btn--primary btn--lg" id="btn-upload-hero" aria-label="Upload Document">
+            <span>📤</span> Upload Document (PDF / Word / Excel / PPT)
           </button>
           <button class="btn btn--ghost btn--lg" id="btn-demo" aria-label="Try Demo">
             Try Demo →
@@ -203,13 +210,19 @@
         </div>
 
         <!-- Drop Zone -->
-        <div class="dropzone" id="dropzone" role="region" aria-label="Drag and drop PDF files here">
+        <div class="dropzone" id="dropzone" role="region" aria-label="Drag and drop documents here">
           <div class="dropzone__content">
-            <div class="dropzone__icon" aria-hidden="true">📂</div>
-            <p class="dropzone__label">Drag &amp; drop your PDF here</p>
-            <p class="dropzone__sub">or <span class="link-text">browse files</span></p>
+            <div class="dropzone__icon" aria-hidden="true">📁</div>
+            <p class="dropzone__label">Drag &amp; drop any document here</p>
+            <p class="dropzone__sub">Supports <strong>PDF, Word (.docx), Excel (.xlsx/.csv), PowerPoint (.pptx)</strong> or <span class="link-text">browse files</span></p>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;font-size:0.75rem;color:var(--color-text-muted);">
+              <span class="badge" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);">📕 PDF</span>
+              <span class="badge" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);">📘 Word (.docx)</span>
+              <span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);">📗 Excel (.xlsx)</span>
+              <span class="badge" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">📙 PowerPoint (.pptx)</span>
+            </div>
           </div>
-          <input type="file" id="file-input" accept=".pdf" class="dropzone__input" aria-label="Select PDF file" />
+          <input type="file" id="file-input" accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md" class="dropzone__input" aria-label="Select document file" />
         </div>
 
         <!-- Trust & Capability Chips -->
@@ -330,11 +343,12 @@
         </div>
         <div class="viewer-canvas-wrapper" id="viewer-canvas-wrapper">
           <div class="viewer-empty-state" id="viewer-empty">
-            <div class="empty-state__icon" aria-hidden="true">📄</div>
-            <p class="empty-state__label">No PDF loaded. Upload one to get started.</p>
-            <button class="btn btn--primary" id="btn-upload-viewer-empty">Upload PDF</button>
+            <div class="empty-state__icon" aria-hidden="true">📁</div>
+            <p class="empty-state__label">No document loaded. Upload a PDF, Word, Excel, or PowerPoint file to view and analyze.</p>
+            <button class="btn btn--primary" id="btn-upload-viewer-empty">Upload Document</button>
           </div>
           <canvas id="pdf-canvas" class="pdf-canvas" aria-label="PDF page canvas"></canvas>
+          <div id="doc-rich-viewer" class="doc-rich-viewer" style="display:none;width:100%;max-width:960px;margin:0 auto;"></div>
         </div>
       </div>
     </section>
@@ -765,8 +779,8 @@
           <p class="page-subtitle">Build from zero with AI, import existing resumes, switch top-rated templates, and export ATS-optimized PDFs</p>
         </div>
         <div class="page-header__actions">
-          <input type="file" id="resume-import-file" accept=".pdf" style="display:none;" />
-          <button class="btn btn--ghost btn--sm" id="btn-import-resume">📂 Import Old Resume</button>
+          <input type="file" id="resume-import-file" accept=".pdf,.docx,.doc,.txt,.json" style="display:none;" />
+          <button class="btn btn--primary btn--sm" id="btn-import-resume" style="background:linear-gradient(135deg, #7c3aed, #4f46e5) !important;">📂 Upload Your CV to Edit</button>
           <button class="btn btn--ghost btn--sm" id="btn-load-sample-resume">⭐ Load Sample</button>
           <button class="btn btn--ghost btn--sm" id="btn-copy-resume-text">📋 Copy Text</button>
           <button class="btn btn--primary btn--sm" id="btn-export-resume-pdf">📥 Download PDF</button>
@@ -820,6 +834,23 @@
         <div class="resume-layout">
           <!-- Left Column: Form Editor -->
           <div class="resume-editor-panel">
+            <!-- Upload CV to Edit Banner Card -->
+            <div class="card" style="border: 1px dashed var(--color-purple-500); background: rgba(139, 92, 246, 0.08); padding: 14px 16px; margin-bottom: 12px; border-radius: var(--radius-xl);">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <div>
+                  <strong style="font-size:0.95rem;color:var(--color-purple-300);display:flex;align-items:center;gap:6px;">
+                    <span>📂</span> Upload Your Own CV / Resume to Edit
+                  </strong>
+                  <p style="font-size:0.75rem;color:var(--color-text-secondary);margin:4px 0 0 0;">
+                    Import any <strong>PDF, Word (.docx), or JSON</strong> resume. All contact details, experience, and skills will be parsed into the editor fields.
+                  </p>
+                </div>
+                <button class="btn btn--primary btn--sm" id="btn-upload-cv-hero" style="background:linear-gradient(135deg, #7c3aed, #4f46e5) !important;">
+                  <span>📤</span> Upload CV File
+                </button>
+              </div>
+            </div>
+
             <!-- ATS Analyzer Card -->
             <div class="ats-card">
               <div class="ats-card__header">
@@ -925,6 +956,17 @@
 
           <!-- Right Column: Live A4 Printable Preview -->
           <div class="resume-preview-panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:rgba(255,255,255,0.03);border:1px solid var(--color-border);padding:8px 14px;border-radius:var(--radius-xl);flex-wrap:wrap;gap:8px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="status-dot status-dot--online"></span>
+                <span style="font-size:0.8rem;color:var(--color-text-primary);font-weight:600;">Live A4 Printable Preview</span>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn--primary btn--sm" id="btn-download-preview" style="box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);">
+                  <span>📥</span> Download PDF
+                </button>
+              </div>
+            </div>
             <div class="resume-paper-wrapper">
               <div class="resume-paper" id="resume-paper-preview"></div>
             </div>
@@ -1217,22 +1259,22 @@
   </div>
 
   <!-- ── Scripts ────────────────────────────────────── -->
-  <script src="js/utils.js?v=3.6.0"></script>
-  <script src="js/supabase-client.js?v=3.6.0"></script>
-  <script src="js/store.js?v=3.6.0"></script>
-  <script src="js/settings.js?v=3.6.0"></script>
-  <script src="js/router.js?v=3.6.0"></script>
-  <script src="js/pdf-loader.js?v=3.6.0"></script>
-  <script src="js/viewer.js?v=3.6.0"></script>
-  <script src="js/audio-reader.js?v=3.6.0"></script>
-  <script src="js/chat.js?v=3.6.0"></script>
-  <script src="js/summarize.js?v=3.6.0"></script>
-  <script src="js/study-quiz.js?v=3.6.0"></script>
-  <script src="js/translate.js?v=3.6.0"></script>
-  <script src="js/compare.js?v=3.6.0"></script>
-  <script src="js/annotate.js?v=3.6.0"></script>
-  <script src="js/tools.js?v=3.6.0"></script>
-  <script src="js/resume.js?v=3.6.0"></script>
-  <script src="js/app.js?v=3.6.0"></script>
+  <script src="js/utils.js?v=3.7.0"></script>
+  <script src="js/supabase-client.js?v=3.7.0"></script>
+  <script src="js/store.js?v=3.7.0"></script>
+  <script src="js/settings.js?v=3.7.0"></script>
+  <script src="js/router.js?v=3.7.0"></script>
+  <script src="js/pdf-loader.js?v=3.7.0"></script>
+  <script src="js/viewer.js?v=3.7.0"></script>
+  <script src="js/audio-reader.js?v=3.7.0"></script>
+  <script src="js/chat.js?v=3.7.0"></script>
+  <script src="js/summarize.js?v=3.7.0"></script>
+  <script src="js/study-quiz.js?v=3.7.0"></script>
+  <script src="js/translate.js?v=3.7.0"></script>
+  <script src="js/compare.js?v=3.7.0"></script>
+  <script src="js/annotate.js?v=3.7.0"></script>
+  <script src="js/tools.js?v=3.7.0"></script>
+  <script src="js/resume.js?v=3.7.0"></script>
+  <script src="js/app.js?v=3.7.0"></script>
 </body>
 </html>
