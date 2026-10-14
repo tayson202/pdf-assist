@@ -1,73 +1,80 @@
 /* ============================================================
-   variables.css — Design Tokens
-   PDF Assist — Dark Mode Purple/Blue Theme
+   variables.css — Enterprise Design Tokens
+   Sinai Tech & Enterprise Blueprint Standards
+   Primary Accent: Cyan-500 (#06b6d4) & Teal-600 (#0d9488)
+   Background: #09090b (Dark) / #fafafa (Light)
+   Typography: Lexend (EN) & IBM Plex Sans Arabic (AR)
    ============================================================ */
 
 :root {
-  /* ── Color Palette ───────────────────────────────── */
-  --color-bg-base:        #0a0b0f;
-  --color-bg-surface:     #111318;
-  --color-bg-elevated:    #1a1d26;
-  --color-bg-overlay:     #212535;
+  /* ── Zinc Scale (Deep Dark Foundation) ───────────── */
+  --color-zinc-50:        #fafafa;
+  --color-zinc-100:       #f4f4f5;
+  --color-zinc-150:       #f0f1f4;
+  --color-zinc-200:       #e4e4e7;
+  --color-zinc-250:       #e2e4e9;
+  --color-zinc-300:       #d4d4d8;
+  --color-zinc-400:       #a1a1aa;
+  --color-zinc-450:       #90929e;
+  --color-zinc-500:       #71717a;
+  --color-zinc-550:       #656773;
+  --color-zinc-600:       #52525b;
+  --color-zinc-650:       #42444e;
+  --color-zinc-700:       #3f3f46;
+  --color-zinc-800:       #27272a;
+  --color-zinc-850:       #1b1c22;
+  --color-zinc-900:       #18181b;
+  --color-zinc-950:       #09090b;
 
-  /* Purple Accent */
-  --color-purple-50:      #f3f0ff;
-  --color-purple-100:     #ede9fe;
-  --color-purple-300:     #c4b5fd;
-  --color-purple-400:     #a78bfa;
-  --color-purple-500:     #8b5cf6;
-  --color-purple-600:     #7c3aed;
-  --color-purple-700:     #6d28d9;
-  --color-purple-900:     #2e1065;
+  /* ── Background & Surfaces ───────────────────────── */
+  --color-bg-base:        #09090b; /* Zinc 950 */
+  --color-bg-surface:     #121317;
+  --color-bg-elevated:    #18181b; /* Zinc 900 */
+  --color-bg-overlay:     #27272a; /* Zinc 800 */
 
-  /* Blue Accent */
-  --color-blue-300:       #93c5fd;
-  --color-blue-400:       #60a5fa;
-  --color-blue-500:       #3b82f6;
-  --color-blue-600:       #2563eb;
-
-  /* Cyan Accent */
+  /* ── Primary Accent System (Cyan & Teal) ─────────── */
   --color-cyan-400:       #22d3ee;
-  --color-cyan-500:       #06b6d4;
+  --color-cyan-500:       #06b6d4; /* Primary Brand */
+  --color-cyan-600:       #0891b2;
+  --color-teal-500:       #14b8a6;
+  --color-teal-600:       #0d9488; /* Secondary Endpoint */
+  
+  /* Fallback aliases for legacy classes */
+  --color-purple-400:     #22d3ee;
+  --color-purple-500:     #06b6d4;
+  --color-purple-600:     #0891b2;
+  --color-blue-400:       #38bdf8;
+  --color-blue-500:       #0ea5e9;
 
-  /* Status Colors */
-  --color-success:        #34d399;
-  --color-warning:        #f59e0b;
-  --color-error:          #f87171;
-  --color-info:           #60a5fa;
+  /* ── Status Colors ───────────────────────────────── */
+  --color-success:        #10b981; /* Emerald-500 */
+  --color-warning:        #f59e0b; /* Amber-500 */
+  --color-error:          #ef4444; /* Red-500 */
+  --color-info:           #06b6d4; /* Cyan-500 */
 
-  /* Neutral */
+  /* ── Strict Text Contrast System (No mid-gray washed out text) ── */
   --color-white:          #ffffff;
-  --color-gray-100:       #f3f4f6;
-  --color-gray-200:       #e5e7eb;
-  --color-gray-400:       #9ca3af;
-  --color-gray-500:       #6b7280;
-  --color-gray-600:       #4b5563;
-  --color-gray-700:       #374151;
-  --color-gray-800:       #1f2937;
-  --color-gray-900:       #111827;
+  --color-text-primary:   #fafafa; /* Pure high contrast */
+  --color-text-secondary: #e2e4e9; /* High readability */
+  --color-text-muted:     #a1a1aa; /* Secondary label */
 
-  /* Text */
-  --color-text-primary:   #f0f2ff;
-  --color-text-secondary: #a8adc4;
-  --color-text-muted:     #5c617a;
-
-  /* Borders */
-  --color-border:         rgba(167, 139, 250, 0.12);
-  --color-border-hover:   rgba(167, 139, 250, 0.3);
-  --color-border-focus:   rgba(167, 139, 250, 0.7);
+  /* ── Borders & Glassmorphism ─────────────────────── */
+  --color-border:         rgba(255, 255, 255, 0.08);
+  --color-border-hover:   rgba(6, 182, 212, 0.35);
+  --color-border-focus:   #06b6d4;
 
   /* ── Gradients ───────────────────────────────────── */
-  --gradient-primary:     linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-  --gradient-primary-alt: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
-  --gradient-glow:        linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15));
-  --gradient-hero:        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
-  --gradient-card:        linear-gradient(160deg, rgba(26, 29, 38, 0.9) 0%, rgba(17, 19, 24, 0.95) 100%);
-  --gradient-text:        linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%);
+  --gradient-primary:     linear-gradient(135deg, #06b6d4 0%, #0d9488 100%);
+  --gradient-primary-alt: linear-gradient(135deg, #0891b2 0%, #0f766e 100%);
+  --gradient-glow:        linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(13, 148, 136, 0.15));
+  --gradient-hero:        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(6, 182, 212, 0.14) 0%, transparent 70%);
+  --gradient-card:        linear-gradient(160deg, rgba(24, 24, 27, 0.8) 0%, rgba(9, 9, 11, 0.95) 100%);
+  --gradient-text:        linear-gradient(135deg, #22d3ee 0%, #14b8a6 100%);
 
-  /* ── Typography ──────────────────────────────────── */
-  --font-sans:            'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display:         'Space Grotesk', 'Inter', sans-serif;
+  /* ── Typography (Lexend + IBM Plex Sans Arabic) ──── */
+  --font-sans:            'Lexend', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display:         'Lexend', 'IBM Plex Sans Arabic', sans-serif;
+  --font-arabic:          'IBM Plex Sans Arabic', 'Lexend', sans-serif;
   --font-mono:            'JetBrains Mono', 'Fira Code', monospace;
 
   --text-xs:   0.75rem;    /* 12px */
@@ -113,73 +120,57 @@
   --max-content-width:    1360px;
 
   /* ── Border Radius ───────────────────────────────── */
-  --radius-sm:   4px;
-  --radius-md:   8px;
-  --radius-lg:   12px;
-  --radius-xl:   16px;
-  --radius-2xl:  20px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-2xl:  24px;
   --radius-full: 9999px;
 
-  /* ── Shadows ─────────────────────────────────────── */
-  --shadow-sm:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md:   0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-lg:   0 10px 30px rgba(0,0,0,0.6), 0 4px 10px rgba(0,0,0,0.3);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.25), 0 0 40px rgba(139, 92, 246, 0.1);
-  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.25);
+  /* ── Shadows & Cyan Glows ────────────────────────── */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:   0 4px 14px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  --shadow-lg:   0 12px 30px rgba(0,0,0,0.7), 0 4px 10px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 20px rgba(6, 182, 212, 0.25), 0 0 40px rgba(6, 182, 212, 0.12);
+  --shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.3);
 
-  /* ── Transitions ─────────────────────────────────── */
+  /* ── Transitions (Cubic Bezier Enterprise Ease) ──── */
   --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base:   250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow:   350ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-spring: 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-spring: 400ms cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* ── Z-index ─────────────────────────────────────── */
-  --z-base:    0;
-  --z-above:   10;
-  --z-sidebar: 100;
-  --z-topbar:  200;
-  --z-modal:   300;
-  --z-toast:   400;
+  /* ── The Mobile Trio Z-Index Hierarchy ───────────── */
+  --z-base:       0;
+  --z-above:      10;
+  --z-taskbar:    40;    /* Mobile Taskbar */
+  --z-header:     50;    /* Mobile / Top Header */
+  --z-backdrop:   55;    /* Sidebar Drawer Backdrop */
+  --z-sidebar:    60;    /* Sidebar Drawer */
+  --z-topbar:     70;
+  --z-dropdown:   100;
+  --z-modal:      99999; /* Escaping Stacking Context */
+  --z-toast:      100000;
 }
 
-/* ── Theme Presets ────────────────────────────────── */
-body[data-theme="ocean"] {
-  --color-bg-base: #070d19;
-  --color-bg-surface: #0c1629;
-  --color-bg-elevated: #13223f;
-  --color-bg-overlay: #1b2f57;
-  --gradient-primary: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-  --gradient-text: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
-  --color-purple-500: #0284c7;
-  --color-purple-400: #38bdf8;
-  --color-border: rgba(14, 165, 233, 0.16);
-  --color-border-hover: rgba(14, 165, 233, 0.35);
-}
+/* ── Light Mode System ────────────────────────────── */
+.light-mode, body[data-theme="light"] {
+  --color-bg-base:        #fafafa; /* Zinc 50 */
+  --color-bg-surface:     #ffffff;
+  --color-bg-elevated:    #f4f4f5; /* Zinc 100 */
+  --color-bg-overlay:     #e4e4e7; /* Zinc 200 */
+  
+  --color-text-primary:   #09090b; /* Pure contrast black */
+  --color-text-secondary: #27272a; /* Deep readability */
+  --color-text-muted:     #52525b; /* Zinc 600 */
+  
+  --color-border:         rgba(0, 0, 0, 0.08);
+  --color-border-hover:   rgba(6, 182, 212, 0.4);
+  --color-border-focus:   #06b6d4;
 
-body[data-theme="emerald"] {
-  --color-bg-base: #06110d;
-  --color-bg-surface: #0a1b15;
-  --color-bg-elevated: #0f2a21;
-  --color-bg-overlay: #163c2f;
-  --gradient-primary: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  --gradient-text: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
-  --color-purple-500: #059669;
-  --color-purple-400: #34d399;
-  --color-border: rgba(16, 185, 129, 0.16);
-  --color-border-hover: rgba(16, 185, 129, 0.35);
+  --gradient-card:        linear-gradient(160deg, #ffffff 0%, #f4f4f5 100%);
+  --gradient-hero:        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+  --shadow-sm:            0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:            0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:            0 12px 24px rgba(0,0,0,0.12);
 }
-
-body[data-theme="light"] {
-  --color-bg-base: #f8fafc;
-  --color-bg-surface: #ffffff;
-  --color-bg-elevated: #f1f5f9;
-  --color-bg-overlay: #e2e8f0;
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
-  --gradient-card: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
-  --gradient-hero: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
-  --color-border: rgba(0, 0, 0, 0.1);
-  --color-border-hover: rgba(139, 92, 246, 0.3);
-}
-

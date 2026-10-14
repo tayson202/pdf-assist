@@ -12,6 +12,7 @@ from app.core.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token
 from app.api.deps import get_current_user
 from app.models.user import User
+from app.core.rate_limiter import rate_limit_auth
 from app.schemas.auth import (
     UserRegisterRequest,
     UserLoginRequest,
@@ -63,6 +64,7 @@ async def register_user(
 async def login_user(
     payload: UserLoginRequest,
     db: AsyncSession = Depends(get_db),
+    _rate_limit: None = Depends(rate_limit_auth),
 ) -> TokenResponse:
     result = await db.execute(select(User).where(User.email == payload.email.lower()))
     user = result.scalar_one_or_none()

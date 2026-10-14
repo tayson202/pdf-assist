@@ -42,6 +42,31 @@ async def lifespan(app: FastAPI):
     logger.info("Application shutdown complete.")
 
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """
+    Enterprise HTTP Security Headers Middleware per Blueprint 4:
+    - X-Content-Type-Options: nosniff
+    - X-Frame-Options: DENY
+    - X-XSS-Protection: 1; mode=block
+    - Referrer-Policy: strict-origin-when-cross-origin
+    - Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+    """
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        if not settings.DEBUG:
+            response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+        return response
+
+
 def create_application() -> FastAPI:
     """FastAPI application factory."""
     app = FastAPI(
@@ -53,6 +78,9 @@ def create_application() -> FastAPI:
         redoc_url=f"{settings.API_V1_STR}/redoc",
         lifespan=lifespan,
     )
+
+    # Security Headers Middleware
+    app.add_middleware(SecurityHeadersMiddleware)
 
     # CORS Middleware
     app.add_middleware(

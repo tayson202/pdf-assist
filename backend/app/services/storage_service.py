@@ -1,13 +1,16 @@
 """
 Storage Service
-Abstracts file persistence across local filesystem and S3/MinIO object storage.
+Abstracts file persistence across local filesystem, S3/MinIO, and Supabase Object Storage.
 """
 
 import os
 from pathlib import Path
 from typing import Optional
-from app.core.config import settings
+import urllib.request
+import urllib.parse
+import json
 import logging
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +33,24 @@ class StorageService:
             with open(file_path, "wb") as f:
                 f.write(content)
             return storage_key
+
+        elif self.backend == "supabase":
+            bucket = urllib.parse.quote(settings.SUPABASE_BUCKET_NAME)
+            key = urllib.parse.quote(storage_key)
+            url = f"{settings.SUPABASE_URL}/storage/v1/object/{bucket}/{key}"
+            headers = {
+                "apikey": settings.SUPABASE_SERVICE_ROLE_KEY,
+                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
+                "Content-Type": "application/pdf",
+                "x-upsert": "true",
+            }
+            req = urllib.request.Request(url, data=content, headers=headers, method="POST")
+            with urllib.request.urlopen(req) as resp:
+                if resp.status in (200, 201):
+                    logger.info("Saved %s to Supabase bucket '%s'", storage_key, settings.SUPABASE_BUCKET_NAME)
+                    return storage_key
+                raise RuntimeError(f"Supabase storage upload failed with status {resp.status}")
+
         else:
             # S3 / MinIO backend using boto3
             import boto3
@@ -60,6 +81,23 @@ class StorageService:
                 return None
             with open(file_path, "rb") as f:
                 return f.read()
+
+        elif self.backend == "supabase":
+            bucket = urllib.parse.quote(settings.SUPABASE_BUCKET_NAME)
+            key = urllib.parse.quote(storage_key)
+            url = f"{settings.SUPABASE_URL}/storage/v1/object/{bucket}/{key}"
+            headers = {
+                "apikey": settings.SUPABASE_SERVICE_ROLE_KEY,
+                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
+            }
+            req = urllib.request.Request(url, headers=headers)
+            try:
+                with urllib.request.urlopen(req) as resp:
+                    return resp.read()
+            except urllib.error.HTTPError as e:
+                logger.error("Supabase get_file failed: %s", e)
+                return None
+
         else:
             import boto3
             s3_client = boto3.client(
@@ -84,6 +122,20 @@ class StorageService:
                 if file_path.exists():
                     file_path.unlink()
                 return True
+
+            elif self.backend == "supabase":
+                bucket = urllib.parse.quote(settings.SUPABASE_BUCKET_NAME)
+                url = f"{settings.SUPABASE_URL}/storage/v1/object/{bucket}"
+                headers = {
+                    "apikey": settings.SUPABASE_SERVICE_ROLE_KEY,
+                    "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
+                    "Content-Type": "application/json",
+                }
+                data = json.dumps({"prefixes": [storage_key]}).encode()
+                req = urllib.request.Request(url, data=data, headers=headers, method="DELETE")
+                with urllib.request.urlopen(req) as resp:
+                    return resp.status in (200, 204)
+
             else:
                 import boto3
                 s3_client = boto3.client(
@@ -103,10 +155,14 @@ class StorageService:
 
     def generate_download_url(self, storage_key: str, expires_in: int = 900) -> str:
         """
-        Generates pre-signed URL (or direct gateway URL for local storage).
+        Generates pre-signed URL (or direct gateway URL for local / Supabase storage).
         """
         if self.backend == "local":
             return f"{settings.API_V1_STR}/documents/download/{storage_key}"
+        elif self.backend == "supabase":
+            bucket = urllib.parse.quote(settings.SUPABASE_BUCKET_NAME)
+            key = urllib.parse.quote(storage_key)
+            return f"{settings.SUPABASE_URL}/storage/v1/object/public/{bucket}/{key}"
         else:
             import boto3
             s3_client = boto3.client(

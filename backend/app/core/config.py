@@ -49,14 +49,19 @@ class Settings(BaseSettings):
     # Test database URL fallback for lightweight isolated tests
     TEST_DATABASE_URL: str = "sqlite+aiosqlite:///:memory:"
 
-    # Object Storage (Local or S3 / MinIO)
-    STORAGE_BACKEND: str = "local"  # "local" or "s3"
+    # Object Storage (Local, S3 / MinIO, or Supabase)
+    STORAGE_BACKEND: str = "supabase"  # "local", "s3", or "supabase"
     LOCAL_STORAGE_PATH: str = "./data/storage"
     S3_ENDPOINT_URL: str = "http://localhost:9000"
     S3_ACCESS_KEY_ID: str = "minioadmin"
     S3_SECRET_ACCESS_KEY: str = "minioadmin"
     S3_BUCKET_NAME: str = "pdf-assist-documents"
     S3_REGION: str = "us-east-1"
+    
+    # Supabase Native Storage
+    SUPABASE_URL: str = "https://tjpvtfxlunlzglucjyih.supabase.co"
+    SUPABASE_SERVICE_ROLE_KEY: str = "your-supabase-service-role-key"
+    SUPABASE_BUCKET_NAME: str = "files assist"
 
     # AI & Embeddings Configuration
     OPENAI_API_KEY: str = "sk-placeholder-for-dev"

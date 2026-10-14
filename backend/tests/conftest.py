@@ -12,7 +12,11 @@ from sqlalchemy import JSON, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from pgvector.sqlalchemy import Vector
 from app.core.database import Base, get_db
+from app.core.config import settings
 from app.main import app
+
+# Ensure environment is set to test
+settings.ENVIRONMENT = "test"
 
 # In-memory test SQLite URL
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"

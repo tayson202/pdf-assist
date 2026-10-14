@@ -1,5 +1,6 @@
 /* ============================================================
-   reset.css — Normalize & CSS Reset
+   reset.css — Normalize & Enterprise CSS Standards
+   Layout stability, Scrollbar styling, High-contrast text & A11y
    ============================================================ */
 
 *, *::before, *::after {
@@ -13,15 +14,28 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overflow-y: scroll;
+  scrollbar-gutter: stable; /* Prevents layout shift across routes */
 }
 
 body {
-  min-height: 100vh;
+  min-height: calc(100vh + 1px);
   line-height: var(--leading-normal);
   font-family: var(--font-sans);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* RTL line height balance */
+[dir="rtl"] p,
+[dir="rtl"] .prose,
+[dir="rtl"] article {
+  line-height: 1.65;
 }
 
 img, svg, video, canvas, audio, iframe, embed, object {
@@ -62,6 +76,15 @@ input, textarea, select {
   background: none;
 }
 
+/* Prevent browser autofill from breaking dark mode */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--color-text-primary) !important;
+  transition: background-color 50000s ease-in-out 0s;
+}
+
 fieldset {
   border: none;
 }
@@ -82,7 +105,7 @@ input[type=number] { -moz-appearance: textfield; }
 /* Hidden attribute */
 [hidden] { display: none !important; }
 
-/* Visually hidden but accessible */
+/* Visually hidden but accessible for screen readers */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -95,9 +118,38 @@ input[type=number] { -moz-appearance: textfield; }
   border-width: 0;
 }
 
-/* Focus ring */
-:focus-visible {
-  outline: 2px solid var(--color-purple-400);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+/* ── Enterprise Focus Ring (2px Cyan #06b6d4) ──────── */
+*:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 2px #06b6d4 !important;
 }
+
+/* ── Custom Cyan Scrollbar ─────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(9, 9, 11, 0.4);
+}
+
+.light-mode ::-webkit-scrollbar-track {
+  background: rgba(240, 241, 244, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3); /* 30% Cyan */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.65); /* 65% Cyan */
+}
+
+/* Utility to hide scrollbar while keeping scrollable */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
