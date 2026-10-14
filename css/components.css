@@ -112,6 +112,20 @@
   font-weight: var(--font-extrabold);
   line-height: var(--leading-tight);
   max-width: 700px;
+  position: relative;
+}
+.hero__title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 440px;
+  height: 180px;
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 70%);
+  filter: blur(50px);
+  z-index: -1;
+  pointer-events: none;
 }
 .hero__subtitle {
   font-size: var(--text-lg);

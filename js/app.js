@@ -40,6 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.pdfLoader.loadDemoPdf(true);
   }
 
+  // Update topbar document badge
+  window.appStore.subscribe('currentPdf', (pdf) => {
+    const docNameEl = document.getElementById('topbar-doc-name');
+    if (docNameEl && pdf) {
+      docNameEl.textContent = `${pdf.name} (${pdf.pageCount || 1} pgs)`;
+    }
+  });
+
   // Suggestion buttons in Chat
   document.querySelectorAll('.chat-suggestion-btn').forEach(btn => {
     btn.addEventListener('click', () => {

@@ -109,8 +109,8 @@
   /* ── Sizing ──────────────────────────────────────── */
   --sidebar-width:        260px;
   --sidebar-collapsed:    72px;
-  --topbar-height:        56px;
-  --max-content-width:    1200px;
+  --topbar-height:        60px;
+  --max-content-width:    1360px;
 
   /* ── Border Radius ───────────────────────────────── */
   --radius-sm:   4px;

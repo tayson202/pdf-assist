@@ -64,3 +64,4 @@ class Router {
 }
 
 window.appRouter = new Router();
+window.router = window.appRouter;
