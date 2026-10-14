@@ -114,6 +114,15 @@ class Viewer {
     this.render();
   }
 
+  goToPage(pageNum) {
+    const target = parseInt(pageNum, 10);
+    if (!isNaN(target)) {
+      this.currentPage = Math.min(Math.max(1, target), this.totalPages || 1);
+      this.render();
+      Utils.showToast(`Viewing Page ${this.currentPage} of ${this.totalPages}`, 'info');
+    }
+  }
+
   handleSearch() {
     const query = (this.searchInput ? this.searchInput.value : '').trim().toLowerCase();
     if (!query) {

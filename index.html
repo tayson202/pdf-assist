@@ -28,15 +28,17 @@
   </script>
 
   <!-- Core Styles -->
-  <link rel="stylesheet" href="css/variables.css?v=3.0.0" />
-  <link rel="stylesheet" href="css/reset.css?v=3.0.0" />
-  <link rel="stylesheet" href="css/base.css?v=3.0.0" />
-  <link rel="stylesheet" href="css/layout.css?v=3.0.0" />
-  <link rel="stylesheet" href="css/components.css?v=3.0.0" />
-  <link rel="stylesheet" href="css/animations.css?v=3.0.0" />
-  <link rel="stylesheet" href="css/responsive.css?v=3.0.0" />
+  <link rel="stylesheet" href="css/variables.css?v=3.2.0" />
+  <link rel="stylesheet" href="css/reset.css?v=3.2.0" />
+  <link rel="stylesheet" href="css/base.css?v=3.2.0" />
+  <link rel="stylesheet" href="css/layout.css?v=3.2.0" />
+  <link rel="stylesheet" href="css/components.css?v=3.2.0" />
+  <link rel="stylesheet" href="css/animations.css?v=3.2.0" />
+  <link rel="stylesheet" href="css/responsive.css?v=3.2.0" />
 
   <!-- Favicon placeholder -->
+  <!-- Supabase JS Client CDN (Enterprise Storage Integration) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- PDF.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
@@ -151,9 +153,13 @@
           <span></span><span></span><span></span>
         </button>
         <span class="topbar__title">PDFAssist</span>
-        <div class="topbar__doc-badge" id="topbar-doc-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(139,92,246,0.12);border:1px solid rgba(167,139,250,0.25);padding:4px 12px;border-radius:999px;font-size:0.75rem;color:var(--color-purple-300);">
+        <div class="topbar__doc-badge" id="topbar-doc-badge">
           <span>📄</span>
-          <span id="topbar-doc-name" style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Artificial_Intelligence_Overview_2026.pdf</span>
+          <span id="topbar-doc-name">Artificial_Intelligence_Overview_2026.pdf</span>
+        </div>
+        <div class="topbar__cloud-pill" id="topbar-cloud-status" title="Connected to Supabase Storage (files assist)">
+          <span class="status-dot status-dot--online"></span>
+          <span>Cloud: <strong>files assist</strong></span>
         </div>
       </div>
       <div class="topbar__actions">
@@ -163,9 +169,9 @@
           <option value="emerald">🌲 Emerald Matrix</option>
           <option value="light">☀️ Crisp Light</option>
         </select>
-        <div class="backend-badge" id="backend-status-badge" title="FastAPI Engine (http://127.0.0.1:8000)">
+        <div class="backend-badge" id="backend-status-badge" title="AI Engine Ready">
           <span class="backend-badge__dot"></span>
-          <span id="backend-status-text">Backend Connected</span>
+          <span id="backend-status-text">AI Ready</span>
         </div>
         <button class="btn btn--primary btn--sm" id="btn-upload-topbar" aria-label="Upload PDF" style="display:inline-flex;align-items:center;gap:6px;">
           <span>📤</span> Upload PDF
@@ -1037,20 +1043,21 @@
   </div>
 
   <!-- ── Scripts ────────────────────────────────────── -->
-  <script src="js/utils.js?v=3.0.0"></script>
-  <script src="js/store.js?v=3.0.0"></script>
-  <script src="js/router.js?v=3.0.0"></script>
-  <script src="js/pdf-loader.js?v=3.0.0"></script>
-  <script src="js/viewer.js?v=3.0.0"></script>
-  <script src="js/audio-reader.js?v=3.0.0"></script>
-  <script src="js/chat.js?v=3.0.0"></script>
-  <script src="js/summarize.js?v=3.0.0"></script>
-  <script src="js/study-quiz.js?v=3.0.0"></script>
-  <script src="js/translate.js?v=3.0.0"></script>
-  <script src="js/compare.js?v=3.0.0"></script>
-  <script src="js/annotate.js?v=3.0.0"></script>
-  <script src="js/tools.js?v=3.0.0"></script>
-  <script src="js/resume.js?v=3.0.0"></script>
-  <script src="js/app.js?v=3.0.0"></script>
+  <script src="js/utils.js?v=3.2.0"></script>
+  <script src="js/supabase-client.js?v=3.2.0"></script>
+  <script src="js/store.js?v=3.2.0"></script>
+  <script src="js/router.js?v=3.2.0"></script>
+  <script src="js/pdf-loader.js?v=3.2.0"></script>
+  <script src="js/viewer.js?v=3.2.0"></script>
+  <script src="js/audio-reader.js?v=3.2.0"></script>
+  <script src="js/chat.js?v=3.2.0"></script>
+  <script src="js/summarize.js?v=3.2.0"></script>
+  <script src="js/study-quiz.js?v=3.2.0"></script>
+  <script src="js/translate.js?v=3.2.0"></script>
+  <script src="js/compare.js?v=3.2.0"></script>
+  <script src="js/annotate.js?v=3.2.0"></script>
+  <script src="js/tools.js?v=3.2.0"></script>
+  <script src="js/resume.js?v=3.2.0"></script>
+  <script src="js/app.js?v=3.2.0"></script>
 </body>
 </html>

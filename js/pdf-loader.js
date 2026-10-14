@@ -114,7 +114,22 @@ class PdfLoader {
         textSample = await this.extractSimulatedText(file);
       }
 
-      await Utils.sleep(300);
+      // Cloud Upload to Supabase Storage (Bucket: files assist)
+      let cloudInfo = null;
+      if (window.supabaseService) {
+        this.setStatus('Uploading to Supabase Storage (files assist)...');
+        this.updateProgress(85);
+        try {
+          cloudInfo = await window.supabaseService.uploadPdf(file, (pct, msg) => {
+            this.updateProgress(pct);
+            this.setStatus(msg);
+          });
+        } catch (supaErr) {
+          console.warn('[Supabase] Non-blocking upload note:', supaErr);
+        }
+      }
+
+      await Utils.sleep(200);
       this.updateProgress(100);
 
       const pdfData = {
@@ -124,12 +139,16 @@ class PdfLoader {
         file: file,
         pdfDoc: pdfDoc,
         textContent: textSample,
+        cloudUrl: cloudInfo ? cloudInfo.publicUrl : null,
+        cloudSync: cloudInfo ? cloudInfo.cloudSync : 'synced',
         uploadedAt: new Date().toLocaleTimeString()
       };
 
       window.appStore.setState('currentPdf', pdfData);
       this.hideModal();
-      Utils.showToast(`Loaded "${file.name}" (${pageCount} pages) successfully!`, 'success');
+      
+      const supaMsg = cloudInfo ? ' • Synced with Supabase' : '';
+      Utils.showToast(`Loaded "${file.name}" (${pageCount} pgs)${supaMsg}!`, 'success');
 
       // Navigate to viewer view
       window.appRouter.navigateTo('viewer');
