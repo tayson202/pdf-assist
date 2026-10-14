@@ -9,9 +9,34 @@ const Utils = {
    * @param {'success'|'error'|'info'|'warning'} type 
    * @param {number} duration 
    */
-  showToast(message, type = 'info', duration = 3500) {
+  showToast(message, type = 'info', duration = 1000) {
+    if (!message) return;
+
+    // Filter to ONLY essential user actions: download, upload, edit, import, save, or errors
+    const lower = message.toLowerCase();
+    const isEssentialAction = 
+      type === 'error' ||
+      lower.includes('download') ||
+      lower.includes('upload') ||
+      lower.includes('import') ||
+      lower.includes('export') ||
+      lower.includes('saved') ||
+      lower.includes('edit') ||
+      lower.includes('split') ||
+      lower.includes('merge');
+
+    if (!isEssentialAction) {
+      // Discard non-essential notifications (e.g. page navigation, shuffle, quiz points, greetings)
+      return;
+    }
+
     const container = document.getElementById('toast-container');
     if (!container) return;
+
+    // Remove any previous toast immediately to prevent clutter
+    while (container.firstChild) {
+      container.firstChild.remove();
+    }
 
     const toast = document.createElement('div');
     toast.className = `toast toast--${type}`;
@@ -30,17 +55,19 @@ const Utils = {
     `;
 
     const closeBtn = toast.querySelector('.toast__close');
+    let removed = false;
     const removeToast = () => {
+      if (removed) return;
+      removed = true;
       toast.classList.add('toast--hide');
-      setTimeout(() => toast.remove(), 250);
+      setTimeout(() => toast.remove(), 200);
     };
 
     closeBtn.addEventListener('click', removeToast);
     container.appendChild(toast);
 
-    if (duration > 0) {
-      setTimeout(removeToast, duration);
-    }
+    // Auto-dismiss after exactly 1 second (1000ms)
+    setTimeout(removeToast, 1000);
   },
 
   /**

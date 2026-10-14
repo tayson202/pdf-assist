@@ -322,7 +322,7 @@ class Viewer {
     // Metadata
     ctx.fillStyle = '#6b7280';
     ctx.font = '12px Inter, sans-serif';
-    ctx.fillText(`Page ${this.currentPage} of ${this.totalPages} • Generated with PDF Assist`, 40, 95);
+    ctx.fillText(`Page ${this.currentPage} of ${this.totalPages} • OmniDoc & Resume`, 40, 95);
 
     // Simulated content paragraphs
     ctx.fillStyle = '#374151';

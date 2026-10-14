@@ -107,11 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Welcome greeting toast
-  setTimeout(() => {
-    Utils.showToast('Welcome to PDF Assist! Upload a PDF or click "Try Demo" to get started.', 'info', 4000);
-  }, 400);
-
   // Probe FastAPI Backend Health
   async function checkBackendHealth() {
     const badge = document.getElementById('backend-status-badge');
@@ -136,6 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   checkBackendHealth();
 
-  console.log('PDF Assist initialized successfully.');
+  console.log('OmniDoc & Resume initialized successfully.');
 });
 
