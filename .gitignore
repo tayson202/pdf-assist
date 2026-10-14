@@ -28,6 +28,7 @@ wheels/
 .coverage
 htmlcov/
 backend/data/storage/
+storage_test/
 
 # Environment variables
 .env

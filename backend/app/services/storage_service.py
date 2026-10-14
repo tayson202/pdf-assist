@@ -16,11 +16,15 @@ logger = logging.getLogger(__name__)
 
 
 class StorageService:
-    def __init__(self):
-        self.backend = settings.STORAGE_BACKEND
-        if self.backend == "local":
-            self.base_path = Path(settings.LOCAL_STORAGE_PATH)
-            self.base_path.mkdir(parents=True, exist_ok=True)
+    @property
+    def backend(self) -> str:
+        return settings.STORAGE_BACKEND
+
+    @property
+    def base_path(self) -> Path:
+        p = Path(settings.LOCAL_STORAGE_PATH)
+        p.mkdir(parents=True, exist_ok=True)
+        return p
 
     async def save_file(self, content: bytes, storage_key: str) -> str:
         """

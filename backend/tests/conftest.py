@@ -17,6 +17,8 @@ from app.main import app
 
 # Ensure environment is set to test
 settings.ENVIRONMENT = "test"
+settings.STORAGE_BACKEND = "local"
+settings.LOCAL_STORAGE_PATH = "./storage_test"
 
 # In-memory test SQLite URL
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
