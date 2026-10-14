@@ -370,9 +370,11 @@
         <div class="chat-input-area" role="region" aria-label="Chat input">
           <div class="chat-suggestions" id="chat-suggestions" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
             <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="What is the main summary of this document?">💡 Summarize document</button>
-            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="What are the key milestones in Section 2?">🎯 Key milestones</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="Explain the most complex concept in this document simply using the Feynman technique.">🧠 Feynman explanation</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="Quiz me on this document with 3 practice exam questions and explanations.">📝 Quiz me (3 questions)</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="Generate a high-yield exam cheat sheet with key formulas and definitions.">📋 Study cheat sheet</button>
             <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="What risks and bottlenecks are analyzed?">⚠️ Risks &amp; Mitigations</button>
-            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="How many pages are in this PDF?">📄 Page count</button>
+            <button class="btn btn--ghost btn--sm chat-suggestion-btn" data-query="How many pages are in this document?">📄 Page count</button>
           </div>
           <div class="chat-input-wrapper">
             <textarea
@@ -429,21 +431,26 @@
     <section class="page" id="page-study" aria-label="Study and Quiz" hidden>
       <div class="page-header">
         <div>
-          <h1 class="page-title">Study &amp; AI Quiz</h1>
-          <p class="page-subtitle">Master document concepts with interactive 3D flashcards and smart AI quizzes</p>
+          <h1 class="page-title">AI Study Suite</h1>
+          <p class="page-subtitle">Master document concepts with 3D flashcards, smart practice exams, high-yield cheat sheets, and the Feynman technique</p>
         </div>
       </div>
 
-      <div class="study-tabs" style="display:flex;gap:var(--space-2);margin-bottom:var(--space-6);border-bottom:1px solid var(--color-border);padding-bottom:var(--space-2);">
+      <div class="study-tabs" style="display:flex;gap:var(--space-2);margin-bottom:var(--space-6);border-bottom:1px solid var(--color-border);padding-bottom:var(--space-2);flex-wrap:wrap;">
         <button class="btn btn--sm btn--active" id="tab-flashcards">🗂️ 3D Flashcards</button>
-        <button class="btn btn--sm btn--ghost" id="tab-quiz">📝 Multiple-Choice Quiz</button>
+        <button class="btn btn--sm btn--ghost" id="tab-quiz">📝 Practice Exam &amp; Quiz</button>
+        <button class="btn btn--sm btn--ghost" id="tab-cheatsheet">📋 Smart Study Guide</button>
+        <button class="btn btn--sm btn--ghost" id="tab-feynman">🧠 Feynman Concept Explainer</button>
       </div>
 
-      <!-- Flashcards View -->
+      <!-- 1. Flashcards View -->
       <div id="study-flashcards-view">
-        <div style="display:flex;justify-content:space-between;align-items:center;max-width:650px;margin:0 auto var(--space-4);">
+        <div style="display:flex;justify-content:space-between;align-items:center;max-width:650px;margin:0 auto var(--space-4);flex-wrap:wrap;gap:8px;">
           <span class="badge badge--primary" id="card-counter">Card 1 of 5</span>
-          <button class="btn btn--ghost btn--sm" id="btn-shuffle-cards">🔀 Shuffle</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn--ghost btn--sm" id="btn-shuffle-cards">🔀 Shuffle</button>
+            <button class="btn btn--ghost btn--sm" id="btn-regen-flashcards">🔄 Regenerate</button>
+          </div>
         </div>
 
         <div class="flashcard-stage">
@@ -468,7 +475,7 @@
               <p id="card-answer" style="font-size:1.1rem;color:var(--color-text-primary);line-height:1.6;text-align:center;">
                 Loading answer...
               </p>
-              <p style="text-align:center;font-size:0.8rem;color:var(--color-purple-300);margin:0;">
+              <p style="text-align:center;font-size:0.8rem;color:var(--color-purple-300);margin:0;" id="card-back-citation">
                 📄 Citation verified from document text
               </p>
             </div>
@@ -482,13 +489,76 @@
         </div>
       </div>
 
-      <!-- Quiz View -->
+      <!-- 2. Practice Exam & Quiz View -->
       <div id="study-quiz-view" hidden>
-        <div style="display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:0 auto var(--space-4);">
+        <div style="display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:0 auto var(--space-4);flex-wrap:wrap;gap:8px;">
           <span class="badge badge--success" id="quiz-score-display" style="font-size:0.9rem;padding:6px 14px;">Score: 0 / 4</span>
-          <button class="btn btn--ghost btn--sm" id="btn-regen-quiz">🔄 Regenerate Quiz</button>
+          <div style="display:flex;gap:8px;">
+            <select id="quiz-difficulty-select" class="form-select" style="padding:4px 8px;font-size:0.8rem;height:auto;width:auto;">
+              <option value="all">🎯 All Topics</option>
+              <option value="easy">🟢 Core Definitions</option>
+              <option value="hard">🔴 Deep Analysis</option>
+            </select>
+            <button class="btn btn--ghost btn--sm" id="btn-regen-quiz">🔄 Regenerate Quiz</button>
+          </div>
         </div>
         <div id="quiz-questions-list" style="display:flex;flex-direction:column;gap:var(--space-5);max-width:760px;margin:0 auto;"></div>
+      </div>
+
+      <!-- 3. Smart Study Guide & Cheat Sheet View -->
+      <div id="study-cheatsheet-view" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;max-width:850px;margin:0 auto var(--space-4);flex-wrap:wrap;gap:8px;">
+          <div>
+            <span class="badge badge--primary" id="cheatsheet-doc-badge">Document Overview</span>
+            <span style="font-size:0.85rem;color:var(--color-text-muted);margin-left:8px;">High-Yield Exam Prep</span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn--ghost btn--sm" id="btn-copy-cheatsheet">📋 Copy Study Guide</button>
+            <button class="btn btn--ghost btn--sm" id="btn-download-cheatsheet">💾 Download (.md)</button>
+            <button class="btn btn--primary btn--sm" id="btn-regen-cheatsheet">🔄 Refresh</button>
+          </div>
+        </div>
+        <div id="cheatsheet-content" class="card" style="max-width:850px;margin:0 auto;line-height:1.7;">
+          <div class="empty-state">
+            <div class="empty-state__icon" aria-hidden="true">📋</div>
+            <p class="empty-state__label">Generating comprehensive study guide...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Feynman Concept Explainer View -->
+      <div id="study-feynman-view" hidden>
+        <div class="card" style="max-width:850px;margin:0 auto var(--space-5);">
+          <h2 class="card__title" style="margin-bottom:8px;font-size:1.1rem;color:var(--color-purple-300);">🧠 Feynman Technique: Explain Like I'm 5</h2>
+          <p style="font-size:0.85rem;color:var(--color-text-secondary);margin-bottom:var(--space-4);">
+            Richard Feynman's secret to true mastery: if you can't explain it in simple everyday language, you don't understand it yet. Pick or type any concept from your document to deconstruct it instantly!
+          </p>
+
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--space-3);" id="feynman-concept-chips"></div>
+
+          <div class="form-group" style="margin-bottom:var(--space-3);">
+            <label class="form-label" for="feynman-concept-input">Concept or Sentence to Deconstruct</label>
+            <input type="text" class="form-input" id="feynman-concept-input" placeholder="e.g. Retrieval-Augmented Generation, Transformer Attention, Liquidity Ratio..." />
+          </div>
+
+          <div style="display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <label class="form-label" for="feynman-depth" style="margin-bottom:4px;">Explanation Style</label>
+              <select class="form-select" id="feynman-depth" style="padding:6px 12px;font-size:0.85rem;">
+                <option value="eli5">👶 Explain Like I'm 5 (Intuitive Everyday Analogy)</option>
+                <option value="college">🎓 Academic / Exam Prep Deep Dive</option>
+                <option value="bullets">⚡ Step-by-Step Mechanism Breakdown</option>
+              </select>
+            </div>
+            <button class="btn btn--primary" id="btn-explain-feynman" style="margin-top:22px;">
+              ✨ Explain Simply
+            </button>
+          </div>
+        </div>
+
+        <div id="feynman-result" class="card" style="max-width:850px;margin:0 auto;" hidden>
+          <!-- Dynamic Feynman Output -->
+        </div>
       </div>
     </section>
 
@@ -634,104 +704,6 @@
       </div>
     </section>
 
-    <!-- STUDY & QUIZ PAGE -->
-    <section class="page" id="page-study" aria-label="Study and Quiz" hidden>
-      <div class="page-header">
-        <h1 class="page-title">Study &amp; AI Quiz</h1>
-        <p class="page-subtitle">Master document concepts with 3D flashcards and automated quizzes</p>
-      </div>
-      <div class="study-layout">
-        <div class="study-tabs" role="tablist">
-          <button class="btn btn--ghost btn--active" id="tab-flashcards">🗂️ 3D Flashcards</button>
-          <button class="btn btn--ghost" id="tab-quiz">📝 Interactive Quiz</button>
-        </div>
-
-        <!-- Flashcards View -->
-        <div id="study-flashcards-view">
-          <div class="flashcard-stage" id="flashcard-stage">
-            <div class="flashcard" id="flashcard">
-              <div class="flashcard-face flashcard-front">
-                <span class="flashcard-tag" id="card-tag">Concept • Page 1</span>
-                <div class="flashcard-prompt" id="card-prompt">Upload a PDF or try the demo to generate flashcards.</div>
-                <span class="flashcard-hint">💡 Click card or press Space to flip</span>
-              </div>
-              <div class="flashcard-face flashcard-back">
-                <span class="flashcard-tag">Verified Citation</span>
-                <div class="flashcard-prompt" id="card-answer" style="font-size:1.1rem;font-weight:400;">Answer will appear here.</div>
-                <span class="flashcard-hint">💡 Click card to flip back</span>
-              </div>
-            </div>
-          </div>
-          <div class="flashcard-controls">
-            <button class="btn btn--ghost btn--icon" id="btn-prev-card" title="Previous Card">‹</button>
-            <span id="card-counter" style="font-size:0.875rem;color:var(--color-text-secondary);font-weight:500;">Card 1 of 5</span>
-            <button class="btn btn--ghost btn--icon" id="btn-next-card" title="Next Card">›</button>
-            <button class="btn btn--primary btn--sm" id="btn-flip-card">🔄 Flip Card</button>
-            <button class="btn btn--ghost btn--sm" id="btn-shuffle-cards">🔀 Shuffle</button>
-          </div>
-        </div>
-
-        <!-- Quiz View -->
-        <div id="study-quiz-view" hidden>
-          <div class="quiz-container">
-            <div class="quiz-progress-bar">
-              <span id="quiz-score-display" style="font-weight:600;color:var(--color-purple-300);">Score: 0 / 4</span>
-              <button class="btn btn--ghost btn--sm" id="btn-regen-quiz">🔄 Regenerate Quiz</button>
-            </div>
-            <div id="quiz-questions-list" class="quiz-options"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TRANSLATE PAGE -->
-    <section class="page" id="page-translate" aria-label="Translate" hidden>
-      <div class="page-header">
-        <h1 class="page-title">Multi-Language Translate</h1>
-        <p class="page-subtitle">Instant neural translation with formatted citations</p>
-      </div>
-      <div class="translate-layout">
-        <div class="card">
-          <h2 class="card__title">Translation Settings</h2>
-          <div class="form-group">
-            <label class="form-label" for="translate-lang">Target Language</label>
-            <select class="form-select" id="translate-lang">
-              <option value="es" selected>🇪🇸 Spanish (Español)</option>
-              <option value="fr">🇫🇷 French (Français)</option>
-              <option value="de">🇩🇪 German (Deutsch)</option>
-              <option value="ar">🇸🇦 Arabic (العربية)</option>
-              <option value="ja">🇯🇵 Japanese (日本語)</option>
-              <option value="zh">🇨🇳 Chinese (中文)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="translate-scope">Translation Scope</label>
-            <select class="form-select" id="translate-scope">
-              <option value="summary" selected>Executive Summary &amp; Key Points</option>
-              <option value="overview">Overview &amp; Methodologies</option>
-              <option value="full">Comprehensive Document Highlights</option>
-            </select>
-          </div>
-          <button class="btn btn--primary btn--full" id="btn-translate-action">🌐 Translate Document</button>
-        </div>
-
-        <div class="translate-output-card">
-          <div class="translate-header">
-            <span style="font-weight:600;font-size:0.95rem;color:var(--color-text-primary);">Translated Intelligence</span>
-            <div style="display:flex;gap:var(--space-2);">
-              <button class="btn btn--ghost btn--sm" id="btn-copy-translation">📋 Copy</button>
-              <button class="btn btn--ghost btn--sm" id="btn-download-translation">💾 Markdown</button>
-            </div>
-          </div>
-          <div id="translate-output-text" style="flex:1;">
-            <div class="empty-state">
-              <div class="empty-state__icon" aria-hidden="true">🌐</div>
-              <p class="empty-state__label">Select language and click "Translate Document"</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- COMPARE PAGE -->
     <section class="page" id="page-compare" aria-label="Compare PDFs" hidden>
