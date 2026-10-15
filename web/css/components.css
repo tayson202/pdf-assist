@@ -838,20 +838,30 @@
 .viewer-audio-bar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 .audio-status-pill {
   font-size: var(--text-xs);
-  padding: 2px 8px;
+  font-weight: 500;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
   background: rgba(139, 92, 246, 0.15);
   color: #c4b5fd;
   border: 1px solid rgba(139, 92, 246, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 .audio-status-pill.playing {
   background: rgba(16, 185, 129, 0.15);
   color: #6ee7b7;
   border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+  animation: audioPulse 2s infinite ease-in-out;
+}
+@keyframes audioPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.98); }
 }
 .viewer-search-box {
   display: flex;

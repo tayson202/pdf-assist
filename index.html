@@ -316,8 +316,14 @@
         <!-- Audio & Search Sub-Bar -->
         <div class="viewer-top-tools">
           <div class="viewer-audio-bar">
-            <button class="btn btn--ghost btn--sm" id="btn-audio-play">▶ Read Aloud</button>
-            <select class="form-select form-select--sm" id="audio-speed" style="padding:4px 8px;font-size:0.75rem;border-radius:var(--radius-md);">
+            <button class="btn btn--ghost btn--sm" id="btn-audio-play" title="Play or Pause Document Audio">▶ Read Aloud</button>
+            <button class="btn btn--ghost btn--sm" id="btn-audio-stop" title="Stop speech" style="display:none;">⏹ Stop</button>
+            <select class="form-select form-select--sm" id="audio-mode" style="padding:4px 8px;font-size:0.75rem;border-radius:var(--radius-md);" title="Choose Audio Reading Scope">
+              <option value="page" selected>📄 Current Page / Slide</option>
+              <option value="all">📚 Entire Document (All Pages)</option>
+              <option value="selected">✨ Selected Text</option>
+            </select>
+            <select class="form-select form-select--sm" id="audio-speed" style="padding:4px 8px;font-size:0.75rem;border-radius:var(--radius-md);" title="Reading Speed">
               <option value="0.75">0.75x</option>
               <option value="1" selected>1.0x</option>
               <option value="1.25">1.25x</option>
@@ -757,6 +763,7 @@
           <input type="file" id="resume-import-file" accept=".pdf,.docx,.doc,.txt,.json" style="display:none;" />
           <button class="btn btn--primary btn--sm" id="btn-import-resume" style="background:linear-gradient(135deg, #7c3aed, #4f46e5) !important;">📂 Upload Your CV to Edit</button>
           <button class="btn btn--ghost btn--sm" id="btn-load-sample-resume">⭐ Load Sample</button>
+          <button class="btn btn--ghost btn--sm" id="btn-audio-resume">🔊 Read Aloud</button>
           <button class="btn btn--ghost btn--sm" id="btn-copy-resume-text">📋 Copy Text</button>
           <button class="btn btn--primary btn--sm" id="btn-export-resume-pdf">📥 Download PDF</button>
         </div>

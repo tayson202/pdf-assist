@@ -135,6 +135,16 @@ class ResumeManager {
       btnCopy.addEventListener('click', () => this.copyAsText());
     }
 
+    // Read Resume Aloud Button
+    const btnAudioResume = document.getElementById('btn-audio-resume');
+    if (btnAudioResume) {
+      btnAudioResume.addEventListener('click', () => {
+        if (window.audioReader) {
+          window.audioReader.play();
+        }
+      });
+    }
+
     // AI summary enhance button
     const btnAiSummary = document.getElementById('btn-ai-enhance-summary');
     if (btnAiSummary) {
