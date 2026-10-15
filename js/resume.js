@@ -16,6 +16,8 @@ class ResumeManager {
       location: 'San Francisco, CA',
       linkedin: 'linkedin.com/in/alexmorgan',
       github: 'github.com/alexmorgan',
+      portfolio: 'https://alexmorgan.dev',
+      customLink: 'https://medium.com/@alexmorgan',
       summary: 'Results-driven Senior Software Engineer with 6+ years of experience architecting high-throughput distributed systems, RAG document pipelines, and modern web applications. Proven track record reducing review latency by 64% and scaling cloud services to 2M+ active users.',
       experience: [
         {
@@ -39,6 +41,20 @@ class ResumeManager {
             'Built responsive client web applications in modern JavaScript and Canvas APIs, boosting engagement by 42%.',
             'Optimized SQL queries and database connection pooling, reducing p95 latency by 120ms.'
           ]
+        }
+      ],
+      projects: [
+        {
+          name: 'OmniDoc AI Document Intelligence Platform',
+          link: 'https://github.com/alexmorgan/omnidoc-ai',
+          tools: 'Python, FastAPI, Vector Search, React, WebSockets',
+          description: 'Production document intelligence platform with multi-format parsing (PDF, Word, Excel, PPT) and verified page citations across 100K+ enterprise documents.'
+        },
+        {
+          name: 'Distributed High-Throughput Task Queue',
+          link: 'https://github.com/alexmorgan/distributed-task-worker',
+          tools: 'Go, Redis, Kubernetes, Docker, gRPC, PostgreSQL',
+          description: 'Fault-tolerant asynchronous job queue processing 50,000 tasks/second with automatic failover, health monitoring, and sub-10ms delivery latency.'
         }
       ],
       education: [
@@ -157,6 +173,31 @@ class ResumeManager {
       btnAddExp.addEventListener('click', () => this.addExperienceItem());
     }
 
+    // Add Project Button
+    const btnAddProj = document.getElementById('btn-add-project');
+    if (btnAddProj) {
+      btnAddProj.addEventListener('click', () => this.addProjectItem());
+    }
+
+    // Add Education Button
+    const btnAddEdu = document.getElementById('btn-add-education');
+    if (btnAddEdu) {
+      btnAddEdu.addEventListener('click', () => this.addEducationItem());
+    }
+
+    // Add Certification Button
+    const btnAddCert = document.getElementById('btn-add-cert');
+    const certInput = document.getElementById('input-new-cert');
+    if (btnAddCert && certInput) {
+      btnAddCert.addEventListener('click', () => this.addCertificationItem());
+      certInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.addCertificationItem();
+        }
+      });
+    }
+
     // Add Skill Button
     const btnAddSkill = document.getElementById('btn-add-skill');
     const skillInput = document.getElementById('input-new-skill');
@@ -181,7 +222,7 @@ class ResumeManager {
     }
 
     // Live update on input changes in editor
-    const liveFields = ['res-name', 'res-title', 'res-email', 'res-phone', 'res-location', 'res-linkedin', 'res-github', 'res-summary'];
+    const liveFields = ['res-name', 'res-title', 'res-email', 'res-phone', 'res-location', 'res-linkedin', 'res-github', 'res-portfolio', 'res-customlink', 'res-summary'];
     liveFields.forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -191,6 +232,18 @@ class ResumeManager {
           this.updateAtsScore();
         });
       }
+    });
+
+    // Wizard Summary Presets
+    document.querySelectorAll('.wiz-summary-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const txt = btn.getAttribute('data-text');
+        const summaryEl = document.getElementById('wiz-summary');
+        if (summaryEl && txt) {
+          summaryEl.value = txt;
+          Utils.showToast('Applied summary preset!', 'info');
+        }
+      });
     });
 
     // ATS Target Job Matcher Scan
@@ -266,9 +319,14 @@ class ResumeManager {
     setVal('res-location', this.data.location);
     setVal('res-linkedin', this.data.linkedin);
     setVal('res-github', this.data.github);
+    setVal('res-portfolio', this.data.portfolio);
+    setVal('res-customlink', this.data.customLink);
     setVal('res-summary', this.data.summary);
 
     this.renderExperienceEditor();
+    this.renderProjectsEditor();
+    this.renderEducationEditor();
+    this.renderCertificationsEditor();
     this.renderSkillsTags();
   }
 
@@ -285,6 +343,8 @@ class ResumeManager {
     this.data.location = getVal('res-location') || '';
     this.data.linkedin = getVal('res-linkedin') || '';
     this.data.github = getVal('res-github') || '';
+    this.data.portfolio = getVal('res-portfolio') || '';
+    this.data.customLink = getVal('res-customlink') || '';
     this.data.summary = getVal('res-summary') || '';
   }
 
@@ -360,6 +420,191 @@ class ResumeManager {
     Utils.showToast('Added new experience entry', 'info');
   }
 
+  renderProjectsEditor() {
+    const container = document.getElementById('projects-items-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    (this.data.projects || []).forEach((proj, idx) => {
+      const item = document.createElement('div');
+      item.className = 'project-edit-card card';
+      item.style.marginBottom = 'var(--space-3)';
+      item.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong style="color:var(--color-purple-300);font-size:0.85rem;">🚀 Project #${idx + 1}</strong>
+          <button class="btn btn--danger btn--sm" data-remove-proj="${idx}">✕ Remove</button>
+        </div>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div>
+            <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Project Title</label>
+            <input type="text" class="form-input form-input--sm proj-name" placeholder="Project Title" value="${this.escapeHtml(proj.name)}" data-idx="${idx}" />
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Live Demo / GitHub Link</label>
+            <input type="text" class="form-input form-input--sm proj-link" placeholder="https://github.com/..." value="${this.escapeHtml(proj.link || '')}" data-idx="${idx}" />
+          </div>
+        </div>
+        <div style="margin-bottom:8px;">
+          <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Technologies / Stack Used</label>
+          <input type="text" class="form-input form-input--sm proj-tools" placeholder="Python, FastAPI, React, PostgreSQL" value="${this.escapeHtml(proj.tools || '')}" data-idx="${idx}" />
+        </div>
+        <div>
+          <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Project Description &amp; Impact</label>
+          <textarea class="form-textarea proj-desc" rows="2" style="font-size:0.8rem;" data-idx="${idx}">${this.escapeHtml(proj.description || '')}</textarea>
+        </div>
+      `;
+
+      item.querySelector('[data-remove-proj]').addEventListener('click', () => {
+        this.data.projects.splice(idx, 1);
+        this.renderProjectsEditor();
+        this.renderPreview();
+        this.updateAtsScore();
+      });
+
+      item.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', () => {
+          const i = parseInt(input.getAttribute('data-idx'), 10);
+          const name = item.querySelector('.proj-name').value;
+          const link = item.querySelector('.proj-link').value;
+          const tools = item.querySelector('.proj-tools').value;
+          const description = item.querySelector('.proj-desc').value;
+
+          this.data.projects[i] = { name, link, tools, description };
+          this.renderPreview();
+          this.updateAtsScore();
+        });
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  addProjectItem() {
+    if (!this.data.projects) this.data.projects = [];
+    this.data.projects.push({
+      name: 'High-Performance Distributed Cloud Architecture',
+      link: 'https://github.com/myname/cloud-architecture',
+      tools: 'Python, Docker, Kubernetes, Redis, PostgreSQL',
+      description: 'Engineered fault-tolerant distributed processing engine with real-time stream caching and sub-15ms throughput.'
+    });
+    this.renderProjectsEditor();
+    this.renderPreview();
+    this.updateAtsScore();
+    Utils.showToast('Added new project entry', 'info');
+  }
+
+  renderEducationEditor() {
+    const container = document.getElementById('education-items-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    (this.data.education || []).forEach((edu, idx) => {
+      const item = document.createElement('div');
+      item.className = 'education-edit-card card';
+      item.style.marginBottom = 'var(--space-3)';
+      item.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong style="color:var(--color-purple-300);font-size:0.85rem;">🎓 Degree #${idx + 1}</strong>
+          <button class="btn btn--danger btn--sm" data-remove-edu="${idx}">✕ Remove</button>
+        </div>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div>
+            <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Degree &amp; Major</label>
+            <input type="text" class="form-input form-input--sm edu-degree" placeholder="B.S. in Computer Science" value="${this.escapeHtml(edu.degree)}" data-idx="${idx}" />
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">University / Institution</label>
+            <input type="text" class="form-input form-input--sm edu-school" placeholder="University Name" value="${this.escapeHtml(edu.school)}" data-idx="${idx}" />
+          </div>
+        </div>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Dates / Graduation Year</label>
+            <input type="text" class="form-input form-input--sm edu-dates" placeholder="2018 - 2022" value="${this.escapeHtml(edu.dates)}" data-idx="${idx}" />
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Honors / GPA / Highlights</label>
+            <input type="text" class="form-input form-input--sm edu-details" placeholder="Dean's List • Focus on Systems" value="${this.escapeHtml(edu.details || '')}" data-idx="${idx}" />
+          </div>
+        </div>
+      `;
+
+      item.querySelector('[data-remove-edu]').addEventListener('click', () => {
+        this.data.education.splice(idx, 1);
+        this.renderEducationEditor();
+        this.renderPreview();
+        this.updateAtsScore();
+      });
+
+      item.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => {
+          const i = parseInt(input.getAttribute('data-idx'), 10);
+          const degree = item.querySelector('.edu-degree').value;
+          const school = item.querySelector('.edu-school').value;
+          const dates = item.querySelector('.edu-dates').value;
+          const details = item.querySelector('.edu-details').value;
+
+          this.data.education[i] = { degree, school, dates, details };
+          this.renderPreview();
+          this.updateAtsScore();
+        });
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  addEducationItem() {
+    if (!this.data.education) this.data.education = [];
+    this.data.education.push({
+      degree: 'B.S. in Computer Science',
+      school: 'University of Technology',
+      dates: '2018 - 2022',
+      details: 'Dean’s Honors List • Focus on Software Engineering & AI'
+    });
+    this.renderEducationEditor();
+    this.renderPreview();
+    this.updateAtsScore();
+    Utils.showToast('Added education entry', 'info');
+  }
+
+  renderCertificationsEditor() {
+    const container = document.getElementById('certifications-tags-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    (this.data.certifications || []).forEach((cert, idx) => {
+      const tag = document.createElement('span');
+      tag.className = 'badge';
+      tag.style.cssText = 'background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);color:#67e8f9;padding:4px 10px;border-radius:999px;font-size:0.75rem;display:inline-flex;align-items:center;gap:6px;margin:2px;';
+      tag.innerHTML = `<span>${this.escapeHtml(cert)}</span><button style="background:none;border:none;color:#f87171;cursor:pointer;font-size:0.75rem;" title="Remove">✕</button>`;
+      tag.querySelector('button').addEventListener('click', () => {
+        this.data.certifications.splice(idx, 1);
+        this.renderCertificationsEditor();
+        this.renderPreview();
+        this.updateAtsScore();
+      });
+      container.appendChild(tag);
+    });
+  }
+
+  addCertificationItem() {
+    const input = document.getElementById('input-new-cert');
+    if (!input) return;
+    const val = input.value.trim();
+    if (val) {
+      if (!this.data.certifications) this.data.certifications = [];
+      if (!this.data.certifications.includes(val)) {
+        this.data.certifications.push(val);
+        input.value = '';
+        this.renderCertificationsEditor();
+        this.renderPreview();
+        this.updateAtsScore();
+        Utils.showToast(`Added certification "${val}"`, 'info');
+      }
+    }
+  }
+
   renderSkillsTags() {
     const container = document.getElementById('skills-tags-container');
     if (!container) return;
@@ -382,25 +627,26 @@ class ResumeManager {
 
   renderPreview() {
     const previewEl = document.getElementById('resume-paper-preview');
+  getTemplateHtml() {
+    switch (this.currentTemplate) {
+      case 'modern':
+        return this.renderModernTemplate();
+      case 'executive':
+        return this.renderExecutiveTemplate();
+      case 'creative':
+        return this.renderCreativeTemplate();
+      case 'classic':
+      default:
+        return this.renderClassicTemplate();
+    }
+  }
+
+  renderPreview() {
+    const previewEl = document.getElementById('resume-paper-preview');
     if (!previewEl) return;
 
     previewEl.className = `resume-paper resume-template--${this.currentTemplate}`;
-
-    switch (this.currentTemplate) {
-      case 'modern':
-        previewEl.innerHTML = this.renderModernTemplate();
-        break;
-      case 'executive':
-        previewEl.innerHTML = this.renderExecutiveTemplate();
-        break;
-      case 'creative':
-        previewEl.innerHTML = this.renderCreativeTemplate();
-        break;
-      case 'classic':
-      default:
-        previewEl.innerHTML = this.renderClassicTemplate();
-        break;
-    }
+    previewEl.innerHTML = this.getTemplateHtml();
   }
 
   renderModernTemplate() {
@@ -411,11 +657,14 @@ class ResumeManager {
           <h1 class="resume-name" style="font-size:1.8rem;font-weight:800;color:#111827;margin:0 0 4px 0;">${this.escapeHtml(d.name)}</h1>
           <p class="resume-title" style="font-size:1.05rem;color:#7c3aed;font-weight:600;margin:0;">${this.escapeHtml(d.title)}</p>
         </div>
-        <div class="resume-contact" style="font-size:0.75rem;color:#4b5563;line-height:1.5;text-align:right;">
+        <div class="resume-contact" style="font-size:0.75rem;color:#4b5563;line-height:1.55;text-align:right;">
           ${d.email ? `<div>✉ ${this.escapeHtml(d.email)}</div>` : ''}
           ${d.phone ? `<div>📞 ${this.escapeHtml(d.phone)}</div>` : ''}
           ${d.location ? `<div>📍 ${this.escapeHtml(d.location)}</div>` : ''}
-          ${d.linkedin ? `<div>🔗 ${this.escapeHtml(d.linkedin)}</div>` : ''}
+          ${d.portfolio ? `<div>🌐 <a href="${this.escapeHtml(d.portfolio.startsWith('http') ? d.portfolio : 'https://' + d.portfolio)}" target="_blank" style="color:#2563eb;text-decoration:none;">${this.escapeHtml(d.portfolio.replace(/^https?:\/\//, ''))}</a></div>` : ''}
+          ${d.linkedin ? `<div>💼 <a href="${this.escapeHtml(d.linkedin.startsWith('http') ? d.linkedin : 'https://' + d.linkedin)}" target="_blank" style="color:#2563eb;text-decoration:none;">${this.escapeHtml(d.linkedin.replace(/^https?:\/\//, ''))}</a></div>` : ''}
+          ${d.github ? `<div>💻 <a href="${this.escapeHtml(d.github.startsWith('http') ? d.github : 'https://' + d.github)}" target="_blank" style="color:#2563eb;text-decoration:none;">${this.escapeHtml(d.github.replace(/^https?:\/\//, ''))}</a></div>` : ''}
+          ${d.customLink ? `<div>🔗 <a href="${this.escapeHtml(d.customLink.startsWith('http') ? d.customLink : 'https://' + d.customLink)}" target="_blank" style="color:#2563eb;text-decoration:none;">${this.escapeHtml(d.customLink.replace(/^https?:\/\//, ''))}</a></div>` : ''}
         </div>
       </div>
       <div style="height:3px;background:linear-gradient(90deg, #7c3aed, #3b82f6);margin:12px 0 16px 0;"></div>
@@ -446,6 +695,22 @@ class ResumeManager {
         `).join('')}
       </div>
 
+      ${(d.projects && d.projects.length > 0) ? `
+        <div class="resume-section">
+          <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:8px;">Featured Projects</h2>
+          ${d.projects.map(p => `
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                <strong style="font-size:0.86rem;color:#111827;">${this.escapeHtml(p.name)}</strong>
+                ${p.link ? `<a href="${this.escapeHtml(p.link.startsWith('http') ? p.link : 'https://' + p.link)}" target="_blank" style="font-size:0.75rem;color:#2563eb;text-decoration:none;font-weight:500;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))} ↗</a>` : ''}
+              </div>
+              ${p.tools ? `<div style="font-size:0.75rem;color:#6b21a8;font-weight:600;margin:1px 0 3px 0;">Technologies: ${this.escapeHtml(p.tools)}</div>` : ''}
+              <p style="font-size:0.8rem;color:#374151;line-height:1.45;margin:0;">${this.escapeHtml(p.description)}</p>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
       <div class="resume-section">
         <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:8px;">Education</h2>
         ${d.education.map(edu => `
@@ -458,6 +723,15 @@ class ResumeManager {
           </div>
         `).join('')}
       </div>
+
+      ${(d.certifications && d.certifications.length > 0) ? `
+        <div class="resume-section" style="margin-top:10px;">
+          <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:6px;">Certifications &amp; Credentials</h2>
+          <ul style="margin:0;padding-left:18px;font-size:0.8rem;color:#374151;line-height:1.5;">
+            ${d.certifications.map(c => `<li>${this.escapeHtml(c)}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
 
       <div class="resume-section" style="margin-top:12px;">
         <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:6px;">Key Competencies &amp; Skills</h2>
@@ -472,12 +746,13 @@ class ResumeManager {
 
   renderExecutiveTemplate() {
     const d = this.data;
+    const linksRow = [d.email, d.phone, d.location, d.portfolio, d.linkedin, d.github, d.customLink].filter(Boolean).map(this.escapeHtml).join('  |  ');
     return `
       <div style="text-align:center;border-bottom:2px solid #111827;padding-bottom:12px;margin-bottom:16px;">
         <h1 style="font-size:2rem;font-family:serif;font-weight:700;color:#111827;margin:0 0 4px 0;letter-spacing:0.02em;">${this.escapeHtml(d.name).toUpperCase()}</h1>
         <p style="font-size:0.95rem;color:#4b5563;font-weight:600;margin:0 0 6px 0;">${this.escapeHtml(d.title)}</p>
-        <div style="font-size:0.78rem;color:#6b7280;">
-          ${[d.email, d.phone, d.location, d.linkedin].filter(Boolean).map(this.escapeHtml).join('  |  ')}
+        <div style="font-size:0.78rem;color:#6b7280;line-height:1.5;">
+          ${linksRow}
         </div>
       </div>
 
@@ -503,6 +778,22 @@ class ResumeManager {
         `).join('')}
       </div>
 
+      ${(d.projects && d.projects.length > 0) ? `
+        <div style="margin-bottom:14px;">
+          <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:8px;color:#111827;">Key Projects &amp; Systems Architecture</h2>
+          ${d.projects.map(p => `
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.84rem;">
+                <strong style="color:#111827;">${this.escapeHtml(p.name)}</strong>
+                ${p.link ? `<span style="font-size:0.75rem;color:#4b5563;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))}</span>` : ''}
+              </div>
+              ${p.tools ? `<div style="font-size:0.75rem;color:#4b5563;font-style:italic;">Stack: ${this.escapeHtml(p.tools)}</div>` : ''}
+              <p style="font-size:0.8rem;color:#374151;line-height:1.45;margin:2px 0 0 0;">${this.escapeHtml(p.description)}</p>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
       <div style="margin-bottom:14px;">
         <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:8px;color:#111827;">Education &amp; Credentials</h2>
         ${d.education.map(edu => `
@@ -512,6 +803,13 @@ class ResumeManager {
           </div>
         `).join('')}
       </div>
+
+      ${(d.certifications && d.certifications.length > 0) ? `
+        <div style="margin-bottom:14px;">
+          <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:6px;color:#111827;">Honors &amp; Certifications</h2>
+          <p style="font-size:0.8rem;color:#374151;line-height:1.5;margin:0;">${d.certifications.map(this.escapeHtml).join('  •  ')}</p>
+        </div>
+      ` : ''}
 
       <div>
         <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:6px;color:#111827;">Core Competencies</h2>
@@ -526,11 +824,14 @@ class ResumeManager {
       <div style="background:linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);color:white;padding:18px 24px;border-radius:8px;margin-bottom:16px;">
         <h1 style="font-size:1.9rem;font-weight:800;margin:0 0 4px 0;">${this.escapeHtml(d.name)}</h1>
         <p style="font-size:1rem;margin:0 0 8px 0;opacity:0.95;">${this.escapeHtml(d.title)}</p>
-        <div style="font-size:0.75rem;display:flex;flex-wrap:wrap;gap:12px;opacity:0.9;">
+        <div style="font-size:0.75rem;display:flex;flex-wrap:wrap;gap:12px;opacity:0.95;">
           ${d.email ? `<span>✉ ${this.escapeHtml(d.email)}</span>` : ''}
           ${d.phone ? `<span>📞 ${this.escapeHtml(d.phone)}</span>` : ''}
           ${d.location ? `<span>📍 ${this.escapeHtml(d.location)}</span>` : ''}
-          ${d.github ? `<span>💻 ${this.escapeHtml(d.github)}</span>` : ''}
+          ${d.portfolio ? `<span>🌐 ${this.escapeHtml(d.portfolio.replace(/^https?:\/\//, ''))}</span>` : ''}
+          ${d.linkedin ? `<span>💼 ${this.escapeHtml(d.linkedin.replace(/^https?:\/\//, ''))}</span>` : ''}
+          ${d.github ? `<span>💻 ${this.escapeHtml(d.github.replace(/^https?:\/\//, ''))}</span>` : ''}
+          ${d.customLink ? `<span>🔗 ${this.escapeHtml(d.customLink.replace(/^https?:\/\//, ''))}</span>` : ''}
         </div>
       </div>
 
@@ -555,6 +856,24 @@ class ResumeManager {
         `).join('')}
       </div>
 
+      ${(d.projects && d.projects.length > 0) ? `
+        <div style="margin-bottom:14px;">
+          <h2 style="font-size:0.95rem;font-weight:700;color:#1e1b4b;margin-bottom:8px;">Featured Projects &amp; Products</h2>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            ${d.projects.map(p => `
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:10px 12px;border-radius:6px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                  <strong style="font-size:0.82rem;color:#0f172a;">${this.escapeHtml(p.name)}</strong>
+                </div>
+                ${p.tools ? `<div style="font-size:0.72rem;color:#4f46e5;font-weight:600;margin:2px 0;">${this.escapeHtml(p.tools)}</div>` : ''}
+                <p style="font-size:0.75rem;color:#475569;line-height:1.4;margin:2px 0;">${this.escapeHtml(p.description)}</p>
+                ${p.link ? `<a href="${this.escapeHtml(p.link.startsWith('http') ? p.link : 'https://' + p.link)}" target="_blank" style="font-size:0.72rem;color:#0284c7;text-decoration:none;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))} ↗</a>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div>
           <h2 style="font-size:0.9rem;font-weight:700;color:#1e1b4b;margin-bottom:6px;">Education</h2>
@@ -564,6 +883,12 @@ class ResumeManager {
               <span>${this.escapeHtml(edu.school)} (${this.escapeHtml(edu.dates)})</span>
             </div>
           `).join('')}
+          ${(d.certifications && d.certifications.length > 0) ? `
+            <div style="margin-top:8px;">
+              <strong style="font-size:0.78rem;color:#1e1b4b;">Certifications:</strong>
+              <div style="font-size:0.75rem;color:#475569;">${d.certifications.map(this.escapeHtml).join(', ')}</div>
+            </div>
+          ` : ''}
         </div>
         <div>
           <h2 style="font-size:0.9rem;font-weight:700;color:#1e1b4b;margin-bottom:6px;">Skills</h2>
@@ -579,12 +904,13 @@ class ResumeManager {
 
   renderClassicTemplate() {
     const d = this.data;
+    const linksRow = [d.email, d.phone, d.location, d.portfolio, d.linkedin, d.github, d.customLink].filter(Boolean).map(this.escapeHtml).join(' | ');
     return `
       <div style="text-align:center;margin-bottom:14px;border-bottom:1px solid #111;padding-bottom:10px;">
         <h1 style="font-size:1.75rem;font-weight:bold;margin:0 0 2px 0;color:#000;">${this.escapeHtml(d.name)}</h1>
         <p style="font-size:0.85rem;margin:0 0 4px 0;color:#222;">${this.escapeHtml(d.title)}</p>
-        <p style="font-size:0.75rem;margin:0;color:#333;">
-          ${[d.email, d.phone, d.location, d.linkedin].filter(Boolean).map(this.escapeHtml).join(' | ')}
+        <p style="font-size:0.75rem;margin:0;color:#333;line-height:1.45;">
+          ${linksRow}
         </p>
       </div>
 
@@ -610,6 +936,21 @@ class ResumeManager {
         `).join('')}
       </div>
 
+      ${(d.projects && d.projects.length > 0) ? `
+        <div style="margin-bottom:12px;">
+          <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 6px 0;color:#000;">Key Projects</h2>
+          ${d.projects.map(p => `
+            <div style="margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+                <strong>${this.escapeHtml(p.name)}${p.tools ? ` <span style="font-weight:normal;color:#444;">(${this.escapeHtml(p.tools)})</span>` : ''}</strong>
+                ${p.link ? `<span style="font-size:0.75rem;color:#333;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))}</span>` : ''}
+              </div>
+              <p style="font-size:0.78rem;line-height:1.4;margin:2px 0 0 0;color:#111;">• ${this.escapeHtml(p.description)}</p>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
       <div style="margin-bottom:12px;">
         <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 4px 0;color:#000;">Education</h2>
         ${d.education.map(edu => `
@@ -619,6 +960,13 @@ class ResumeManager {
           </div>
         `).join('')}
       </div>
+
+      ${(d.certifications && d.certifications.length > 0) ? `
+        <div style="margin-bottom:12px;">
+          <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 4px 0;color:#000;">Certifications</h2>
+          <p style="font-size:0.78rem;margin:0;color:#111;">${d.certifications.map(this.escapeHtml).join(' • ')}</p>
+        </div>
+      ` : ''}
 
       <div>
         <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 4px 0;color:#000;">Skills</h2>
@@ -868,7 +1216,23 @@ class ResumeManager {
       location: 'Seattle, WA',
       linkedin: 'linkedin.com/in/jordanmiller-lead',
       github: 'github.com/jordanmiller-dev',
+      portfolio: 'https://jordanmiller.tech',
+      customLink: 'https://github.com/topics/system-design',
       summary: 'Distinguished Principal Software Architect with 9+ years delivering enterprise-grade cloud systems, neural search architectures, and micro-frontend applications. Led digital transformation driving $4.2M in annual infrastructure cost savings and 99.999% SLA reliability.',
+      projects: [
+        {
+          name: 'HyperScale Enterprise Document Search Mesh',
+          link: 'https://github.com/jordanmiller/search-mesh',
+          tools: 'Rust, Python, FastAPI, Milvus, Kubernetes',
+          description: 'Multi-region distributed neural search index serving 12M vector embeddings with sub-10ms p99 query latency.'
+        },
+        {
+          name: 'Event-Driven Realtime Financial Telemetry',
+          link: 'https://github.com/jordanmiller/telemetry-pipeline',
+          tools: 'Kafka, Go, ClickHouse, Docker, Grafana',
+          description: 'Streaming financial telemetry engine processing 1.2M transactions/sec with zero packet drop and automated circuit breakers.'
+        }
+      ],
       experience: [
         {
           role: 'Principal Architect & Director of Platform',
@@ -1082,53 +1446,162 @@ class ResumeManager {
   }
 
   exportPdf() {
-    const previewEl = document.getElementById('resume-paper-preview');
-    if (!previewEl) {
-      window.print();
-      return;
-    }
+    const candidateName = (this.data.name || 'Resume').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    Utils.showToast('Generating high-resolution PDF download...', 'info');
+
+    // Create a dedicated, clean container attached directly to document.body
+    // This resolves all blank PDF causes:
+    // 1. html2canvas window scroll offset bug (when page is scrolled down, canvas was blank)
+    // 2. Parent sticky / overflow clipping from .resume-paper-wrapper
+    // 3. Hidden wizard view state when downloading from wizard tab
+    const exportDiv = document.createElement('div');
+    exportDiv.id = 'resume-export-clean-container';
+    exportDiv.className = `resume-paper resume-template--${this.currentTemplate}`;
+    exportDiv.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 794px;
+      min-height: 1120px;
+      padding: 36px 44px;
+      background: #ffffff !important;
+      color: #111827 !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      box-sizing: border-box;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      z-index: 9999999;
+      pointer-events: none;
+      visibility: visible !important;
+      display: block !important;
+    `;
+
+    exportDiv.innerHTML = this.getTemplateHtml();
+    document.body.appendChild(exportDiv);
+
+    const cleanup = () => {
+      if (exportDiv.parentNode) {
+        exportDiv.parentNode.removeChild(exportDiv);
+      }
+    };
 
     if (window.html2pdf) {
-      const candidateName = (this.data.name || 'Resume').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
-      Utils.showToast('Generating high-resolution PDF download...', 'info');
-
       const opt = {
-        margin: [8, 8, 8, 8],
+        margin: [6, 6, 6, 6],
         filename: `${candidateName}_Resume.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: false },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          logging: false,
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: 794
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      window.html2pdf().set(opt).from(previewEl).save().then(() => {
-        Utils.showToast(`Downloaded "${candidateName}_Resume.pdf"!`, 'success');
-      }).catch(err => {
-        console.warn('html2pdf notice, fallback to browser print dialog:', err);
-        window.print();
-      });
+      window.html2pdf()
+        .set(opt)
+        .from(exportDiv)
+        .save()
+        .then(() => {
+          cleanup();
+          Utils.showToast(`Downloaded "${candidateName}_Resume.pdf"!`, 'success');
+        })
+        .catch(err => {
+          console.warn('html2pdf notice, fallback to print window:', err);
+          cleanup();
+          this.fallbackPrintDialog();
+        });
     } else {
-      window.print();
+      cleanup();
+      this.fallbackPrintDialog();
     }
+  }
+
+  fallbackPrintDialog() {
+    const candidateName = (this.data.name || 'Resume').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    const printWindow = window.open('', '_blank', 'width=840,height=1100');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${candidateName} - Resume</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { background: #ffffff; color: #111827; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 32px 36px; }
+          @media print {
+            body { padding: 0; }
+            @page { margin: 10mm; size: A4 portrait; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="resume-paper resume-template--${this.currentTemplate}">
+          ${this.getTemplateHtml()}
+        </div>
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+              window.close();
+            }, 300);
+          };
+        <\/script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   copyAsText() {
     const d = this.data;
-    let txt = `${d.name}\n${d.title}\n${d.email} | ${d.phone} | ${d.location}\n\nSUMMARY\n${d.summary}\n\nEXPERIENCE\n`;
-    d.experience.forEach(e => {
-      txt += `\n${e.role} — ${e.company} (${e.dates})\n`;
-      e.bullets.forEach(b => txt += `• ${b}\n`);
-    });
-    txt += `\nEDUCATION\n`;
-    d.education.forEach(ed => {
-      txt += `${ed.school} — ${ed.degree} (${ed.dates})\n`;
-    });
-    txt += `\nSKILLS\n${d.skills.join(', ')}\n`;
+    const linksLine = [d.email, d.phone, d.location, d.portfolio, d.linkedin, d.github, d.customLink].filter(Boolean).join(' | ');
+    let txt = `${d.name}\n${d.title}\n${linksLine}\n\n`;
+    if (d.summary) txt += `SUMMARY\n${d.summary}\n\n`;
+    if (d.experience && d.experience.length) {
+      txt += `EXPERIENCE\n`;
+      d.experience.forEach(e => {
+        txt += `\n${e.role} — ${e.company} (${e.dates}) [${e.location}]\n`;
+        (e.bullets || []).forEach(b => txt += `• ${b}\n`);
+      });
+      txt += '\n';
+    }
+    if (d.projects && d.projects.length) {
+      txt += `PROJECTS\n`;
+      d.projects.forEach(p => {
+        txt += `\n${p.name}${p.link ? ` (${p.link})` : ''}\n`;
+        if (p.tools) txt += `Stack: ${p.tools}\n`;
+        if (p.description) txt += `• ${p.description}\n`;
+      });
+      txt += '\n';
+    }
+    if (d.education && d.education.length) {
+      txt += `EDUCATION\n`;
+      d.education.forEach(ed => {
+        txt += `${ed.school} — ${ed.degree} (${ed.dates})${ed.details ? ` • ${ed.details}` : ''}\n`;
+      });
+      txt += '\n';
+    }
+    if (d.certifications && d.certifications.length) {
+      txt += `CERTIFICATIONS\n${d.certifications.join(', ')}\n\n`;
+    }
+    if (d.skills && d.skills.length) {
+      txt += `SKILLS\n${d.skills.join(', ')}\n`;
+    }
 
     navigator.clipboard.writeText(txt);
     Utils.showToast('Resume plain text copied to clipboard!', 'success');
   }
 
-  // --- Wizard: Build from Zero ---
+  // --- Wizard: Build from Zero (6 Steps) ---
   renderWizardStep() {
     document.querySelectorAll('.wizard-step-pane').forEach((pane, idx) => {
       if (idx + 1 === this.wizardStep) {
@@ -1140,7 +1613,7 @@ class ResumeManager {
 
     const stepIndicator = document.getElementById('wizard-step-indicator');
     if (stepIndicator) {
-      stepIndicator.textContent = `Step ${this.wizardStep} of 4`;
+      stepIndicator.textContent = `Step ${this.wizardStep} of 6`;
     }
 
     const btnPrev = document.getElementById('btn-wizard-prev');
@@ -1148,12 +1621,12 @@ class ResumeManager {
     const btnFinish = document.getElementById('btn-wizard-finish');
 
     if (btnPrev) btnPrev.style.display = this.wizardStep > 1 ? 'inline-flex' : 'none';
-    if (btnNext) btnNext.style.display = this.wizardStep < 4 ? 'inline-flex' : 'none';
-    if (btnFinish) btnFinish.style.display = this.wizardStep === 4 ? 'inline-flex' : 'none';
+    if (btnNext) btnNext.style.display = this.wizardStep < 6 ? 'inline-flex' : 'none';
+    if (btnFinish) btnFinish.style.display = this.wizardStep === 6 ? 'inline-flex' : 'none';
   }
 
   nextWizardStep() {
-    if (this.wizardStep < 4) {
+    if (this.wizardStep < 6) {
       this.wizardStep++;
       this.renderWizardStep();
     }
@@ -1177,34 +1650,90 @@ class ResumeManager {
     const title = getWizVal('wiz-title') || this.data.title;
     const email = getWizVal('wiz-email') || this.data.email;
     const phone = getWizVal('wiz-phone') || this.data.phone;
-    const skillsRaw = getWizVal('wiz-skills');
+    const loc = getWizVal('wiz-location') || this.data.location;
+    const portfolio = getWizVal('wiz-portfolio') || this.data.portfolio;
+    const linkedin = getWizVal('wiz-linkedin') || this.data.linkedin;
+    const github = getWizVal('wiz-github') || this.data.github;
+    const customlink = getWizVal('wiz-customlink') || this.data.customLink;
+
+    const summary = getWizVal('wiz-summary') || `Results-oriented ${title} with proven expertise in modern engineering, system design, and reliable software delivery. Dedicated to driving business value and engineering excellence.`;
+
     const roleDesc = getWizVal('wiz-exp-role') || 'Software Engineer';
     const company = getWizVal('wiz-exp-company') || 'Technology Corp';
+    const expDates = getWizVal('wiz-exp-dates') || '2022 - Present';
+    const expLoc = getWizVal('wiz-exp-location') || 'San Francisco, CA / Remote';
+    const expBulletsRaw = getWizVal('wiz-exp-bullets');
+    const bullets = expBulletsRaw ? expBulletsRaw.split('\n').map(b => b.trim().replace(/^[•\-\*]\s*/, '')).filter(Boolean) : [
+      `Spearheaded core software development initiatives for ${company}, enhancing system performance and user experience.`,
+      'Implemented automated workflows, reducing operational turnaround times by 45%.',
+      'Collaborated in cross-functional teams to deliver production features on schedule with high reliability.'
+    ];
+
+    // Projects
+    const newProjects = [];
+    const p1Name = getWizVal('wiz-proj1-name');
+    if (p1Name) {
+      newProjects.push({
+        name: p1Name,
+        link: getWizVal('wiz-proj1-link'),
+        tools: getWizVal('wiz-proj1-tools'),
+        description: getWizVal('wiz-proj1-desc') || 'Engineered production system architecture with high availability and verified performance metrics.'
+      });
+    }
+    const p2Name = getWizVal('wiz-proj2-name');
+    if (p2Name) {
+      newProjects.push({
+        name: p2Name,
+        link: getWizVal('wiz-proj2-link'),
+        tools: getWizVal('wiz-proj2-tools'),
+        description: getWizVal('wiz-proj2-desc') || 'Built distributed asynchronous workflows with automated recovery and sub-10ms response.'
+      });
+    }
+    if (newProjects.length > 0) {
+      this.data.projects = newProjects;
+    }
+
+    // Education
+    const eduDegree = getWizVal('wiz-edu-degree');
+    const eduSchool = getWizVal('wiz-edu-school');
+    if (eduDegree || eduSchool) {
+      this.data.education = [{
+        degree: eduDegree || 'B.S. in Computer Science',
+        school: eduSchool || 'University of California, Berkeley',
+        dates: getWizVal('wiz-edu-dates') || '2018 - 2022',
+        details: getWizVal('wiz-edu-details') || 'Dean’s Honors List • Focus on Distributed Systems'
+      }];
+    }
+
+    // Certifications
+    const certsRaw = getWizVal('wiz-certs');
+    if (certsRaw) {
+      this.data.certifications = certsRaw.split(',').map(c => c.trim()).filter(Boolean);
+    }
+
+    // Skills
+    const skillsRaw = getWizVal('wiz-skills');
+    if (skillsRaw) {
+      this.data.skills = skillsRaw.split(',').map(s => s.trim()).filter(Boolean);
+    }
 
     this.data.name = name;
     this.data.title = title;
     this.data.email = email;
     this.data.phone = phone;
-
-    if (skillsRaw) {
-      this.data.skills = skillsRaw.split(',').map(s => s.trim()).filter(Boolean);
-    }
-
-    this.data.summary = `Results-oriented ${title} with proven expertise in modern engineering, system design, and reliable software delivery. Dedicated to driving business value and engineering excellence.`;
-
-    this.data.experience = [
-      {
-        role: roleDesc,
-        company: company,
-        location: 'United States',
-        dates: '2022 - Present',
-        bullets: [
-          `Spearheaded core software development initiatives for ${company}, enhancing system performance and user experience.`,
-          'Implemented automated workflows, reducing operational turnaround times by 45%.',
-          'Collaborated in cross-functional teams to deliver production features on schedule with high reliability.'
-        ]
-      }
-    ];
+    this.data.location = loc;
+    this.data.portfolio = portfolio;
+    this.data.linkedin = linkedin;
+    this.data.github = github;
+    this.data.customLink = customlink;
+    this.data.summary = summary;
+    this.data.experience = [{
+      role: roleDesc,
+      company: company,
+      location: expLoc,
+      dates: expDates,
+      bullets
+    }];
 
     const chosenTpl = document.querySelector('input[name="wiz-template"]:checked');
     if (chosenTpl) {

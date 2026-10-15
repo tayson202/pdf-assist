@@ -164,7 +164,6 @@
         <button class="topbar__hamburger" id="btn-hamburger" aria-label="Toggle sidebar" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
-        <span class="topbar__title">PDFAssist</span>
         <div class="topbar__doc-badge" id="topbar-doc-badge">
           <span>📄</span>
           <span id="topbar-doc-name">Artificial_Intelligence_Overview_2026.pdf</span>
@@ -853,9 +852,9 @@
               </div>
             </div>
 
-            <!-- Personal Information -->
+            <!-- Personal Information & Online Links -->
             <div class="card">
-              <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;color:var(--color-purple-300);">👤 Personal Details</h2>
+              <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:12px;color:var(--color-purple-300);">👤 Personal Details &amp; Links</h2>
               <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
                 <div>
                   <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Full Name</label>
@@ -886,9 +885,19 @@
                   <input type="text" class="form-input form-input--sm" id="res-linkedin" placeholder="linkedin.com/in/alex" />
                 </div>
               </div>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">GitHub Profile / URL</label>
+                  <input type="text" class="form-input form-input--sm" id="res-github" placeholder="github.com/alex" />
+                </div>
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Portfolio / Website URL</label>
+                  <input type="text" class="form-input form-input--sm" id="res-portfolio" placeholder="https://alexmorgan.dev" />
+                </div>
+              </div>
               <div>
-                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">GitHub / Portfolio URL</label>
-                <input type="text" class="form-input form-input--sm" id="res-github" placeholder="github.com/alex" />
+                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Other Custom Link (Twitter / Blog / Medium / Kaggle)</label>
+                <input type="text" class="form-input form-input--sm" id="res-customlink" placeholder="https://medium.com/@alex" />
               </div>
             </div>
 
@@ -908,6 +917,37 @@
                 <button class="btn btn--ghost btn--sm" id="btn-add-experience">+ Add Position</button>
               </div>
               <div id="experience-items-list"></div>
+            </div>
+
+            <!-- Featured Projects (NEW) -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div>
+                  <h2 style="font-size:0.95rem;font-weight:600;margin:0;color:var(--color-purple-300);">🚀 Featured Projects</h2>
+                  <p style="font-size:0.75rem;color:var(--color-text-muted);margin:2px 0 0 0;">Add key systems, open-source work, and live portfolio projects</p>
+                </div>
+                <button class="btn btn--ghost btn--sm" id="btn-add-project">+ Add Project</button>
+              </div>
+              <div id="projects-items-list"></div>
+            </div>
+
+            <!-- Education & Academics (NEW) -->
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="font-size:0.95rem;font-weight:600;margin:0;color:var(--color-purple-300);">🎓 Education &amp; Academics</h2>
+                <button class="btn btn--ghost btn--sm" id="btn-add-education">+ Add Degree</button>
+              </div>
+              <div id="education-items-list"></div>
+            </div>
+
+            <!-- Certifications & Awards (NEW) -->
+            <div class="card">
+              <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:8px;color:var(--color-purple-300);">🏆 Certifications &amp; Awards</h2>
+              <div id="certifications-tags-container" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;"></div>
+              <div style="display:flex;gap:8px;">
+                <input type="text" class="form-input form-input--sm" id="input-new-cert" placeholder="e.g. AWS Certified Solutions Architect, GCP Data Engineer..." />
+                <button class="btn btn--primary btn--sm" id="btn-add-cert">Add</button>
+              </div>
             </div>
 
             <!-- Skills -->
@@ -962,14 +1002,14 @@
           <div class="wizard-steps-header">
             <div>
               <h2 style="font-size:1.25rem;font-weight:700;margin:0 0 4px 0;">✨ AI Resume Creator — Build from Zero</h2>
-              <p style="font-size:0.85rem;color:var(--color-text-muted);margin:0;">Answer a few quick questions to generate an industry-ready resume.</p>
+              <p style="font-size:0.85rem;color:var(--color-text-muted);margin:0;">Answer quick guided questions to craft an industry-ready, ATS-optimized resume.</p>
             </div>
-            <span class="badge badge--primary" id="wizard-step-indicator" style="font-size:0.8rem;padding:4px 10px;">Step 1 of 4</span>
+            <span class="badge badge--primary" id="wizard-step-indicator" style="font-size:0.8rem;padding:4px 10px;">Step 1 of 6</span>
           </div>
 
-          <!-- Step 1 -->
+          <!-- Step 1: Contact Information & Online Presence -->
           <div class="wizard-step-pane" data-step="1">
-            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 1: Contact Information</h3>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 1: Contact Information &amp; Online Links</h3>
             <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div>
                 <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Full Name *</label>
@@ -977,7 +1017,7 @@
               </div>
               <div>
                 <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Target Job Title *</label>
-                <input type="text" class="form-input" id="wiz-title" placeholder="e.g. Lead Machine Learning Engineer" />
+                <input type="text" class="form-input" id="wiz-title" placeholder="e.g. Senior Machine Learning Engineer" />
               </div>
             </div>
             <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -990,65 +1030,199 @@
                 <input type="text" class="form-input" id="wiz-phone" placeholder="e.g. +1 (555) 234-5678" />
               </div>
             </div>
-          </div>
-
-          <!-- Step 2 -->
-          <div class="wizard-step-pane" data-step="2" hidden>
-            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 2: Experience &amp; Impact</h3>
-            <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div>
-                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Most Recent Role / Position *</label>
-                <input type="text" class="form-input" id="wiz-exp-role" placeholder="e.g. Senior Software Architect" />
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Location</label>
+                <input type="text" class="form-input" id="wiz-location" placeholder="e.g. San Francisco, CA or Remote" />
               </div>
               <div>
-                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Company / Organization Name *</label>
-                <input type="text" class="form-input" id="wiz-exp-company" placeholder="e.g. Google Cloud Platforms" />
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Portfolio / Website Link</label>
+                <input type="text" class="form-input" id="wiz-portfolio" placeholder="e.g. https://sarahconnor.dev" />
               </div>
-              <p style="font-size:0.8rem;color:var(--color-text-muted);">Our AI engine will automatically craft quantified achievement bullet points and ATS power action verbs for this role.</p>
             </div>
-          </div>
-
-          <!-- Step 3 -->
-          <div class="wizard-step-pane" data-step="3" hidden>
-            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 3: Core Skills &amp; Tools</h3>
+            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">LinkedIn Profile URL</label>
+                <input type="text" class="form-input" id="wiz-linkedin" placeholder="e.g. linkedin.com/in/sarahconnor" />
+              </div>
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">GitHub Profile URL</label>
+                <input type="text" class="form-input" id="wiz-github" placeholder="e.g. github.com/sarahconnor" />
+              </div>
+            </div>
             <div>
-              <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Comma-separated list of your technical competencies &amp; tools:</label>
-              <textarea class="form-textarea" id="wiz-skills" rows="3" placeholder="e.g. Python, FastAPI, Docker, Kubernetes, React, PostgreSQL, AI Prompting, CI/CD"></textarea>
+              <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Other Link (Twitter / Blog / Kaggle / Medium)</label>
+              <input type="text" class="form-input" id="wiz-customlink" placeholder="e.g. https://medium.com/@sarahconnor" />
             </div>
           </div>
 
-          <!-- Step 4 -->
+          <!-- Step 2: Professional Career Summary -->
+          <div class="wizard-step-pane" data-step="2" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 2: Professional Career Summary</h3>
+            <p style="font-size:0.8rem;color:var(--color-text-muted);margin:0 0 10px 0;">A strong 3-4 sentence elevator pitch demonstrating your key strengths and years of experience.</p>
+            <textarea class="form-textarea" id="wiz-summary" rows="4" placeholder="e.g. Results-driven Software Engineer with 5+ years of experience architecting distributed systems, cloud microservices, and AI document workflows. Proven track record boosting throughput by 40% and scaling applications to 1M+ active users."></textarea>
+            <div style="margin-top:10px;">
+              <span style="font-size:0.75rem;color:var(--color-text-secondary);display:block;margin-bottom:6px;">💡 Or pick an AI starter template:</span>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <button type="button" class="btn btn--ghost btn--sm wiz-summary-preset" data-text="Results-driven Engineer with expertise in building high-throughput distributed systems, modern cloud microservices, and reliable APIs with 99.9% uptime.">🚀 Tech &amp; Cloud Pro</button>
+                <button type="button" class="btn btn--ghost btn--sm wiz-summary-preset" data-text="Innovative Full-Stack Developer specializing in modern frontend architectures, responsive design systems, and resilient backend integrations.">💻 Full-Stack Specialist</button>
+                <button type="button" class="btn btn--ghost btn--sm wiz-summary-preset" data-text="AI & Machine Learning Engineer passionate about deep learning, retrieval-augmented generation (RAG), vector embeddings, and real-time inference.">🧠 AI &amp; ML Engineer</button>
+                <button type="button" class="btn btn--ghost btn--sm wiz-summary-preset" data-text="Motivated Computer Science graduate with strong foundational training in algorithms, object-oriented design, and hands-on software project development.">🎓 Recent Graduate</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Work Experience -->
+          <div class="wizard-step-pane" data-step="3" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 3: Work Experience &amp; Impact</h3>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Most Recent Role / Position *</label>
+                  <input type="text" class="form-input" id="wiz-exp-role" placeholder="e.g. Senior Software Architect" />
+                </div>
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Company / Organization Name *</label>
+                  <input type="text" class="form-input" id="wiz-exp-company" placeholder="e.g. Google Cloud Platforms" />
+                </div>
+              </div>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Employment Dates</label>
+                  <input type="text" class="form-input" id="wiz-exp-dates" placeholder="e.g. 2022 - Present" />
+                </div>
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Location</label>
+                  <input type="text" class="form-input" id="wiz-exp-location" placeholder="e.g. San Francisco, CA / Remote" />
+                </div>
+              </div>
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Key Achievements &amp; Responsibilities (one per line):</label>
+                <textarea class="form-textarea" id="wiz-exp-bullets" rows="3" placeholder="• Architected core microservices reducing API latency by 45%&#10;• Led team of 6 engineers across CI/CD and deployment pipelines&#10;• Scaled database query throughput to handle 20,000 requests/sec"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Featured Projects (NEW) -->
           <div class="wizard-step-pane" data-step="4" hidden>
-            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 4: Select Your Starting Template</h3>
-            <div class="template-radio-grid">
-              <label class="template-radio-label">
-                <input type="radio" name="wiz-template" value="modern" checked />
-                <div class="template-radio-content">
-                  <strong>⭐ Modern Tech Pro (4.9 Highest Rated)</strong>
-                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Sleek top border, modern typography, tech-tailored</p>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 4: Featured Projects &amp; Portfolio Systems</h3>
+            <p style="font-size:0.8rem;color:var(--color-text-muted);margin:0 0 12px 0;">Highlight 1 or 2 notable projects. Recruiters look for live links, GitHub repos, and technologies used.</p>
+            
+            <div class="card" style="background:rgba(255,255,255,0.02);border:1px solid var(--color-border);padding:12px;margin-bottom:12px;border-radius:var(--radius-lg);">
+              <strong style="font-size:0.85rem;color:var(--color-purple-300);display:block;margin-bottom:8px;">🚀 Project #1 (Primary)</strong>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Project Name *</label>
+                  <input type="text" class="form-input form-input--sm" id="wiz-proj1-name" placeholder="e.g. OmniDoc AI Document Intelligence Platform" />
                 </div>
-              </label>
-              <label class="template-radio-label">
-                <input type="radio" name="wiz-template" value="executive" />
-                <div class="template-radio-content">
-                  <strong>Executive Minimalist (⭐ 4.8)</strong>
-                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Classic serif typography, centered elegant headers</p>
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Live Demo or GitHub URL</label>
+                  <input type="text" class="form-input form-input--sm" id="wiz-proj1-link" placeholder="e.g. https://github.com/username/project" />
                 </div>
-              </label>
-              <label class="template-radio-label">
-                <input type="radio" name="wiz-template" value="creative" />
-                <div class="template-radio-content">
-                  <strong>Creative Gradient (⭐ 4.8)</strong>
-                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Vibrant pill tags, eye-catching color accents</p>
+              </div>
+              <div style="margin-bottom:8px;">
+                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Technologies &amp; Tools Used</label>
+                <input type="text" class="form-input form-input--sm" id="wiz-proj1-tools" placeholder="e.g. Python, FastAPI, React, PostgreSQL, Docker" />
+              </div>
+              <div>
+                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Project Description &amp; Highlights</label>
+                <textarea class="form-textarea" id="wiz-proj1-desc" rows="2" style="font-size:0.78rem;" placeholder="Engineered multi-format document parser processing 50K+ pages monthly with sub-second semantic retrieval."></textarea>
+              </div>
+            </div>
+
+            <div class="card" style="background:rgba(255,255,255,0.02);border:1px solid var(--color-border);padding:12px;border-radius:var(--radius-lg);">
+              <strong style="font-size:0.85rem;color:var(--color-purple-300);display:block;margin-bottom:8px;">🚀 Project #2 (Optional)</strong>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Project Name</label>
+                  <input type="text" class="form-input form-input--sm" id="wiz-proj2-name" placeholder="e.g. Distributed Task Queue &amp; Worker Engine" />
                 </div>
-              </label>
-              <label class="template-radio-label">
-                <input type="radio" name="wiz-template" value="classic" />
-                <div class="template-radio-content">
-                  <strong>Classic ATS Standard (⭐ 4.7)</strong>
-                  <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Maximum text density, 100% monochrome ATS scan pass</p>
+                <div>
+                  <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Live Demo or GitHub URL</label>
+                  <input type="text" class="form-input form-input--sm" id="wiz-proj2-link" placeholder="e.g. https://github.com/username/task-queue" />
                 </div>
-              </label>
+              </div>
+              <div style="margin-bottom:8px;">
+                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Technologies &amp; Tools Used</label>
+                <input type="text" class="form-input form-input--sm" id="wiz-proj2-tools" placeholder="e.g. Go, Redis, Kubernetes, gRPC" />
+              </div>
+              <div>
+                <label style="font-size:0.75rem;color:var(--color-text-muted);display:block;margin-bottom:2px;">Project Description &amp; Highlights</label>
+                <textarea class="form-textarea" id="wiz-proj2-desc" rows="2" style="font-size:0.78rem;" placeholder="Fault-tolerant job scheduler handling 25,000 tasks/second with automated node health recovery."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Education & Certifications (NEW) -->
+          <div class="wizard-step-pane" data-step="5" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 5: Education &amp; Certifications</h3>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Degree &amp; Major *</label>
+                  <input type="text" class="form-input" id="wiz-edu-degree" placeholder="e.g. B.S. in Computer Science" />
+                </div>
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">University / Institution *</label>
+                  <input type="text" class="form-input" id="wiz-edu-school" placeholder="e.g. University of California, Berkeley" />
+                </div>
+              </div>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Graduation Dates</label>
+                  <input type="text" class="form-input" id="wiz-edu-dates" placeholder="e.g. 2018 - 2022" />
+                </div>
+                <div>
+                  <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Academic Details / GPA / Honors</label>
+                  <input type="text" class="form-input" id="wiz-edu-details" placeholder="e.g. Dean's Honors List • Focus on Distributed Systems" />
+                </div>
+              </div>
+              <div>
+                <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Professional Certifications &amp; Awards (comma-separated):</label>
+                <input type="text" class="form-input" id="wiz-certs" placeholder="e.g. AWS Certified Solutions Architect, Google Cloud Professional Data Engineer, DeepLearning.AI" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 6: Core Skills & Starting Template -->
+          <div class="wizard-step-pane" data-step="6" hidden>
+            <h3 style="font-size:1rem;font-weight:600;color:var(--color-purple-300);">Step 6: Core Skills &amp; Template Selection</h3>
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem;display:block;margin-bottom:4px;">Comma-separated technical competencies &amp; tools:</label>
+              <textarea class="form-textarea" id="wiz-skills" rows="3" placeholder="e.g. Python, FastAPI, Docker, Kubernetes, React, PostgreSQL, AI Prompting, CI/CD, TypeScript"></textarea>
+            </div>
+            <div>
+              <label style="font-size:0.8rem;display:block;margin-bottom:6px;font-weight:600;color:var(--color-purple-300);">Select Your Starting Design Template:</label>
+              <div class="template-radio-grid">
+                <label class="template-radio-label">
+                  <input type="radio" name="wiz-template" value="modern" checked />
+                  <div class="template-radio-content">
+                    <strong>⭐ Modern Tech Pro (4.9 Highest Rated)</strong>
+                    <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Sleek top border, modern typography, tech-tailored</p>
+                  </div>
+                </label>
+                <label class="template-radio-label">
+                  <input type="radio" name="wiz-template" value="executive" />
+                  <div class="template-radio-content">
+                    <strong>Executive Minimalist (⭐ 4.8)</strong>
+                    <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Classic serif typography, centered elegant headers</p>
+                  </div>
+                </label>
+                <label class="template-radio-label">
+                  <input type="radio" name="wiz-template" value="creative" />
+                  <div class="template-radio-content">
+                    <strong>Creative Gradient (⭐ 4.8)</strong>
+                    <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Vibrant pill tags, eye-catching color accents</p>
+                  </div>
+                </label>
+                <label class="template-radio-label">
+                  <input type="radio" name="wiz-template" value="classic" />
+                  <div class="template-radio-content">
+                    <strong>Classic ATS Standard (⭐ 4.7)</strong>
+                    <p style="font-size:0.75rem;margin:2px 0 0 0;color:var(--color-text-muted);">Maximum text density, 100% monochrome ATS scan pass</p>
+                  </div>
+                </label>
+              </div>
             </div>
           </div>
 
