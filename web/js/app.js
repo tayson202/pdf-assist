@@ -35,10 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Pre-load default document so all features work out of the box
-  if (window.pdfLoader && !window.appStore.getState('currentPdf')) {
-    window.pdfLoader.loadDemoPdf(true);
-  }
 
   // Update topbar document badge
   window.appStore.subscribe('currentPdf', (pdf) => {
