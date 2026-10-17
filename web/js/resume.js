@@ -399,6 +399,46 @@ class ResumeManager {
     this.data.portfolio = getVal('res-portfolio') || '';
     this.data.customLink = getVal('res-customlink') || '';
     this.data.summary = getVal('res-summary') || '';
+
+    // Also sync all experience cards directly from DOM if present
+    const expItems = document.querySelectorAll('#experience-items-list .experience-edit-card');
+    if (expItems.length > 0) {
+      this.data.experience = Array.from(expItems).map(item => {
+        const role = item.querySelector('.exp-role')?.value || '';
+        const company = item.querySelector('.exp-company')?.value || '';
+        const dates = item.querySelector('.exp-dates')?.value || '';
+        const location = item.querySelector('.exp-location')?.value || '';
+        const bullets = (item.querySelector('.exp-bullets')?.value || '')
+          .split('\n')
+          .map(b => b.trim())
+          .filter(Boolean);
+        return { role, company, location, dates, bullets };
+      });
+    }
+
+    // Also sync all project cards directly from DOM if present
+    const projItems = document.querySelectorAll('#projects-items-list .project-edit-card');
+    if (projItems.length > 0) {
+      this.data.projects = Array.from(projItems).map(item => {
+        const name = item.querySelector('.proj-name')?.value || '';
+        const tools = item.querySelector('.proj-tools')?.value || '';
+        const link = item.querySelector('.proj-link')?.value || '';
+        const description = item.querySelector('.proj-desc')?.value || '';
+        return { name, tools, link, description };
+      });
+    }
+
+    // Also sync all education cards directly from DOM if present
+    const eduItems = document.querySelectorAll('#education-items-list .education-edit-card');
+    if (eduItems.length > 0) {
+      this.data.education = Array.from(eduItems).map(item => {
+        const degree = item.querySelector('.edu-degree')?.value || '';
+        const school = item.querySelector('.edu-school')?.value || '';
+        const dates = item.querySelector('.edu-dates')?.value || '';
+        const details = item.querySelector('.edu-details')?.value || '';
+        return { degree, school, dates, details };
+      });
+    }
   }
 
   renderExperienceEditor() {
@@ -1567,16 +1607,17 @@ class ResumeManager {
     }
   }
 
-  exportPdf() {
+  async exportPdf() {
     this.syncFromEditor();
     this.renderPreview();
 
     const candidateName = (this.data.name || 'Resume').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     Utils.showToast('Generating high-resolution PDF download...', 'info');
 
-    // If on wizard tab, switch to editor tab so preview element is active in DOM
+    // If on wizard tab, switch to editor tab so preview element is active and rendered in DOM
     if (this.activeTab === 'wizard') {
       this.switchTab('editor');
+      await new Promise(r => setTimeout(r, 60));
     }
 
     const previewEl = document.getElementById('resume-paper-preview');
@@ -1585,32 +1626,42 @@ class ResumeManager {
       return;
     }
 
+    // Save scroll position and reset to 0,0 for html2canvas to prevent blank white page capture
+    const prevScrollX = window.scrollX;
+    const prevScrollY = window.scrollY;
+    window.scrollTo(0, 0);
+    await new Promise(r => setTimeout(r, 60));
+
     if (window.html2pdf) {
       const opt = {
         margin: 0,
         filename: `${candidateName}_Resume.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
+        enableLinks: true,
         html2canvas: {
           scale: 2,
           useCORS: true,
           letterRendering: true,
+          backgroundColor: '#ffffff',
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: document.documentElement.offsetWidth,
           logging: false
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      window.html2pdf()
-        .set(opt)
-        .from(previewEl)
-        .save()
-        .then(() => {
-          Utils.showToast(`Downloaded "${candidateName}_Resume.pdf"!`, 'success');
-        })
-        .catch(err => {
-          console.warn('[Resume PDF] html2pdf notice, fallback to print view:', err);
-          this.fallbackPrintDialog();
-        });
+      try {
+        await window.html2pdf().set(opt).from(previewEl).save();
+        Utils.showToast(`Downloaded "${candidateName}_Resume.pdf"!`, 'success');
+      } catch (err) {
+        console.warn('[Resume PDF] html2pdf notice, fallback to print view:', err);
+        this.fallbackPrintDialog();
+      } finally {
+        window.scrollTo(prevScrollX, prevScrollY);
+      }
     } else {
+      window.scrollTo(prevScrollX, prevScrollY);
       this.fallbackPrintDialog();
     }
   }
