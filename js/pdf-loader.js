@@ -101,13 +101,17 @@ class PdfLoader {
             this.updateProgress(70);
 
             const texts = [];
-            const maxPagesToExtract = Math.min(pageCount, 15);
-            for (let i = 1; i <= maxPagesToExtract; i++) {
+            // Extract EVERY SINGLE PAGE of the document — no arbitrary page limit!
+            for (let i = 1; i <= pageCount; i++) {
               const page = await pdfDoc.getPage(i);
               const textContent = await page.getTextContent();
               const pageStr = textContent.items.map(item => item.str).join(' ');
               if (pageStr.trim()) {
                 texts.push(`[Page ${i}]: ${pageStr.trim()}`);
+              }
+              if (i % 5 === 0 || i === pageCount) {
+                this.updateProgress(70 + Math.round((i / pageCount) * 15));
+                this.setStatus(`Extracted text from page ${i} of ${pageCount}...`);
               }
             }
             textSample = texts.join('\n\n');
@@ -127,7 +131,7 @@ class PdfLoader {
             docDetails.html = resHtml.value;
             docDetails.raw = resRaw.value;
 
-            // Chunk by ~300 words into pages for viewer & RAG
+            // Chunk full text into pages for viewer & RAG
             const words = (resRaw.value || '').split(/\s+/).filter(Boolean);
             const wordsPerPage = 320;
             pageCount = Math.max(1, Math.ceil(words.length / wordsPerPage));
@@ -162,7 +166,7 @@ class PdfLoader {
               const html = XLSX.utils.sheet_to_html(ws);
               const csv = XLSX.utils.sheet_to_csv(ws);
               docDetails.sheets[sheetName] = { html, csv };
-              pages.push(`[Page ${idx + 1} - Sheet: ${sheetName}]:\n${csv.slice(0, 1800)}`);
+              pages.push(`[Page ${idx + 1} - Sheet: ${sheetName}]:\n${csv}`);
             });
             textSample = pages.join('\n\n');
           } else {
@@ -211,9 +215,20 @@ class PdfLoader {
         }
       } else {
         docType = 'text';
-        textSample = await file.text();
-        const words = textSample.split(/\s+/).filter(Boolean);
-        pageCount = Math.max(1, Math.ceil(words.length / 320));
+        const rawContent = await file.text();
+        const words = rawContent.split(/\s+/).filter(Boolean);
+        const wordsPerPage = 320;
+        pageCount = Math.max(1, Math.ceil(words.length / wordsPerPage));
+        if (pageCount > 1) {
+          const pages = [];
+          for (let i = 0; i < pageCount; i++) {
+            const chunk = words.slice(i * wordsPerPage, (i + 1) * wordsPerPage).join(' ');
+            pages.push(`[Page ${i + 1}]: ${chunk}`);
+          }
+          textSample = pages.join('\n\n');
+        } else {
+          textSample = `[Page 1]: ${rawContent}`;
+        }
       }
 
       if (!textSample) {

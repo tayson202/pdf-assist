@@ -402,8 +402,15 @@
     <!-- SUMMARIZE PAGE -->
     <section class="page" id="page-summarize" aria-label="Summarize" hidden>
       <div class="page-header">
-        <h1 class="page-title">Summarize</h1>
-        <p class="page-subtitle">Get AI-generated summaries of any document</p>
+        <div>
+          <h1 class="page-title">Summarize</h1>
+          <p class="page-subtitle">Comprehensive AI-generated summaries across all pages and data points</p>
+        </div>
+        <div class="page-header__actions">
+          <button class="btn btn--ghost btn--sm" id="btn-copy-summary">📋 Copy Summary</button>
+          <button class="btn btn--ghost btn--sm" id="btn-read-summary">🔊 Read Aloud</button>
+          <button class="btn btn--primary btn--sm" id="btn-download-summary">📥 Download (.md)</button>
+        </div>
       </div>
       <div class="summarize-layout">
         <div class="summarize-controls card">
@@ -578,6 +585,7 @@
           <p class="page-subtitle">Translate document sections into 10+ international languages with AI fidelity</p>
         </div>
         <div class="page-header__actions">
+          <button class="btn btn--ghost btn--sm" id="btn-read-translation">🔊 Read Aloud</button>
           <button class="btn btn--ghost btn--sm" id="btn-copy-translation">📋 Copy Text</button>
           <button class="btn btn--primary btn--sm" id="btn-download-translation">📥 Download (.md)</button>
         </div>
@@ -597,6 +605,11 @@
               <option value="ar">🇸🇦 Arabic (العربية)</option>
               <option value="ja">🇯🇵 Japanese (日本語)</option>
               <option value="zh">🇨🇳 Chinese (中文)</option>
+              <option value="it">🇮🇹 Italian (Italiano)</option>
+              <option value="pt">🇵🇹 Portuguese (Português)</option>
+              <option value="ru">🇷🇺 Russian (Русский)</option>
+              <option value="ko">🇰🇷 Korean (한국어)</option>
+              <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
             </select>
           </div>
 
@@ -1481,22 +1494,22 @@
   </div>
 
   <!-- ── Scripts ────────────────────────────────────── -->
-  <script src="js/utils.js?v=3.7.0"></script>
-  <script src="js/supabase-client.js?v=3.7.0"></script>
-  <script src="js/store.js?v=3.7.0"></script>
-  <script src="js/settings.js?v=3.7.0"></script>
-  <script src="js/router.js?v=3.7.0"></script>
-  <script src="js/pdf-loader.js?v=3.7.0"></script>
-  <script src="js/viewer.js?v=3.7.0"></script>
-  <script src="js/audio-reader.js?v=3.7.0"></script>
-  <script src="js/chat.js?v=3.7.0"></script>
-  <script src="js/summarize.js?v=3.7.0"></script>
-  <script src="js/study-quiz.js?v=3.7.0"></script>
-  <script src="js/translate.js?v=3.7.0"></script>
-  <script src="js/compare.js?v=3.7.0"></script>
-  <script src="js/annotate.js?v=3.7.0"></script>
-  <script src="js/tools.js?v=3.7.0"></script>
-  <script src="js/resume.js?v=3.7.0"></script>
-  <script src="js/app.js?v=3.7.0"></script>
+  <script src="js/utils.js?v=3.8.0"></script>
+  <script src="js/supabase-client.js?v=3.8.0"></script>
+  <script src="js/store.js?v=3.8.0"></script>
+  <script src="js/settings.js?v=3.8.0"></script>
+  <script src="js/router.js?v=3.8.0"></script>
+  <script src="js/pdf-loader.js?v=3.8.0"></script>
+  <script src="js/viewer.js?v=3.8.0"></script>
+  <script src="js/audio-reader.js?v=3.8.0"></script>
+  <script src="js/chat.js?v=3.8.0"></script>
+  <script src="js/summarize.js?v=3.8.0"></script>
+  <script src="js/study-quiz.js?v=3.8.0"></script>
+  <script src="js/translate.js?v=3.8.0"></script>
+  <script src="js/compare.js?v=3.8.0"></script>
+  <script src="js/annotate.js?v=3.8.0"></script>
+  <script src="js/tools.js?v=3.8.0"></script>
+  <script src="js/resume.js?v=3.8.0"></script>
+  <script src="js/app.js?v=3.8.0"></script>
 </body>
 </html>

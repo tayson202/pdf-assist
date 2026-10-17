@@ -186,25 +186,35 @@ class StudyQuizSuite {
    * DOCUMENT TEXT ANALYSIS & EXTRACTION ENGINE
    * ───────────────────────────────────────────────────────────── */
   extractDocumentData(pdf) {
-    const rawText = pdf.textContent || '';
+    const rawText = pdf.textContent || (pdf.docDetails && pdf.docDetails.raw) || '';
     const pages = [];
     const definitions = [];
     const metrics = [];
     const keySentences = [];
     const concepts = new Set();
 
-    // Parse pages or slides
-    const pageRegex = /(?:\[(?:Page|Slide)\s+(\d+)(?:\s*[-:]\s*[^\]]+)?\]):?\s*([\s\S]*?)(?=(?:\[(?:Page|Slide)\s+\d+|$))/gi;
+    // Parse pages, slides, or sheets
+    const pageRegex = /(?:\[(?:Page|Slide|Sheet)\s+(\d+)(?:\s*[-:]\s*[^\]]+)?\]):?\s*([\s\S]*?)(?=(?:\[(?:Page|Slide|Sheet)\s+\d+|$))/gi;
     let match;
 
     while ((match = pageRegex.exec(rawText)) !== null) {
       const pageNum = parseInt(match[1], 10);
       const content = match[2].trim();
-      pages.push({ page: pageNum, content });
+      if (content) {
+        pages.push({ page: pageNum, content });
+      }
     }
 
-    if (!pages.length && rawText) {
-      pages.push({ page: 1, content: rawText });
+    if (!pages.length && rawText.trim()) {
+      const words = rawText.trim().split(/\s+/);
+      const perPage = 320;
+      const count = Math.max(1, Math.ceil(words.length / perPage));
+      for (let i = 0; i < count; i++) {
+        pages.push({
+          page: i + 1,
+          content: words.slice(i * perPage, (i + 1) * perPage).join(' ')
+        });
+      }
     }
 
     pages.forEach(p => {
@@ -230,7 +240,7 @@ class StudyQuizSuite {
         }
 
         // Metrics: sentences with numbers / percentages / stats
-        if (/\b\d+(?:\.\d+)?%\b|\b\d+\s*(?:million|billion|users|reduction|increase|seconds|ms|parameters)\b/i.test(sent)) {
+        if (/\b\d+(?:\.\d+)?%\b|\$\s*\d+(?:[.,]\d+)?\s*[kKmMbBtT]?\b|€\s*\d+|£\s*\d+|\b\d+(?:,\d{3})+(?:\.\d+)?\b|\b\d+(?:\.\d+)?\s*(?:million|billion|trillion|thousand|users|percent|seconds|ms|minutes|hours|days|parameters|ops|rpm|qps|req|tps|reduction|increase|growth|savings|accuracy|latency|variance|margin|division|branch)\b/i.test(sent)) {
           metrics.push({ page: p.page, text: sent });
         }
 
@@ -253,12 +263,12 @@ class StudyQuizSuite {
       definitions,
       metrics,
       keySentences,
-      concepts: Array.from(concepts).slice(0, 15)
+      concepts: Array.from(concepts).slice(0, 20)
     };
   }
 
   /* ─────────────────────────────────────────────────────────────
-   * 1. 3D FLASHCARDS GENERATOR
+   * 1. 3D FLASHCARDS GENERATOR (ALL PAGES COVERED)
    * ───────────────────────────────────────────────────────────── */
   generateFlashcards(pdf) {
     const data = this.extractedData || this.extractDocumentData(pdf);
@@ -272,8 +282,8 @@ class StudyQuizSuite {
       page: 1
     });
 
-    // Cards from extracted definitions
-    data.definitions.slice(0, 4).forEach((d, idx) => {
+    // Cards from all extracted definitions across all pages
+    data.definitions.forEach((d) => {
       cards.push({
         tag: `Definition • Page ${d.page}`,
         prompt: `How is "${d.term}" defined and applied in this document?`,
@@ -282,24 +292,28 @@ class StudyQuizSuite {
       });
     });
 
-    // Cards from extracted metrics
-    data.metrics.slice(0, 2).forEach((m, idx) => {
+    // Cards from all extracted metrics across all pages
+    data.metrics.forEach((m) => {
       cards.push({
-        tag: `Key Finding & Metric • Page ${m.page}`,
+        tag: `Key Benchmark • Page ${m.page}`,
         prompt: `What measurable outcome or performance benchmark is emphasized on Page ${m.page}?`,
         answer: m.text,
         page: m.page
       });
     });
 
-    // Key sentences for remaining cards
-    data.keySentences.slice(1, 4).forEach((k) => {
-      if (cards.length < 7) {
+    // Cards for every single page in the document to ensure 100% full-file coverage
+    data.pages.forEach((p) => {
+      const pageSentences = (p.content || '')
+        .split(/(?<=[.?!])\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 25);
+      if (pageSentences.length > 0) {
         cards.push({
-          tag: `High-Yield Fact • Page ${k.page}`,
-          prompt: `What critical insight is established regarding the document's core methodology?`,
-          answer: k.text,
-          page: k.page
+          tag: `Section Insight • Page ${p.page}`,
+          prompt: `What critical methodology, data point, or principle is established on Page ${p.page}?`,
+          answer: pageSentences[0],
+          page: p.page
         });
       }
     });
@@ -392,39 +406,30 @@ class StudyQuizSuite {
   }
 
   /* ─────────────────────────────────────────────────────────────
-   * 2. DYNAMIC PRACTICE EXAM & QUIZ GENERATOR
+   * 2. DYNAMIC PRACTICE EXAM & QUIZ GENERATOR (ALL PAGES COVERED)
    * ───────────────────────────────────────────────────────────── */
   generateQuiz(pdf) {
     const data = this.extractedData || this.extractDocumentData(pdf);
     const questions = [];
 
-    // Q1: Based on definitions if available
-    if (data.definitions.length > 0) {
-      const def = data.definitions[0];
-      const otherTerms = data.definitions.slice(1).map(d => d.term);
-      const distractors = [
-        `An unverified heuristic without validation`,
-        `A legacy manual protocol scheduled for deprecation`,
-        `A static cache container for unindexed raw text`
-      ];
-
+    // 1. Definition questions
+    data.definitions.forEach((def) => {
       questions.push({
         difficulty: 'easy',
         question: `According to ${data.docName} [Page ${def.page}], how is "${def.term}" defined?`,
         options: this.shuffleOptions([
           def.definition,
-          distractors[0],
-          distractors[1],
-          distractors[2]
+          `An unverified heuristic without validation`,
+          `A legacy manual protocol scheduled for deprecation`,
+          `A static cache container for unindexed raw text`
         ], def.definition),
         page: def.page,
         explanation: `As detailed on Page ${def.page}, "${def.term}" is specifically defined as: ${def.definition}`
       });
-    }
+    });
 
-    // Q2: Based on metrics/benchmarks
-    if (data.metrics.length > 0) {
-      const metric = data.metrics[0];
+    // 2. Metrics & Benchmarks questions
+    data.metrics.forEach((metric) => {
       questions.push({
         difficulty: 'hard',
         question: `Which verified operational benchmark or metric is highlighted in ${data.docName} [Page ${metric.page}]?`,
@@ -437,51 +442,47 @@ class StudyQuizSuite {
         page: metric.page,
         explanation: `Page ${metric.page} verifies this finding: "${metric.text}"`
       });
+    });
+
+    // 3. Page-by-page questions for every page
+    data.pages.forEach((p) => {
+      const pageSentences = (p.content || '')
+        .split(/(?<=[.?!])\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 25);
+
+      if (pageSentences.length > 0) {
+        const primary = pageSentences[0];
+        questions.push({
+          difficulty: p.page % 2 === 0 ? 'hard' : 'easy',
+          question: `Regarding Page ${p.page} of ${data.docName}, which statement accurately reflects the analysis?`,
+          options: this.shuffleOptions([
+            primary,
+            'Completely ungrounded conjecture without procedural confirmation',
+            'Discontinuation of structured verification protocols',
+            'Manual transcription without systematic record keeping'
+          ], primary),
+          page: p.page,
+          explanation: `Page ${p.page} confirms this statement: "${primary}"`
+        });
+      }
+    });
+
+    // Ensure at least 4 questions
+    if (questions.length < 4) {
+      questions.push({
+        difficulty: 'easy',
+        question: `Which client-side capability ensures private and instant document access without cloud delays?`,
+        options: this.shuffleOptions([
+          'In-browser vector rendering with zero external server dependencies',
+          'Mandatory third-party cloud uploads for every page viewed',
+          'Legacy proprietary desktop plugins',
+          'Unencrypted cleartext transmission over public sockets'
+        ], 'In-browser vector rendering with zero external server dependencies'),
+        page: 1,
+        explanation: 'Modern in-browser engines render canvas vectors and parse documents locally without exposing sensitive documents.'
+      });
     }
-
-    // Q3: Core Methodology
-    const sentA = data.keySentences[1]?.text || `Structured verification loops ensure deterministic accuracy across all processing phases.`;
-    questions.push({
-      difficulty: 'hard',
-      question: `What fundamental principle governs the analysis and findings of ${data.docName}?`,
-      options: this.shuffleOptions([
-        sentA,
-        'Relying exclusively on non-deterministic heuristic models without audit trails',
-        'Discarding page citations to maximize unverified generation speed',
-        'Manual spreadsheet transcription without structured automation'
-      ], sentA),
-      page: data.keySentences[1]?.page || 2,
-      explanation: `Page ${data.keySentences[1]?.page || 2} underscores this key principle: "${sentA}"`
-    });
-
-    // Q4: Operational Mitigations
-    const sentB = data.keySentences[2]?.text || `Automated compliance checklists and asynchronous workers prevent pipeline bottlenecks.`;
-    questions.push({
-      difficulty: 'easy',
-      question: `How does the framework address review delays and throughput constraints?`,
-      options: this.shuffleOptions([
-        sentB,
-        'By restricting all document analyses to single-page summaries',
-        'By disabling error reporting and audit logging',
-        'By halting ingestion queues whenever concurrent users connect'
-      ], sentB),
-      page: data.keySentences[2]?.page || 3,
-      explanation: `Page ${data.keySentences[2]?.page || 3} details the operational mitigation: "${sentB}"`
-    });
-
-    // Q5: Client-side capabilities
-    questions.push({
-      difficulty: 'easy',
-      question: `Which client-side capability ensures private and instant document access without cloud delays?`,
-      options: this.shuffleOptions([
-        'In-browser vector rendering with zero external server dependencies',
-        'Mandatory third-party cloud uploads for every page viewed',
-        'Legacy proprietary desktop plugins',
-        'Unencrypted cleartext transmission over public sockets'
-      ], 'In-browser vector rendering with zero external server dependencies'),
-      page: 1,
-      explanation: 'Modern in-browser engines render canvas vectors and parse documents locally without exposing sensitive documents.'
-    });
 
     this.quizQuestions = questions;
     this.filteredQuestions = [...questions];
@@ -647,7 +648,7 @@ class StudyQuizSuite {
     `;
 
     if (data.definitions.length > 0) {
-      data.definitions.slice(0, 6).forEach(d => {
+      data.definitions.forEach(d => {
         html += `
           <div style="background:var(--color-bg-elevated);padding:12px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;">
             <div style="font-weight:700;color:var(--color-purple-300);margin-bottom:4px;font-size:0.9rem;">${d.term}</div>
@@ -672,13 +673,13 @@ class StudyQuizSuite {
       <!-- III. Key Metrics, Formulas & Quantitative Proofs -->
       <div style="margin-bottom:24px;">
         <h3 style="font-size:1.1rem;color:var(--color-text-primary);display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <span>📌</span> III. Key Metrics, Quantifiable Benchmarks &amp; Findings
+          <span>📌</span> III. Key Metrics, Quantifiable Benchmarks &amp; Findings (All Pages)
         </h3>
         <ul style="padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:0.92rem;color:var(--color-text-primary);">
     `;
 
     if (data.metrics.length > 0) {
-      data.metrics.slice(0, 4).forEach(m => {
+      data.metrics.forEach(m => {
         html += `<li><strong>[Page ${m.page}]:</strong> ${m.text}</li>`;
       });
     } else {
@@ -695,14 +696,13 @@ class StudyQuizSuite {
       <!-- IV. Pre-Exam Cram Checklist -->
       <div>
         <h3 style="font-size:1.1rem;color:var(--color-text-primary);display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <span>⚡</span> IV. High-Yield Pre-Exam Cram Checklist
+          <span>⚡</span> IV. High-Yield Pre-Exam Cram Checklist (${data.pageCount} Pages Covered)
         </h3>
         <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.3);border-radius:8px;padding:14px;font-size:0.875rem;color:var(--color-text-primary);">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div>☑️ Master the definition of <strong>${data.definitions[0]?.term || 'core system architecture'}</strong> on Page ${data.definitions[0]?.page || 1}.</div>
-            <div>☑️ Memorize key quantitative findings to support essay and multiple-choice questions.</div>
-            <div>☑️ Know how bottlenecks are mitigated: decoupled async pipelines and automated checklists.</div>
-            <div>☑️ Review verified citations directly in the document viewer before test day.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${data.pages.map(p => `
+              <div>☑️ <strong>Page ${p.page}:</strong> Review section key takeaway and verified figures before test day.</div>
+            `).join('')}
           </div>
         </div>
       </div>
