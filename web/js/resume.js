@@ -1630,7 +1630,10 @@ class ResumeManager {
     const prevScrollX = window.scrollX;
     const prevScrollY = window.scrollY;
     window.scrollTo(0, 0);
-    await new Promise(r => setTimeout(r, 60));
+
+    // Apply PDF export mode class for exact A4 print typography, full-width headers, and clean margins
+    previewEl.classList.add('pdf-export-mode');
+    await new Promise(r => setTimeout(r, 80));
 
     if (window.html2pdf) {
       const opt = {
@@ -1645,10 +1648,10 @@ class ResumeManager {
           backgroundColor: '#ffffff',
           scrollX: 0,
           scrollY: 0,
-          windowWidth: document.documentElement.offsetWidth,
           logging: false
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       try {
@@ -1658,9 +1661,11 @@ class ResumeManager {
         console.warn('[Resume PDF] html2pdf notice, fallback to print view:', err);
         this.fallbackPrintDialog();
       } finally {
+        previewEl.classList.remove('pdf-export-mode');
         window.scrollTo(prevScrollX, prevScrollY);
       }
     } else {
+      previewEl.classList.remove('pdf-export-mode');
       window.scrollTo(prevScrollX, prevScrollY);
       this.fallbackPrintDialog();
     }

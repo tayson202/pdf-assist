@@ -1234,6 +1234,47 @@
   margin-bottom: 16px;
 }
 
+/* Precision A4 PDF Export Mode — Standard Executive Print Typography */
+.resume-paper.pdf-export-mode {
+  width: 794px !important;
+  max-width: 794px !important;
+  min-width: 794px !important;
+  padding: 38px 46px !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  line-height: 1.5 !important;
+  position: relative !important;
+}
+
+.resume-paper.pdf-export-mode .resume-modern-header {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 20px !important;
+  margin-bottom: 12px !important;
+}
+
+.resume-paper.pdf-export-mode .resume-contact {
+  text-align: right !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  font-size: 0.78rem !important;
+  line-height: 1.6 !important;
+}
+
+.resume-paper.pdf-export-mode .resume-section {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  margin-bottom: 14px !important;
+}
+
 /* ATS Score Card */
 .ats-card {
   background: var(--color-bg-surface);

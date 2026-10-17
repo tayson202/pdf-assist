@@ -97,6 +97,7 @@
 
   .main-content {
     margin-left: 0;
+    width: 100%;
     min-height: calc(100vh - var(--topbar-height));
   }
 
@@ -126,8 +127,66 @@
   }
 
   .features-grid,
-  .tools-grid {
-    grid-template-columns: 1fr;
+  .tools-grid,
+  .resume-layout,
+  .compare-layout,
+  .compare-diff-container,
+  .summarize-layout,
+  .annotate-layout {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4);
+  }
+
+  /* Responsive Topbar on Mobile */
+  .topbar {
+    height: auto;
+    min-height: var(--topbar-height);
+    padding: var(--space-2) var(--space-3);
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .topbar__actions {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .topbar__doc-badge {
+    max-width: 150px;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+  .topbar__cloud-pill {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  /* Horizontal Scrollable Areas for Wide Content */
+  .resume-paper-wrapper,
+  .viewer-canvas-wrapper,
+  .annotate-canvas-wrapper,
+  .compare-pane-content,
+  .tools-grid-item {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    width: 100%;
+  }
+
+  .resume-paper:not(.pdf-export-mode) {
+    min-width: 320px;
+    max-width: 100%;
+    padding: 20px 16px;
+    margin: 0 auto;
+  }
+
+  .resume-paper:not(.pdf-export-mode) .resume-modern-header {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .resume-paper:not(.pdf-export-mode) .resume-modern-header .resume-contact {
+    text-align: left;
   }
 
   .chat-layout,
@@ -138,6 +197,8 @@
   .viewer-toolbar {
     gap: var(--space-1);
     padding: var(--space-2);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .viewer-toolbar__page-info,
@@ -150,16 +211,20 @@
 /* ── Small Phones (<= 480px) ───────────────────────────── */
 @media (max-width: 480px) {
   .page {
-    padding: var(--space-4) var(--space-3);
+    padding: var(--space-4) var(--space-2);
   }
 
   .dropzone {
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-6) var(--space-3);
   }
 
   .toast {
-    min-width: calc(100vw - 32px);
-    right: 16px;
-    left: 16px;
+    min-width: calc(100vw - 24px);
+    right: 12px;
+    left: 12px;
+  }
+
+  .topbar__title {
+    font-size: var(--text-base);
   }
 }
