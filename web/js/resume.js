@@ -105,7 +105,7 @@ class ResumeManager {
       });
     });
 
-    // Import Resume File Input
+    // Import Resume File Input & Drag/Drop Card
     const importInput = document.getElementById('resume-import-file');
     const btnImport = document.getElementById('btn-import-resume');
     if (btnImport && importInput) {
@@ -114,13 +114,47 @@ class ResumeManager {
 
     const btnUploadHero = document.getElementById('btn-upload-cv-hero');
     if (btnUploadHero && importInput) {
-      btnUploadHero.addEventListener('click', () => importInput.click());
+      btnUploadHero.addEventListener('click', (e) => {
+        e.stopPropagation();
+        importInput.click();
+      });
+    }
+
+    const dropCard = document.getElementById('resume-upload-dropcard');
+    if (dropCard && importInput) {
+      dropCard.addEventListener('click', (e) => {
+        if (!e.target.closest('#btn-upload-cv-hero')) {
+          importInput.click();
+        }
+      });
+      ['dragenter', 'dragover'].forEach(name => {
+        dropCard.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropCard.style.borderColor = 'var(--color-purple-400)';
+          dropCard.style.background = 'rgba(139, 92, 246, 0.18)';
+        });
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        dropCard.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropCard.style.borderColor = 'var(--color-purple-500)';
+          dropCard.style.background = 'rgba(139, 92, 246, 0.08)';
+        });
+      });
+      dropCard.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+          this.handleImportFile(e.dataTransfer.files[0]);
+        }
+      });
     }
 
     if (importInput) {
       importInput.addEventListener('change', (e) => {
         if (e.target.files.length) {
           this.handleImportFile(e.target.files[0]);
+          e.target.value = '';
         }
       });
     }
@@ -198,18 +232,28 @@ class ResumeManager {
       });
     }
 
-    // Add Skill Button
+    // Add Skill Button (supports comma-separated skills)
     const btnAddSkill = document.getElementById('btn-add-skill');
     const skillInput = document.getElementById('input-new-skill');
     if (btnAddSkill && skillInput) {
       const addSkillFn = () => {
-        const val = skillInput.value.trim();
-        if (val && !this.data.skills.includes(val)) {
-          this.data.skills.push(val);
-          skillInput.value = '';
-          this.renderSkillsTags();
-          this.renderPreview();
-          this.updateAtsScore();
+        const raw = skillInput.value.trim();
+        if (!raw) return;
+        if (!this.data.skills) this.data.skills = [];
+        const skillsToAdd = raw.split(/[,]+/).map(s => s.trim()).filter(Boolean);
+        let addedCount = 0;
+        skillsToAdd.forEach(s => {
+          if (!this.data.skills.includes(s)) {
+            this.data.skills.push(s);
+            addedCount++;
+          }
+        });
+        skillInput.value = '';
+        this.renderSkillsTags();
+        this.renderPreview();
+        this.updateAtsScore();
+        if (addedCount > 0) {
+          Utils.showToast(`Added ${addedCount} skill${addedCount > 1 ? 's' : ''}!`, 'info');
         }
       };
       btnAddSkill.addEventListener('click', addSkillFn);
@@ -231,6 +275,15 @@ class ResumeManager {
           this.renderPreview();
           this.updateAtsScore();
         });
+      }
+    });
+
+    // Page navigation hook
+    window.addEventListener('pageChange', (e) => {
+      if (e.detail && e.detail.page === 'resume') {
+        this.populateEditor();
+        this.renderPreview();
+        this.updateAtsScore();
       }
     });
 
@@ -591,17 +644,23 @@ class ResumeManager {
   addCertificationItem() {
     const input = document.getElementById('input-new-cert');
     if (!input) return;
-    const val = input.value.trim();
-    if (val) {
-      if (!this.data.certifications) this.data.certifications = [];
+    const raw = input.value.trim();
+    if (!raw) return;
+    if (!this.data.certifications) this.data.certifications = [];
+    const certsToAdd = raw.split(/[,]+/).map(c => c.trim()).filter(Boolean);
+    let addedCount = 0;
+    certsToAdd.forEach(val => {
       if (!this.data.certifications.includes(val)) {
         this.data.certifications.push(val);
-        input.value = '';
-        this.renderCertificationsEditor();
-        this.renderPreview();
-        this.updateAtsScore();
-        Utils.showToast(`Added certification "${val}"`, 'info');
+        addedCount++;
       }
+    });
+    input.value = '';
+    this.renderCertificationsEditor();
+    this.renderPreview();
+    this.updateAtsScore();
+    if (addedCount > 0) {
+      Utils.showToast(`Added ${addedCount} certification${addedCount > 1 ? 's' : ''}!`, 'info');
     }
   }
 
@@ -625,8 +684,6 @@ class ResumeManager {
     });
   }
 
-  renderPreview() {
-    const previewEl = document.getElementById('resume-paper-preview');
   getTemplateHtml() {
     switch (this.currentTemplate) {
       case 'modern':
@@ -1443,6 +1500,71 @@ class ResumeManager {
     if (extractedExp.length > 0) {
       this.data.experience = extractedExp;
     }
+
+    // 9. Education extraction
+    const eduKeywords = ['University', 'College', 'Institute', 'School', 'Polytechnic', 'Academy', 'Bachelor', 'Master', 'Degree', 'B.S.', 'M.S.', 'B.A.', 'M.A.', 'Ph.D.', 'B.Sc', 'M.Sc'];
+    const extractedEdu = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (eduKeywords.some(kw => line.includes(kw)) && line.length < 80 && !line.toLowerCase().startsWith('experience')) {
+        const dateMatch = line.match(/\b(19\d\d|20\d\d)(?:\s*[-–to]+\s*(19\d\d|20\d\d|Present))?\b/);
+        const dates = dateMatch ? dateMatch[0] : '2018 - 2022';
+        const cleanLine = line.replace(dates, '').trim();
+        let degree = 'B.S. in Computer Science';
+        let school = cleanLine || 'University';
+        if (cleanLine.includes('—') || cleanLine.includes('-') || cleanLine.includes(',')) {
+          const parts = cleanLine.split(/[—\-,]/).map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            degree = parts[0];
+            school = parts.slice(1).join(', ');
+          }
+        }
+        extractedEdu.push({
+          degree: degree.length > 50 ? degree.slice(0, 50) : degree,
+          school: school.length > 60 ? school.slice(0, 60) : school,
+          dates: dates,
+          details: 'Academic Honors & Focus'
+        });
+        if (extractedEdu.length >= 2) break;
+      }
+    }
+    if (extractedEdu.length > 0) {
+      this.data.education = extractedEdu;
+    }
+
+    // 10. Certifications extraction
+    const certKeywords = ['Certified', 'AWS', 'GCP', 'Google Cloud', 'Azure', 'Kubernetes', 'CKA', 'CKAD', 'CISSP', 'PMP', 'Scrum', 'CompTIA', 'DeepLearning'];
+    const extractedCerts = [];
+    lines.forEach(l => {
+      if (l.length < 70 && certKeywords.some(ck => l.includes(ck)) && !l.includes('@') && !l.toLowerCase().includes('university')) {
+        const clean = l.replace(/^[•\-\*]\s*/, '').trim();
+        if (clean && !extractedCerts.includes(clean)) {
+          extractedCerts.push(clean);
+        }
+      }
+    });
+    if (extractedCerts.length > 0) {
+      this.data.certifications = extractedCerts.slice(0, 5);
+    }
+
+    // 11. Projects extraction
+    const ghMatches = text.match(/github\.com\/[A-Za-z0-9_-]+\/([A-Za-z0-9_-]+)/g);
+    if (ghMatches && ghMatches.length > 0) {
+      const extractedProjects = [];
+      ghMatches.slice(0, 3).forEach(ghUrl => {
+        const projName = ghUrl.split('/').pop().replace(/[-_]/g, ' ');
+        const capName = projName.charAt(0).toUpperCase() + projName.slice(1);
+        extractedProjects.push({
+          name: capName,
+          link: 'https://' + ghUrl,
+          tools: 'Modern Engineering Stack',
+          description: 'Production system architecture and open-source project repository.'
+        });
+      });
+      if (extractedProjects.length > 0) {
+        this.data.projects = extractedProjects;
+      }
+    }
   }
 
   exportPdf() {
@@ -1755,4 +1877,10 @@ class ResumeManager {
   }
 }
 
-window.resumeManager = new ResumeManager();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.resumeManager = new ResumeManager();
+  });
+} else {
+  window.resumeManager = new ResumeManager();
+}
