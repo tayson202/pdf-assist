@@ -1568,119 +1568,78 @@ class ResumeManager {
   }
 
   exportPdf() {
+    this.syncFromEditor();
+    this.renderPreview();
+
     const candidateName = (this.data.name || 'Resume').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
     Utils.showToast('Generating high-resolution PDF download...', 'info');
 
-    // Create a dedicated, clean container attached directly to document.body
-    // This resolves all blank PDF causes:
-    // 1. html2canvas window scroll offset bug (when page is scrolled down, canvas was blank)
-    // 2. Parent sticky / overflow clipping from .resume-paper-wrapper
-    // 3. Hidden wizard view state when downloading from wizard tab
-    const exportDiv = document.createElement('div');
-    exportDiv.id = 'resume-export-clean-container';
-    exportDiv.className = `resume-paper resume-template--${this.currentTemplate}`;
-    exportDiv.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 794px;
-      min-height: 1120px;
-      padding: 36px 44px;
-      background: #ffffff !important;
-      color: #111827 !important;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      line-height: 1.5;
-      box-sizing: border-box;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      z-index: 9999999;
-      pointer-events: none;
-      visibility: visible !important;
-      display: block !important;
-    `;
+    // If on wizard tab, switch to editor tab so preview element is active in DOM
+    if (this.activeTab === 'wizard') {
+      this.switchTab('editor');
+    }
 
-    exportDiv.innerHTML = this.getTemplateHtml();
-    document.body.appendChild(exportDiv);
-
-    const cleanup = () => {
-      if (exportDiv.parentNode) {
-        exportDiv.parentNode.removeChild(exportDiv);
-      }
-    };
+    const previewEl = document.getElementById('resume-paper-preview');
+    if (!previewEl) {
+      this.fallbackPrintDialog();
+      return;
+    }
 
     if (window.html2pdf) {
       const opt = {
-        margin: [6, 6, 6, 6],
+        margin: 0,
         filename: `${candidateName}_Resume.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           letterRendering: true,
-          logging: false,
-          scrollY: 0,
-          scrollX: 0,
-          windowWidth: 794
+          logging: false
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
       window.html2pdf()
         .set(opt)
-        .from(exportDiv)
+        .from(previewEl)
         .save()
         .then(() => {
-          cleanup();
           Utils.showToast(`Downloaded "${candidateName}_Resume.pdf"!`, 'success');
         })
         .catch(err => {
-          console.warn('html2pdf notice, fallback to print window:', err);
-          cleanup();
+          console.warn('[Resume PDF] html2pdf notice, fallback to print view:', err);
           this.fallbackPrintDialog();
         });
     } else {
-      cleanup();
       this.fallbackPrintDialog();
     }
   }
 
   fallbackPrintDialog() {
     const candidateName = (this.data.name || 'Resume').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
-    const printWindow = window.open('', '_blank', 'width=840,height=1100');
-    if (!printWindow) {
-      window.print();
-      return;
+    
+    let printContainer = document.getElementById('print-resume-sheet');
+    if (!printContainer) {
+      printContainer = document.createElement('div');
+      printContainer.id = 'print-resume-sheet';
+      document.body.appendChild(printContainer);
     }
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${candidateName} - Resume</title>
-        <style>
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          body { background: #ffffff; color: #111827; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 32px 36px; }
-          @media print {
-            body { padding: 0; }
-            @page { margin: 10mm; size: A4 portrait; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="resume-paper resume-template--${this.currentTemplate}">
-          ${this.getTemplateHtml()}
-        </div>
-        <script>
-          window.onload = function() {
-            setTimeout(function() {
-              window.print();
-              window.close();
-            }, 300);
-          };
-        <\/script>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
+    
+    printContainer.className = `resume-paper resume-template--${this.currentTemplate}`;
+    printContainer.innerHTML = this.getTemplateHtml();
+
+    document.body.classList.add('printing-resume');
+
+    // Open print dialog
+    window.print();
+
+    // Clean up after print dialog finishes
+    setTimeout(() => {
+      document.body.classList.remove('printing-resume');
+      if (printContainer && printContainer.parentNode) {
+        printContainer.parentNode.removeChild(printContainer);
+      }
+    }, 1000);
   }
 
   copyAsText() {

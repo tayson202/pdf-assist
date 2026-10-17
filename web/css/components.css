@@ -1318,24 +1318,24 @@
 
 /* Print Rules for 1-Click PDF Generation */
 @media print {
-  body * {
-    visibility: hidden;
+  body.printing-resume > :not(#print-resume-sheet) {
+    display: none !important;
   }
-  #resume-paper-preview, #resume-paper-preview * {
-    visibility: visible;
-  }
-  #resume-paper-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
+  body.printing-resume #print-resume-sheet {
+    display: block !important;
+    position: static !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 16mm !important;
+    padding: 10mm 14mm !important;
+    background: #ffffff !important;
+    color: #111827 !important;
     box-shadow: none !important;
     border: none !important;
-    background: #ffffff !important;
-    color: #000000 !important;
+  }
+  @page {
+    margin: 8mm;
+    size: A4 portrait;
   }
 }
 
