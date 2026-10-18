@@ -773,24 +773,28 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.experience && d.experience.length > 0) ? `
       <div class="resume-section">
         <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:8px;">Experience</h2>
         ${d.experience.map(exp => `
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
-              <strong style="font-size:0.88rem;color:#111827;">${this.escapeHtml(exp.role)}</strong>
-              <span style="font-size:0.78rem;color:#6b7280;font-weight:500;">${this.escapeHtml(exp.dates)}</span>
+              <strong style="font-size:0.88rem;color:#111827;">${this.escapeHtml(exp.role || '')}</strong>
+              <span style="font-size:0.78rem;color:#6b7280;font-weight:500;">${this.escapeHtml(exp.dates || '')}</span>
             </div>
             <div style="display:flex;justify-content:space-between;color:#4b5563;font-size:0.8rem;margin-bottom:4px;">
-              <span>${this.escapeHtml(exp.company)}</span>
-              <span>${this.escapeHtml(exp.location)}</span>
+              <span>${this.escapeHtml(exp.company || '')}</span>
+              <span>${this.escapeHtml(exp.location || '')}</span>
             </div>
-            <ul style="margin:4px 0 0 0;padding-left:18px;font-size:0.8rem;color:#374151;line-height:1.5;">
-              ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
-            </ul>
+            ${(exp.bullets && exp.bullets.length > 0) ? `
+              <ul style="margin:4px 0 0 0;padding-left:18px;font-size:0.8rem;color:#374151;line-height:1.5;">
+                ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
+              </ul>
+            ` : ''}
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.projects && d.projects.length > 0) ? `
         <div class="resume-section">
@@ -798,28 +802,30 @@ class ResumeManager {
           ${d.projects.map(p => `
             <div style="margin-bottom:10px;">
               <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <strong style="font-size:0.86rem;color:#111827;">${this.escapeHtml(p.name)}</strong>
+                <strong style="font-size:0.86rem;color:#111827;">${this.escapeHtml(p.name || '')}</strong>
                 ${p.link ? `<a href="${this.escapeHtml(p.link.startsWith('http') ? p.link : 'https://' + p.link)}" target="_blank" style="font-size:0.75rem;color:#2563eb;text-decoration:none;font-weight:500;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))} ↗</a>` : ''}
               </div>
               ${p.tools ? `<div style="font-size:0.75rem;color:#6b21a8;font-weight:600;margin:1px 0 3px 0;">Technologies: ${this.escapeHtml(p.tools)}</div>` : ''}
-              <p style="font-size:0.8rem;color:#374151;line-height:1.45;margin:0;">${this.escapeHtml(p.description)}</p>
+              <p style="font-size:0.8rem;color:#374151;line-height:1.45;margin:0;">${this.escapeHtml(p.description || '')}</p>
             </div>
           `).join('')}
         </div>
       ` : ''}
 
+      ${(d.education && d.education.length > 0) ? `
       <div class="resume-section">
         <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:8px;">Education</h2>
         ${d.education.map(edu => `
           <div style="margin-bottom:8px;">
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
-              <strong style="font-size:0.85rem;color:#111827;">${this.escapeHtml(edu.degree)}</strong>
-              <span style="font-size:0.78rem;color:#6b7280;">${this.escapeHtml(edu.dates)}</span>
+              <strong style="font-size:0.85rem;color:#111827;">${this.escapeHtml(edu.degree || '')}</strong>
+              <span style="font-size:0.78rem;color:#6b7280;">${this.escapeHtml(edu.dates || '')}</span>
             </div>
-            <div style="font-size:0.8rem;color:#4b5563;">${this.escapeHtml(edu.school)} • <span style="color:#6b7280;">${this.escapeHtml(edu.details)}</span></div>
+            <div style="font-size:0.8rem;color:#4b5563;">${this.escapeHtml(edu.school || '')}${edu.details ? ` • <span style="color:#6b7280;">${this.escapeHtml(edu.details)}</span>` : ''}</div>
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.certifications && d.certifications.length > 0) ? `
         <div class="resume-section" style="margin-top:10px;">
@@ -830,6 +836,7 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.skills && d.skills.length > 0) ? `
       <div class="resume-section" style="margin-top:12px;">
         <h2 class="resume-sec-title" style="font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;font-weight:700;margin-bottom:6px;">Key Competencies &amp; Skills</h2>
         <div style="display:flex;flex-wrap:wrap;gap:5px;">
@@ -838,6 +845,7 @@ class ResumeManager {
           `).join('')}
         </div>
       </div>
+      ` : ''}
     `;
   }
 
@@ -860,20 +868,24 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.experience && d.experience.length > 0) ? `
       <div style="margin-bottom:14px;">
         <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:8px;color:#111827;">Professional Experience</h2>
         ${d.experience.map(exp => `
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;">
-              <span style="font-size:0.86rem;font-weight:700;color:#111827;">${this.escapeHtml(exp.company)} — <span style="font-weight:500;font-style:italic;">${this.escapeHtml(exp.role)}</span></span>
-              <span style="font-size:0.78rem;color:#4b5563;font-weight:600;">${this.escapeHtml(exp.dates)}</span>
+              <span style="font-size:0.86rem;font-weight:700;color:#111827;">${this.escapeHtml(exp.company || '')}${exp.role ? ` — <span style="font-weight:500;font-style:italic;">${this.escapeHtml(exp.role)}</span>` : ''}</span>
+              <span style="font-size:0.78rem;color:#4b5563;font-weight:600;">${this.escapeHtml(exp.dates || '')}</span>
             </div>
-            <ul style="margin:4px 0 0 0;padding-left:18px;font-size:0.8rem;color:#374151;line-height:1.5;">
-              ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
-            </ul>
+            ${(exp.bullets && exp.bullets.length > 0) ? `
+              <ul style="margin:4px 0 0 0;padding-left:18px;font-size:0.8rem;color:#374151;line-height:1.5;">
+                ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
+              </ul>
+            ` : ''}
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.projects && d.projects.length > 0) ? `
         <div style="margin-bottom:14px;">
@@ -881,25 +893,27 @@ class ResumeManager {
           ${d.projects.map(p => `
             <div style="margin-bottom:10px;">
               <div style="display:flex;justify-content:space-between;font-size:0.84rem;">
-                <strong style="color:#111827;">${this.escapeHtml(p.name)}</strong>
+                <strong style="color:#111827;">${this.escapeHtml(p.name || '')}</strong>
                 ${p.link ? `<span style="font-size:0.75rem;color:#4b5563;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))}</span>` : ''}
               </div>
               ${p.tools ? `<div style="font-size:0.75rem;color:#4b5563;font-style:italic;">Stack: ${this.escapeHtml(p.tools)}</div>` : ''}
-              <p style="font-size:0.8rem;color:#374151;line-height:1.45;margin:2px 0 0 0;">${this.escapeHtml(p.description)}</p>
+              <p style="font-size:0.8rem;color:#374151;line-height:1.45;margin:2px 0 0 0;">${this.escapeHtml(p.description || '')}</p>
             </div>
           `).join('')}
         </div>
       ` : ''}
 
+      ${(d.education && d.education.length > 0) ? `
       <div style="margin-bottom:14px;">
         <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:8px;color:#111827;">Education &amp; Credentials</h2>
         ${d.education.map(edu => `
           <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px;">
-            <span><strong>${this.escapeHtml(edu.school)}</strong>, ${this.escapeHtml(edu.degree)}</span>
-            <span style="color:#6b7280;">${this.escapeHtml(edu.dates)}</span>
+            <span><strong>${this.escapeHtml(edu.school || '')}</strong>${edu.degree ? `, ${this.escapeHtml(edu.degree)}` : ''}</span>
+            <span style="color:#6b7280;">${this.escapeHtml(edu.dates || '')}</span>
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.certifications && d.certifications.length > 0) ? `
         <div style="margin-bottom:14px;">
@@ -908,10 +922,12 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.skills && d.skills.length > 0) ? `
       <div>
         <h2 style="font-size:0.85rem;font-family:serif;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #d1d5db;padding-bottom:3px;margin-bottom:6px;color:#111827;">Core Competencies</h2>
         <p style="font-size:0.8rem;color:#374151;line-height:1.6;margin:0;">${d.skills.map(this.escapeHtml).join(' • ')}</p>
       </div>
+      ` : ''}
     `;
   }
 
@@ -938,20 +954,24 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.experience && d.experience.length > 0) ? `
       <div style="margin-bottom:14px;">
         <h2 style="font-size:0.95rem;font-weight:700;color:#1e1b4b;margin-bottom:8px;">Experience</h2>
         ${d.experience.map(exp => `
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;">
-              <strong style="color:#0f172a;font-size:0.88rem;">${this.escapeHtml(exp.role)} @ ${this.escapeHtml(exp.company)}</strong>
-              <span style="font-size:0.75rem;background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:999px;font-weight:600;">${this.escapeHtml(exp.dates)}</span>
+              <strong style="color:#0f172a;font-size:0.88rem;">${this.escapeHtml(exp.role || '')}${exp.company ? ` @ ${this.escapeHtml(exp.company)}` : ''}</strong>
+              <span style="font-size:0.75rem;background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:999px;font-weight:600;">${this.escapeHtml(exp.dates || '')}</span>
             </div>
-            <ul style="margin:4px 0 0 0;padding-left:18px;font-size:0.8rem;color:#475569;line-height:1.5;">
-              ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
-            </ul>
+            ${(exp.bullets && exp.bullets.length > 0) ? `
+              <ul style="margin:4px 0 0 0;padding-left:18px;font-size:0.8rem;color:#475569;line-height:1.5;">
+                ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
+              </ul>
+            ` : ''}
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.projects && d.projects.length > 0) ? `
         <div style="margin-bottom:14px;">
@@ -960,10 +980,10 @@ class ResumeManager {
             ${d.projects.map(p => `
               <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:10px 12px;border-radius:6px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                  <strong style="font-size:0.82rem;color:#0f172a;">${this.escapeHtml(p.name)}</strong>
+                  <strong style="font-size:0.82rem;color:#0f172a;">${this.escapeHtml(p.name || '')}</strong>
                 </div>
                 ${p.tools ? `<div style="font-size:0.72rem;color:#4f46e5;font-weight:600;margin:2px 0;">${this.escapeHtml(p.tools)}</div>` : ''}
-                <p style="font-size:0.75rem;color:#475569;line-height:1.4;margin:2px 0;">${this.escapeHtml(p.description)}</p>
+                <p style="font-size:0.75rem;color:#475569;line-height:1.4;margin:2px 0;">${this.escapeHtml(p.description || '')}</p>
                 ${p.link ? `<a href="${this.escapeHtml(p.link.startsWith('http') ? p.link : 'https://' + p.link)}" target="_blank" style="font-size:0.72rem;color:#0284c7;text-decoration:none;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))} ↗</a>` : ''}
               </div>
             `).join('')}
@@ -971,13 +991,14 @@ class ResumeManager {
         </div>
       ` : ''}
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="display:grid;grid-template-columns:${(d.education && d.education.length > 0 && d.skills && d.skills.length > 0) ? '1fr 1fr' : '1fr'};gap:16px;">
+        ${(d.education && d.education.length > 0) ? `
         <div>
           <h2 style="font-size:0.9rem;font-weight:700;color:#1e1b4b;margin-bottom:6px;">Education</h2>
           ${d.education.map(edu => `
             <div style="font-size:0.8rem;color:#334155;margin-bottom:4px;">
-              <strong>${this.escapeHtml(edu.degree)}</strong><br/>
-              <span>${this.escapeHtml(edu.school)} (${this.escapeHtml(edu.dates)})</span>
+              <strong>${this.escapeHtml(edu.degree || '')}</strong><br/>
+              <span>${this.escapeHtml(edu.school || '')} (${this.escapeHtml(edu.dates || '')})</span>
             </div>
           `).join('')}
           ${(d.certifications && d.certifications.length > 0) ? `
@@ -987,6 +1008,8 @@ class ResumeManager {
             </div>
           ` : ''}
         </div>
+        ` : ''}
+        ${(d.skills && d.skills.length > 0) ? `
         <div>
           <h2 style="font-size:0.9rem;font-weight:700;color:#1e1b4b;margin-bottom:6px;">Skills</h2>
           <div style="display:flex;flex-wrap:wrap;gap:4px;">
@@ -995,6 +1018,7 @@ class ResumeManager {
             `).join('')}
           </div>
         </div>
+        ` : ''}
       </div>
     `;
   }
@@ -1018,20 +1042,24 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.experience && d.experience.length > 0) ? `
       <div style="margin-bottom:12px;">
         <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 6px 0;color:#000;">Experience</h2>
         ${d.experience.map(exp => `
           <div style="margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
-              <strong>${this.escapeHtml(exp.company)} — ${this.escapeHtml(exp.role)}</strong>
-              <span>${this.escapeHtml(exp.dates)}</span>
+              <strong>${this.escapeHtml(exp.company || '')}${exp.role ? ` — ${this.escapeHtml(exp.role)}` : ''}</strong>
+              <span>${this.escapeHtml(exp.dates || '')}</span>
             </div>
-            <ul style="margin:3px 0 0 0;padding-left:18px;font-size:0.78rem;line-height:1.45;color:#111;">
-              ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
-            </ul>
+            ${(exp.bullets && exp.bullets.length > 0) ? `
+              <ul style="margin:3px 0 0 0;padding-left:18px;font-size:0.78rem;line-height:1.45;color:#111;">
+                ${exp.bullets.map(b => `<li>${this.escapeHtml(b)}</li>`).join('')}
+              </ul>
+            ` : ''}
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.projects && d.projects.length > 0) ? `
         <div style="margin-bottom:12px;">
@@ -1039,24 +1067,26 @@ class ResumeManager {
           ${d.projects.map(p => `
             <div style="margin-bottom:8px;">
               <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
-                <strong>${this.escapeHtml(p.name)}${p.tools ? ` <span style="font-weight:normal;color:#444;">(${this.escapeHtml(p.tools)})</span>` : ''}</strong>
+                <strong>${this.escapeHtml(p.name || '')}${p.tools ? ` <span style="font-weight:normal;color:#444;">(${this.escapeHtml(p.tools)})</span>` : ''}</strong>
                 ${p.link ? `<span style="font-size:0.75rem;color:#333;">${this.escapeHtml(p.link.replace(/^https?:\/\//, ''))}</span>` : ''}
               </div>
-              <p style="font-size:0.78rem;line-height:1.4;margin:2px 0 0 0;color:#111;">• ${this.escapeHtml(p.description)}</p>
+              <p style="font-size:0.78rem;line-height:1.4;margin:2px 0 0 0;color:#111;">• ${this.escapeHtml(p.description || '')}</p>
             </div>
           `).join('')}
         </div>
       ` : ''}
 
+      ${(d.education && d.education.length > 0) ? `
       <div style="margin-bottom:12px;">
         <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 4px 0;color:#000;">Education</h2>
         ${d.education.map(edu => `
           <div style="display:flex;justify-content:space-between;font-size:0.8rem;">
-            <span><strong>${this.escapeHtml(edu.school)}</strong> — ${this.escapeHtml(edu.degree)}</span>
-            <span>${this.escapeHtml(edu.dates)}</span>
+            <span><strong>${this.escapeHtml(edu.school || '')}</strong>${edu.degree ? ` — ${this.escapeHtml(edu.degree)}` : ''}</span>
+            <span>${this.escapeHtml(edu.dates || '')}</span>
           </div>
         `).join('')}
       </div>
+      ` : ''}
 
       ${(d.certifications && d.certifications.length > 0) ? `
         <div style="margin-bottom:12px;">
@@ -1065,10 +1095,12 @@ class ResumeManager {
         </div>
       ` : ''}
 
+      ${(d.skills && d.skills.length > 0) ? `
       <div>
         <h2 style="font-size:0.85rem;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #666;margin:0 0 4px 0;color:#000;">Skills</h2>
         <p style="font-size:0.78rem;margin:0;color:#111;">${d.skills.map(this.escapeHtml).join(', ')}</p>
       </div>
+      ` : ''}
     `;
   }
 
@@ -1291,9 +1323,28 @@ class ResumeManager {
   }
 
   aiEnhanceSummary() {
-    const role = this.data.title || 'Software Engineer';
-    const enhanced = `High-impact ${role} with extensive experience architecting mission-critical distributed systems, scalable microservices, and user-centric web platforms. Proven record of accelerating product velocity, optimizing computational throughput, and elevating engineering standards across cross-functional teams.`;
+    const role = this.data.title || 'Professional';
+    const currentSummary = (this.data.summary || '').trim();
+    const topSkills = (this.data.skills || []).slice(0, 6).join(', ');
     
+    let enhanced = '';
+    if (currentSummary && currentSummary.length > 20) {
+      // Elevate the candidate's actual summary with impactful action verbs and ATS structure
+      let polished = currentSummary;
+      if (!/^(?:results-driven|proven|high-impact|accomplished|seasoned|experienced|innovative|dedicated)/i.test(polished)) {
+        polished = `Results-driven ${role}. ${polished}`;
+      }
+      if (topSkills && !polished.toLowerCase().includes(topSkills.toLowerCase().slice(0, 15))) {
+        polished = `${polished} Core competencies include ${topSkills}.`;
+      }
+      enhanced = polished.replace(/\s+/g, ' ').trim();
+    } else {
+      // Build tailored summary strictly from candidate's actual title, skills, and experience
+      const expCount = (this.data.experience || []).length;
+      const expHint = expCount > 0 ? `across ${expCount}+ industry position${expCount > 1 ? 's' : ''}` : 'in fast-paced professional environments';
+      enhanced = `Results-oriented ${role} with demonstrated success ${expHint}.${topSkills ? ` Core proficiencies include ${topSkills}.` : ''} Committed to operational excellence, rigorous execution, and high-impact delivery.`;
+    }
+
     const summaryInput = document.getElementById('res-summary');
     if (summaryInput) {
       summaryInput.value = enhanced;
@@ -1301,7 +1352,7 @@ class ResumeManager {
     this.data.summary = enhanced;
     this.renderPreview();
     this.updateAtsScore();
-    Utils.showToast('AI enhanced summary with action verbs & leadership keywords!', 'success');
+    Utils.showToast('AI polished your summary based on your actual profile & skills!', 'success');
   }
 
   loadSample() {
@@ -1375,11 +1426,97 @@ class ResumeManager {
     this.setTemplate('modern');
   }
 
+  createEmptyCandidate() {
+    return {
+      name: '',
+      title: '',
+      email: '',
+      phone: '',
+      location: '',
+      linkedin: '',
+      github: '',
+      portfolio: '',
+      customLink: '',
+      summary: '',
+      experience: [],
+      projects: [],
+      education: [],
+      skills: [],
+      certifications: []
+    };
+  }
+
+  cleanCandidateNameFromFilename(filename) {
+    if (!filename) return 'Candidate';
+    let base = filename.replace(/\.[^/.]+$/, '');
+    base = base.replace(/[-_.]/g, ' ');
+    base = base.replace(/\b(?:resume|cv|curriculum|vitae|draft|final|v\d+|\d{4}|updated?|official)\b/gi, ' ');
+    base = base.replace(/\s+/g, ' ').trim();
+    if (!base || base.length > 35) return 'Candidate';
+    // Title case
+    return base.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  }
+
+  async extractStructuredTextFromPdf(pdfDoc) {
+    const pageTexts = [];
+    const maxPages = Math.min(pdfDoc.numPages, 20);
+
+    for (let p = 1; p <= maxPages; p++) {
+      const page = await pdfDoc.getPage(p);
+      const textContent = await page.getTextContent();
+      if (!textContent || !textContent.items || !textContent.items.length) continue;
+
+      // Sort items by Y (descending) and X (ascending) to reconstruct natural reading layout
+      const items = [...textContent.items].sort((a, b) => {
+        const yA = a.transform ? a.transform[5] : 0;
+        const yB = b.transform ? b.transform[5] : 0;
+        const diffY = yB - yA;
+        if (Math.abs(diffY) > 3.2) return diffY;
+        const xA = a.transform ? a.transform[4] : 0;
+        const xB = b.transform ? b.transform[4] : 0;
+        return xA - xB;
+      });
+
+      const lines = [];
+      let currentLineItems = [];
+      let lastY = null;
+
+      for (const it of items) {
+        const str = (it.str || '').trim();
+        if (!str) continue;
+        const y = it.transform ? it.transform[5] : 0;
+
+        if (lastY !== null && Math.abs(lastY - y) > 3.5) {
+          if (currentLineItems.length > 0) {
+            lines.push(currentLineItems.join(' '));
+            currentLineItems = [];
+          }
+        }
+        currentLineItems.push(str);
+        lastY = y;
+
+        if (it.hasEOL) {
+          if (currentLineItems.length > 0) {
+            lines.push(currentLineItems.join(' '));
+            currentLineItems = [];
+            lastY = null;
+          }
+        }
+      }
+      if (currentLineItems.length > 0) {
+        lines.push(currentLineItems.join(' '));
+      }
+      pageTexts.push(lines.join('\n'));
+    }
+    return pageTexts.join('\n\n');
+  }
+
   async handleImportFile(file) {
     if (!file) return;
     const nameLower = file.name.toLowerCase();
     const validExtensions = ['.pdf', '.docx', '.doc', '.txt', '.json'];
-    const isValid = validExtensions.some(ext => nameLower.endsWith(ext)) || file.type.includes('pdf') || file.type.includes('word') || file.type.includes('json') || file.type.includes('text');
+    const isValid = validExtensions.some(ext => nameLower.endsWith(ext)) ||
+      file.type.includes('pdf') || file.type.includes('word') || file.type.includes('json') || file.type.includes('text');
 
     if (!isValid) {
       Utils.showToast('Please upload a PDF, Word (.docx), JSON, or TXT resume file.', 'error');
@@ -1388,48 +1525,54 @@ class ResumeManager {
 
     Utils.showToast(`Importing and parsing "${file.name}"...`, 'info');
 
+    // 1. CLEAR ANY PREVIOUS OR MOCK RESUME DATA (Zero fake data policy)
+    this.data = this.createEmptyCandidate();
+
     try {
       let rawText = '';
+      let htmlText = '';
 
       if (nameLower.endsWith('.json')) {
         const text = await file.text();
         const parsed = JSON.parse(text);
-        if (parsed.resume) Object.assign(this.data, parsed.resume);
-        else Object.assign(this.data, parsed);
+        const sourceData = parsed.resume || parsed;
+        // Copy only actual candidate fields
+        Object.keys(this.data).forEach(k => {
+          if (sourceData[k] !== undefined) {
+            this.data[k] = sourceData[k];
+          }
+        });
+        if (!this.data.name) this.data.name = this.cleanCandidateNameFromFilename(file.name);
         this.populateEditor();
         this.renderPreview();
         this.updateAtsScore();
         this.analyzeJobMatch();
-        Utils.showToast(`Imported structured resume data from "${file.name}"!`, 'success');
+        Utils.showToast(`Imported structured resume data for "${this.data.name}"!`, 'success');
         return;
       }
 
       if (nameLower.endsWith('.docx') && window.mammoth) {
         const arrayBuffer = await file.arrayBuffer();
-        const res = await mammoth.extractRawText({ arrayBuffer });
-        rawText = res.value || '';
+        const resRaw = await mammoth.extractRawText({ arrayBuffer });
+        rawText = resRaw.value || '';
+        try {
+          const resHtml = await mammoth.convertToHtml({ arrayBuffer });
+          htmlText = resHtml.value || '';
+        } catch (_) {}
       } else if (nameLower.endsWith('.pdf') && window.pdfjsLib) {
         const arrayBuffer = await file.arrayBuffer();
         const typedArray = new Uint8Array(arrayBuffer);
         const loadingTask = pdfjsLib.getDocument({ data: typedArray, isEvalSupported: false });
         const pdfDoc = await loadingTask.promise;
-        const pageTexts = [];
-        for (let i = 1; i <= Math.min(pdfDoc.numPages, 10); i++) {
-          const page = await pdfDoc.getPage(i);
-          const content = await page.getTextContent();
-          pageTexts.push(content.items.map(item => item.str).join(' '));
-        }
-        rawText = pageTexts.join('\n');
+        rawText = await this.extractStructuredTextFromPdf(pdfDoc);
       } else {
         rawText = await file.text();
       }
 
-      if (rawText && rawText.trim().length > 20) {
-        this.extractResumeFieldsFromText(rawText, file.name);
+      if (rawText && rawText.trim().length > 10) {
+        this.data = this.parseResumeFromText(rawText, file.name, htmlText);
       } else {
-        const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-        this.data.name = baseName.length < 30 ? baseName : 'Candidate Name';
-        this.data.summary = `Extracted from uploaded document ${file.name}. Seasoned professional with proven track record of engineering leadership and high performance.`;
+        this.data.name = this.cleanCandidateNameFromFilename(file.name);
       }
 
       this.populateEditor();
@@ -1437,174 +1580,447 @@ class ResumeManager {
       this.renderPreview();
       this.updateAtsScore();
       this.analyzeJobMatch();
-      Utils.showToast(`Successfully extracted resume for "${this.data.name}"!`, 'success');
+
+      const expCount = (this.data.experience || []).length;
+      const skillCount = (this.data.skills || []).length;
+      const eduCount = (this.data.education || []).length;
+      Utils.showToast(`Extracted "${this.data.name}": ${expCount} job${expCount === 1 ? '' : 's'}, ${skillCount} skills, ${eduCount} degree${eduCount === 1 ? '' : 's'}!`, 'success');
     } catch (err) {
       console.error('[Resume Parser] Error:', err);
       Utils.showToast(`Notice: Error parsing file: ${err.message}`, 'error');
     }
   }
 
-  extractResumeFieldsFromText(text, filename) {
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    if (!lines.length) return;
-
-    // 1. Email extraction
-    const emailMatch = text.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/);
-    if (emailMatch) this.data.email = emailMatch[0];
-
-    // 2. Phone extraction
-    const phoneMatch = text.match(/(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/);
-    if (phoneMatch) this.data.phone = phoneMatch[0];
-
-    // 3. Links
-    const linkedinMatch = text.match(/linkedin\.com\/in\/[A-Za-z0-9_-]+/i);
-    if (linkedinMatch) this.data.linkedin = linkedinMatch[0];
-    const githubMatch = text.match(/github\.com\/[A-Za-z0-9_-]+/i);
-    if (githubMatch) this.data.github = githubMatch[0];
-
-    // 4. Candidate Name: First line that doesn't contain email or phone or links
-    let nameCandidate = '';
-    for (let i = 0; i < Math.min(lines.length, 5); i++) {
-      const line = lines[i];
-      if (!line.includes('@') && !line.includes('http') && !line.includes('www') && !/\d{4}/.test(line) && line.length < 40 && line.length > 2) {
-        nameCandidate = line;
-        break;
-      }
-    }
-    if (nameCandidate) this.data.name = nameCandidate;
-    else {
-      const baseName = filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-      this.data.name = baseName.length < 30 ? baseName : 'Candidate Name';
+  parseResumeFromText(rawText, filename, htmlContent = '') {
+    const candidate = this.createEmptyCandidate();
+    if (!rawText || !rawText.trim()) {
+      candidate.name = this.cleanCandidateNameFromFilename(filename);
+      return candidate;
     }
 
-    // 5. Title
-    const titleCandidates = ['Engineer', 'Developer', 'Architect', 'Manager', 'Lead', 'Designer', 'Scientist', 'Consultant', 'Analyst', 'Specialist', 'Director'];
-    for (let i = 1; i < Math.min(lines.length, 7); i++) {
-      const line = lines[i];
-      if (titleCandidates.some(tc => line.toLowerCase().includes(tc.toLowerCase())) && line.length < 50) {
-        this.data.title = line;
-        break;
-      }
+    const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return candidate;
+
+    // --- 1. CONTACT INFO & LINKS EXTRACTION ---
+    // Email
+    const emailMatch = rawText.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/);
+    if (emailMatch) candidate.email = emailMatch[0].toLowerCase();
+
+    // Phone (North American, UK, European, Middle Eastern, and international formats)
+    const phoneMatch = rawText.match(/(?:\+?\d{1,3}[\s-]?)?\(?\d{2,4}\)?[\s.-]?\d{3}[\s.-]?\d{3,4}\b/);
+    if (phoneMatch) candidate.phone = phoneMatch[0].trim();
+
+    // LinkedIn
+    const linkedinMatch = rawText.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/([A-Za-z0-9_-]+)/i);
+    if (linkedinMatch) {
+      candidate.linkedin = linkedinMatch[0].replace(/^https?:\/\//, '');
     }
 
-    // 6. Summary: Find paragraph of text between 50 and 600 chars
-    const summaryMatch = text.match(/(?:summary|profile|about|professional summary)[\s:]*([^\n]+(?:\n[^\n]+){1,4})/i);
-    if (summaryMatch && summaryMatch[1]) {
-      this.data.summary = summaryMatch[1].replace(/[\r\n]+/g, ' ').trim();
-    } else {
-      const longParagraph = lines.find(l => l.length > 80 && l.length < 500 && !l.includes('•') && !l.includes('- '));
-      if (longParagraph) this.data.summary = longParagraph;
+    // GitHub
+    const githubMatch = rawText.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/([A-Za-z0-9_-]+)(?!\/(?:features|pulls|issues|explore|settings))/i);
+    if (githubMatch) {
+      candidate.github = githubMatch[0].replace(/^https?:\/\//, '');
     }
 
-    // 7. Skills extraction
-    const techDictionary = [
-      'Python', 'FastAPI', 'Django', 'Flask', 'JavaScript', 'TypeScript', 'React', 'Vue', 'Angular',
-      'Node.js', 'Next.js', 'HTML5', 'CSS3', 'Tailwind', 'SQL', 'PostgreSQL', 'MySQL', 'MongoDB',
-      'Redis', 'Kafka', 'GraphQL', 'REST APIs', 'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure',
-      'Git', 'CI/CD', 'Linux', 'Microservices', 'RAG', 'Machine Learning', 'TensorFlow', 'PyTorch',
-      'C++', 'C#', 'Java', 'Golang', 'Rust', 'PHP', 'Swift', 'Kotlin', 'Flutter', 'Figma'
+    // Portfolio / Website / Custom Link
+    const urlMatches = rawText.match(/https?:\/\/[^\s"',;()]+/gi) || [];
+    const customUrls = urlMatches.filter(u => !u.includes('linkedin.com') && !u.includes('github.com'));
+    if (customUrls[0]) candidate.portfolio = customUrls[0];
+    if (customUrls[1]) candidate.customLink = customUrls[1];
+
+    // --- 2. SECTION BOUNDARY CLASSIFIER ---
+    const sectionHeaders = [
+      { key: 'summary', regex: /^(?:professional\s+|career\s+|executive\s+)?(?:summary|profile|about\s*(?:me)?|objective|overview)$/i },
+      { key: 'experience', regex: /^(?:work\s+|professional\s+|employment\s+|career\s+|relevant\s+)?(?:experience|history|employment)$/i },
+      { key: 'education', regex: /^(?:education(?:al\s+background)?|academic\s+(?:background|history|credentials)|degrees?|qualifications)$/i },
+      { key: 'projects', regex: /^(?:featured\s+|key\s+|personal\s+|technical\s+|selected\s+)?projects?|portfolio$/i },
+      { key: 'skills', regex: /^(?:key\s+|core\s+|technical\s+)?skills?|(?:core\s+)?competencies|technologies|tools\s*(?:&|and)?\s*technologies|areas\s+of\s+expertise|proficiencies$/i },
+      { key: 'certifications', regex: /^(?:licenses\s*(?:&|and)\s*)?certifications?|certificates?|credentials|courses\s*(?:&|and)\s*certifications$/i }
     ];
+
+    const sections = {
+      header: [],
+      summary: [],
+      experience: [],
+      education: [],
+      projects: [],
+      skills: [],
+      certifications: []
+    };
+
+    let currentSection = 'header';
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const cleanLine = line.replace(/^[#*•\-_—:=|\s]+|[#*•\-_—:=|\s]+$/g, '').trim();
+      let matchedKey = null;
+
+      if (cleanLine.length >= 3 && cleanLine.length <= 40 && !cleanLine.includes('@') && !/\d{4}/.test(cleanLine)) {
+        for (const sh of sectionHeaders) {
+          if (sh.regex.test(cleanLine)) {
+            matchedKey = sh.key;
+            break;
+          }
+        }
+      }
+
+      if (matchedKey) {
+        currentSection = matchedKey;
+      } else {
+        if (sections[currentSection]) {
+          sections[currentSection].push(line);
+        }
+      }
+    }
+
+    // --- 3. CANDIDATE NAME ---
+    const headerLines = sections.header.length > 0 ? sections.header : lines.slice(0, 8);
+    let extractedName = '';
+    for (let i = 0; i < Math.min(headerLines.length, 5); i++) {
+      const l = headerLines[i].replace(/^[#*•\-_—:=|\s]+|[#*•\-_—:=|\s]+$/g, '').trim();
+      if (!l) continue;
+      if (l.includes('@') || /https?:|www\.|\.com|\.io|\.org|\.net/i.test(l)) continue;
+      if (/\+?\d{3,}/.test(l)) continue;
+      if (/^(?:curriculum\s+vitae|resume|cv|portfolio|profile)$/i.test(l)) continue;
+      if (l.length >= 2 && l.length <= 40 && !/[;{}[\]<>_+=~]/.test(l)) {
+        extractedName = l;
+        break;
+      }
+    }
+    candidate.name = extractedName || this.cleanCandidateNameFromFilename(filename);
+
+    // --- 4. PROFESSIONAL TITLE ---
+    const titleRegex = /(?:software|full[\s-]?stack|frontend|backend|cloud|systems?|devops|data|ai|machine\s+learning|mobile|android|ios|qa|security|network|site\s+reliability|solutions?|product|project|lead|senior|junior|principal|associate|executive|consultant|analyst|specialist|manager|director|architect|engineer|developer|designer|administrator)/i;
+    let extractedTitle = '';
+    for (let i = 0; i < Math.min(headerLines.length, 8); i++) {
+      const l = headerLines[i];
+      if (l === candidate.name) continue;
+      if (l.includes('@') || /https?:/i.test(l) || /\+?\d{3,}/.test(l)) continue;
+      if (titleRegex.test(l) && l.length < 65) {
+        extractedTitle = l.replace(/^[•|\-_—\s]+|[•|\-_—\s]+$/g, '').trim();
+        break;
+      }
+    }
+    candidate.title = extractedTitle;
+
+    // --- 5. LOCATION ---
+    const locRegex = /\b([A-Z][a-zA-Z\s.-]+,\s*[A-Z]{2}\b|[A-Z][a-zA-Z\s.-]+,\s*[A-Z][a-zA-Z\s.-]+|\bRemote\b)/;
+    for (let i = 0; i < Math.min(headerLines.length, 8); i++) {
+      const l = headerLines[i];
+      if (l === candidate.name || l === candidate.title) continue;
+      if (l.includes('@') || /https?:/i.test(l)) continue;
+      const m = l.match(locRegex);
+      if (m && m[0].length < 40) {
+        candidate.location = m[0].trim();
+        break;
+      }
+    }
+
+    // --- 6. PROFESSIONAL SUMMARY ---
+    if (sections.summary.length > 0) {
+      candidate.summary = sections.summary.join(' ').replace(/\s+/g, ' ').trim();
+    } else {
+      // Look for a top-level paragraph in header that is between 50 and 500 characters
+      const candidateSummaryLine = headerLines.find(l => {
+        return l !== candidate.name && l !== candidate.title && l.length > 60 && l.length < 500 && !l.includes('@');
+      });
+      if (candidateSummaryLine) {
+        candidate.summary = candidateSummaryLine.trim();
+      }
+    }
+
+    // --- 7. WORK EXPERIENCE (100% REAL USER WORK & REAL BULLETS) ---
+    candidate.experience = this.parseExperienceSection(sections.experience, rawText);
+    if (!candidate.title && candidate.experience.length > 0 && candidate.experience[0].role) {
+      candidate.title = candidate.experience[0].role;
+    }
+    if (!candidate.title) candidate.title = 'Professional Specialist';
+
+    // --- 8. EDUCATION (100% REAL USER EDUCATION) ---
+    candidate.education = this.parseEducationSection(sections.education, rawText);
+
+    // --- 9. PROJECTS (100% REAL USER PROJECTS) ---
+    candidate.projects = this.parseProjectsSection(sections.projects, rawText);
+
+    // --- 10. SKILLS ---
+    candidate.skills = this.parseSkillsSection(sections.skills, rawText);
+
+    // --- 11. CERTIFICATIONS ---
+    candidate.certifications = this.parseCertificationsSection(sections.certifications, rawText);
+
+    return candidate;
+  }
+
+  parseExperienceSection(expLines, rawText) {
+    const extractedExp = [];
+    if (!expLines || !expLines.length) return extractedExp;
+
+    const datePattern = /\b(?:(?:19|20)\d\d|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*(?:19|20)\d\d|\b\d{1,2}\/\d{2,4})\s*(?:-|–|—|to)\s*(?:(?:19|20)\d\d|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*(?:19|20)\d\d|\b\d{1,2}\/\d{2,4}|Present|Current|Now)\b|\b(?:19|20)\d\d\s*[-–—]\s*(?:Present|Current)\b/i;
+
+    let currentJob = null;
+
+    for (let i = 0; i < expLines.length; i++) {
+      const line = expLines[i].trim();
+      if (!line) continue;
+
+      const dateMatch = line.match(datePattern);
+      const isBullet = /^[•\-\*▪▫–—›>✓\u2022\u25cf\u25aa]\s*/.test(line) || /^\d+\.\s+/.test(line);
+
+      // Check if line looks like a job header (has date or precedes date)
+      if (dateMatch && !isBullet) {
+        if (currentJob) {
+          extractedExp.push(currentJob);
+        }
+
+        const dates = dateMatch[0].trim();
+        const lineWithoutDate = line.replace(dates, '').replace(/^[|•–—,\s]+|[|•–—,\s]+$/g, '').trim();
+
+        let role = '';
+        let company = '';
+        let location = '';
+
+        if (lineWithoutDate.includes('|') || lineWithoutDate.includes('—') || lineWithoutDate.includes('–') || lineWithoutDate.includes(' - ') || lineWithoutDate.includes(',')) {
+          const parts = lineWithoutDate.split(/[|—–]|\s-\s|,/).map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            role = parts[0];
+            company = parts[1];
+            if (parts[2]) location = parts[2];
+          } else {
+            role = lineWithoutDate;
+          }
+        } else if (lineWithoutDate) {
+          role = lineWithoutDate;
+        }
+
+        // If role was on the line above
+        if (!company && i > 0 && !expLines[i - 1].match(datePattern) && expLines[i - 1].length < 50 && !/^[•\-\*]/.test(expLines[i - 1])) {
+          company = expLines[i - 1].trim();
+        }
+
+        currentJob = {
+          role: role || 'Role / Position',
+          company: company || 'Company',
+          location: location || '',
+          dates: dates,
+          bullets: []
+        };
+      } else if (currentJob) {
+        // Collect real user bullets or descriptive accomplishments
+        const cleanBullet = line.replace(/^[•\-\*▪▫–—›>✓\u2022\u25cf\u25aa]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+        if (cleanBullet.length > 5) {
+          if (isBullet || cleanBullet.length > 25) {
+            currentJob.bullets.push(cleanBullet);
+          } else if (currentJob.bullets.length > 0) {
+            // Append continuation line to previous bullet
+            const lastIdx = currentJob.bullets.length - 1;
+            currentJob.bullets[lastIdx] += ' ' + cleanBullet;
+          } else {
+            currentJob.bullets.push(cleanBullet);
+          }
+        }
+      }
+    }
+
+    if (currentJob) {
+      extractedExp.push(currentJob);
+    }
+
+    // Clean bullets to remove any blank items
+    extractedExp.forEach(job => {
+      job.bullets = (job.bullets || []).filter(b => b.trim().length > 3);
+    });
+
+    return extractedExp.slice(0, 6);
+  }
+
+  parseEducationSection(eduLines, rawText) {
+    const extractedEdu = [];
+    if (!eduLines || !eduLines.length) return extractedEdu;
+
+    const degreeKeywords = /\b(?:B\.?S(?:\.|\b)|B\.?A(?:\.|\b)|B\.?Sc(?:\.|\b)|Bachelor(?:'s)?|M\.?S(?:\.|\b)|M\.?A(?:\.|\b)|M\.?Sc(?:\.|\b)|Master(?:'s)?|Ph\.?D(?:\.|\b)|Doctorate|MBA|B\.?Tech|M\.?Tech|Associate(?:'s)?|Diploma|High\s+School)\b/i;
+    const schoolKeywords = /\b(?:University|College|Institute|Academy|School|Polytechnic)\b/i;
+    const datePattern = /\b(19\d\d|20\d\d)(?:\s*[-–—to]+\s*(19\d\d|20\d\d|Present|Current))?\b/i;
+
+    let currentEdu = null;
+
+    for (let i = 0; i < eduLines.length; i++) {
+      const line = eduLines[i].trim();
+      if (!line) continue;
+
+      const dateMatch = line.match(datePattern);
+      const hasDegree = degreeKeywords.test(line);
+      const hasSchool = schoolKeywords.test(line);
+
+      if (hasDegree || hasSchool || (dateMatch && !currentEdu)) {
+        if (currentEdu) {
+          extractedEdu.push(currentEdu);
+        }
+
+        const dates = dateMatch ? dateMatch[0].trim() : '';
+        const lineClean = line.replace(dates, '').replace(/^[|•–—,\s]+|[|•–—,\s]+$/g, '').trim();
+
+        let degree = '';
+        let school = '';
+        let details = '';
+
+        if (lineClean.includes('—') || lineClean.includes('–') || lineClean.includes('|') || lineClean.includes(',')) {
+          const parts = lineClean.split(/[|—–]|\s-\s|,/).map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            if (degreeKeywords.test(parts[0])) {
+              degree = parts[0];
+              school = parts[1];
+            } else {
+              school = parts[0];
+              degree = parts[1];
+            }
+            if (parts[2]) details = parts[2];
+          } else {
+            degree = lineClean;
+          }
+        } else {
+          if (hasDegree) degree = lineClean;
+          else school = lineClean;
+        }
+
+        currentEdu = {
+          degree: degree || 'Degree',
+          school: school || 'Institution',
+          dates: dates || '',
+          details: details || ''
+        };
+      } else if (currentEdu && !currentEdu.details && line.length < 80) {
+        // Collect actual user details (e.g. GPA, Honors, Major)
+        currentEdu.details = line.replace(/^[•\-\*]\s*/, '').trim();
+      }
+    }
+
+    if (currentEdu) {
+      extractedEdu.push(currentEdu);
+    }
+
+    return extractedEdu.slice(0, 4);
+  }
+
+  parseProjectsSection(projLines, rawText) {
+    const extractedProjects = [];
+    if (!projLines || !projLines.length) return extractedProjects;
+
+    let currentProj = null;
+
+    for (let i = 0; i < projLines.length; i++) {
+      const line = projLines[i].trim();
+      if (!line) continue;
+
+      const urlMatch = line.match(/https?:\/\/[^\s"',;()]+|github\.com\/[^\s"',;()]+/i);
+      const isBullet = /^[•\-\*▪▫–—›>✓]\s*/.test(line);
+
+      // Check for project title line
+      if (!isBullet && (line.length < 60 || urlMatch)) {
+        if (currentProj) {
+          extractedProjects.push(currentProj);
+        }
+
+        let link = urlMatch ? urlMatch[0] : '';
+        let title = line.replace(link, '').replace(/[|()•—–]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!title && link) {
+          title = link.split('/').pop().replace(/[-_]/g, ' ');
+        }
+
+        currentProj = {
+          name: title || 'Featured Project',
+          link: link,
+          tools: '',
+          description: ''
+        };
+      } else if (currentProj) {
+        const cleanText = line.replace(/^[•\-\*▪▫–—›>✓]\s*/, '').trim();
+        if (/^(?:technologies|tools|stack|tech)\s*:\s*/i.test(cleanText)) {
+          currentProj.tools = cleanText.replace(/^(?:technologies|tools|stack|tech)\s*:\s*/i, '').trim();
+        } else if (!currentProj.description) {
+          currentProj.description = cleanText;
+        } else {
+          currentProj.description += ' ' + cleanText;
+        }
+      }
+    }
+
+    if (currentProj) {
+      extractedProjects.push(currentProj);
+    }
+
+    return extractedProjects.slice(0, 4);
+  }
+
+  parseSkillsSection(skillLines, rawText) {
     const detectedSkills = [];
+
+    // 1. From skills section lines
+    if (skillLines && skillLines.length > 0) {
+      skillLines.forEach(l => {
+        // Strip category labels (e.g. "Languages:", "Frameworks & Tools:", "Databases:")
+        const cleaned = l.replace(/^[A-Za-z\s/&]+:\s*/, '');
+        const tokens = cleaned.split(/[,;•|/·\t\n]+/).map(s => s.trim()).filter(Boolean);
+        tokens.forEach(tok => {
+          if (tok.length >= 2 && tok.length <= 35 && !tok.includes('@') && !/\d{4}/.test(tok)) {
+            if (!detectedSkills.some(s => s.toLowerCase() === tok.toLowerCase())) {
+              detectedSkills.push(tok);
+            }
+          }
+        });
+      });
+    }
+
+    // 2. Comprehensive dictionary match across the entire document
+    const techDictionary = [
+      'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Next.js', 'Vue.js', 'Angular',
+      'HTML5', 'CSS3', 'Tailwind CSS', 'Sass', 'FastAPI', 'Django', 'Flask', 'Express.js',
+      'SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Cassandra', 'SQLite', 'GraphQL',
+      'Docker', 'Kubernetes', 'AWS', 'Google Cloud (GCP)', 'Microsoft Azure', 'Terraform',
+      'Git', 'GitHub', 'GitLab', 'CI/CD Pipelines', 'Linux', 'REST APIs', 'Microservices',
+      'Machine Learning', 'Deep Learning', 'PyTorch', 'TensorFlow', 'Scikit-Learn', 'RAG',
+      'C++', 'C#', 'Java', 'Go', 'Rust', 'PHP', 'Swift', 'Kotlin', 'Flutter', 'Dart',
+      'Data Analysis', 'Tableau', 'Power BI', 'Pandas', 'NumPy', 'Kafka', 'RabbitMQ',
+      'Elasticsearch', 'Vector Databases', 'Prompt Engineering', 'LangChain', 'Agile / Scrum'
+    ];
+
     techDictionary.forEach(skill => {
       const regex = new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-      if (regex.test(text) && !detectedSkills.includes(skill)) {
+      if (regex.test(rawText) && !detectedSkills.some(s => s.toLowerCase() === skill.toLowerCase())) {
         detectedSkills.push(skill);
       }
     });
-    if (detectedSkills.length >= 4) {
-      this.data.skills = detectedSkills;
-    }
 
-    // 8. Experience extraction
-    const expRegex = /([A-Za-z0-9\s,&.-]{3,35})\s*(?:[|•–-])\s*([A-Za-z0-9\s,&.-]{3,35})?\s*(?:[|•–-])?\s*(\b(?:20\d\d|19\d\d)\s*(?:-|–|to)\s*(?:Present|Current|20\d\d)\b)/gi;
-    let match;
-    const extractedExp = [];
-    while ((match = expRegex.exec(text)) !== null) {
-      const role = match[1].trim();
-      const company = match[2] ? match[2].trim() : 'Company';
-      const dates = match[3].trim();
-      if (role.length < 40 && !role.toLowerCase().includes('university')) {
-        extractedExp.push({
-          role: role,
-          company: company,
-          location: 'Remote / US',
-          dates: dates,
-          bullets: [
-            `Accelerated engineering throughput and delivered core system capabilities at ${company}.`,
-            'Architected scalable solutions, automated deployment workflows, and collaborated in agile cross-functional pods.'
-          ]
-        });
-      }
-      if (extractedExp.length >= 3) break;
-    }
-    if (extractedExp.length > 0) {
-      this.data.experience = extractedExp;
-    }
+    return detectedSkills.slice(0, 24);
+  }
 
-    // 9. Education extraction
-    const eduKeywords = ['University', 'College', 'Institute', 'School', 'Polytechnic', 'Academy', 'Bachelor', 'Master', 'Degree', 'B.S.', 'M.S.', 'B.A.', 'M.A.', 'Ph.D.', 'B.Sc', 'M.Sc'];
-    const extractedEdu = [];
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      if (eduKeywords.some(kw => line.includes(kw)) && line.length < 80 && !line.toLowerCase().startsWith('experience')) {
-        const dateMatch = line.match(/\b(19\d\d|20\d\d)(?:\s*[-–to]+\s*(19\d\d|20\d\d|Present))?\b/);
-        const dates = dateMatch ? dateMatch[0] : '2018 - 2022';
-        const cleanLine = line.replace(dates, '').trim();
-        let degree = 'B.S. in Computer Science';
-        let school = cleanLine || 'University';
-        if (cleanLine.includes('—') || cleanLine.includes('-') || cleanLine.includes(',')) {
-          const parts = cleanLine.split(/[—\-,]/).map(p => p.trim()).filter(Boolean);
-          if (parts.length >= 2) {
-            degree = parts[0];
-            school = parts.slice(1).join(', ');
+  parseCertificationsSection(certLines, rawText) {
+    const certs = [];
+    if (certLines && certLines.length > 0) {
+      certLines.forEach(l => {
+        const clean = l.replace(/^[•\-\*▪▫✓\d\.]+\s*/, '').trim();
+        if (clean.length >= 3 && clean.length <= 80 && !clean.includes('@')) {
+          if (!certs.includes(clean)) {
+            certs.push(clean);
           }
         }
-        extractedEdu.push({
-          degree: degree.length > 50 ? degree.slice(0, 50) : degree,
-          school: school.length > 60 ? school.slice(0, 60) : school,
-          dates: dates,
-          details: 'Academic Honors & Focus'
-        });
-        if (extractedEdu.length >= 2) break;
-      }
-    }
-    if (extractedEdu.length > 0) {
-      this.data.education = extractedEdu;
-    }
-
-    // 10. Certifications extraction
-    const certKeywords = ['Certified', 'AWS', 'GCP', 'Google Cloud', 'Azure', 'Kubernetes', 'CKA', 'CKAD', 'CISSP', 'PMP', 'Scrum', 'CompTIA', 'DeepLearning'];
-    const extractedCerts = [];
-    lines.forEach(l => {
-      if (l.length < 70 && certKeywords.some(ck => l.includes(ck)) && !l.includes('@') && !l.toLowerCase().includes('university')) {
-        const clean = l.replace(/^[•\-\*]\s*/, '').trim();
-        if (clean && !extractedCerts.includes(clean)) {
-          extractedCerts.push(clean);
-        }
-      }
-    });
-    if (extractedCerts.length > 0) {
-      this.data.certifications = extractedCerts.slice(0, 5);
-    }
-
-    // 11. Projects extraction
-    const ghMatches = text.match(/github\.com\/[A-Za-z0-9_-]+\/([A-Za-z0-9_-]+)/g);
-    if (ghMatches && ghMatches.length > 0) {
-      const extractedProjects = [];
-      ghMatches.slice(0, 3).forEach(ghUrl => {
-        const projName = ghUrl.split('/').pop().replace(/[-_]/g, ' ');
-        const capName = projName.charAt(0).toUpperCase() + projName.slice(1);
-        extractedProjects.push({
-          name: capName,
-          link: 'https://' + ghUrl,
-          tools: 'Modern Engineering Stack',
-          description: 'Production system architecture and open-source project repository.'
-        });
       });
-      if (extractedProjects.length > 0) {
-        this.data.projects = extractedProjects;
-      }
     }
+
+    // Check for common certs in document if cert section was absent
+    if (certs.length === 0) {
+      const commonCerts = [
+        'AWS Certified Solutions Architect', 'AWS Certified Developer', 'Google Cloud Certified Professional',
+        'Certified Kubernetes Administrator (CKA)', 'Certified Kubernetes Application Developer (CKAD)',
+        'Microsoft Certified: Azure Solutions Architect', 'CompTIA Security+', 'CISSP', 'PMP',
+        'Certified ScrumMaster (CSM)', 'DeepLearning.AI'
+      ];
+      commonCerts.forEach(cc => {
+        if (new RegExp(`\\b${cc.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(rawText)) {
+          certs.push(cc);
+        }
+      });
+    }
+
+    return certs.slice(0, 6);
   }
 
   async exportPdf() {
